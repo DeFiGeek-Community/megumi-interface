@@ -1,97 +1,36 @@
-# Megumi interface
+This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-### ER Diagram
+## Getting Started
 
-```mermaid
-erDiagram
-    airdrops {
-        UUID id PK "default uuid_generate_v4()"
-        bytea contract_address "UNIQUE"
-        bytea template_name "NOT NULL"
-        bytea owner "NOT NULL"
-        bytea token "NOT NULL"
-        VARCHAR token_logo
-        TIMESTAMP created_at "CURRENT_TIMESTAMP"
-        TIMESTAMP updated_at "CURRENT_TIMESTAMP"
-    }
+First, run the development server:
 
-    claimers {
-        UUID id PK "default uuid_generate_v4()"
-        bytea address "NOT NULL UNIQUE"
-    }
-
-    airdrop_claimer_maps {
-        UUID id PK "default uuid_generate_v4()"
-        UUID airdrop_id FK "NOT NULL"
-        UUID claimer_id FK "NOT NULL"
-        BOOLEAN is_claimed "NOT NULL DEFAULT FALSE"
-        bytea[] proofs "NOT NULL"
-        INT index "NOT NULL"
-        BIGINT amount "NOT NULL"
-    }
-
-    airdrops ||--o{ airdrop_claimer_maps : "has"
-    claimers ||--o{ airdrop_claimer_maps : "has"
-
+```bash
+npm run dev
+# or
+yarn dev
+# or
+pnpm dev
+# or
+bun dev
 ```
 
-### Airdrop creation flow
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-```mermaid
-sequenceDiagram
-    participant User
-    participant NextJS
-    participant CovalentAPI
-    participant Lambda
-    participant DB
-    participant S3
-    participant Ethereum
+You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-    User->>NextJS: エアドロップ基本情報登録
-    activate NextJS
-    NextJS->>DB: Create airdrop
-    activate DB
-    DB-->>NextJS: Response
-    deactivate DB
-    NextJS-->>User: Response
-    deactivate NextJS
+This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-    User->>NextJS: Merkle Tree作成(スナップショット)
-    activate NextJS
-    loop 指定ブロックの指定トークンホルダー取得完了するまで
-        NextJS->>CovalentAPI: 1000件ずつ対象アドレス取得
-        activate CovalentAPI
-        CovalentAPI-->>NextJS: Response
-        deactivate CovalentAPI
-    end
-    NextJS->>NextJS: Merkle treeファイル作成
-    NextJS->>S3: Merkle treeファイルアップロード
-    activate S3
-    S3-->>NextJS: Response
-    deactivate S3
-    NextJS-->>User: Response
-    deactivate NextJS
+## Learn More
 
-    User->>Ethereum: コントラクトデプロイ
-    Ethereum-->>User: Response
-    User-->>NextJS: バックグラウンドジョブ開始（自動、手動）
-    NextJS-->>Lambda: バックグラウンドジョブ開始
-    activate Lambda
-    loop デプロイ完了まで
-        Lambda-->>Ethereum: 確認
-        Ethereum-->>Lambda: Response
-    end
-    Lambda->>DB: ステータス更新
-    activate DB
-    DB-->>Lambda: Response
-    deactivate DB
-    Lambda->>S3: Merkle Treeファイル取得
-    activate S3
-    S3-->>Lambda: レスポンス
-    deactivate S3
-    Lambda->>DB: merkle tree情報をBulk insert
-    activate DB
-    DB-->>Lambda: Response
-    deactivate DB
-    deactivate Lambda
-```
+To learn more about Next.js, take a look at the following resources:
+
+- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
+- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+
+You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+
+## Deploy on Vercel
+
+The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+
+Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
