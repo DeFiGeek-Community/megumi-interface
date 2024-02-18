@@ -1,10 +1,8 @@
 import type { Metadata } from "next";
-import Providers from "../components/providers/Providers";
-import { Inter } from "next/font/google";
+import Providers from "./providers/Providers";
 import { getServerSession } from "next-auth";
 import "./globals.css";
-
-const inter = Inter({ subsets: ["latin"] });
+import Header from "./components/common/Header";
 
 export const metadata: Metadata = {
   title: "Megumi",
@@ -19,8 +17,11 @@ export default async function RootLayout({
   const session = await getServerSession();
   return (
     <html lang="en">
-      <body className={inter.className}>
-        <Providers session={session}>{children}</Providers>
+      <body>
+        <Providers session={session}>
+          <Header />
+          {children}
+        </Providers>
       </body>
     </html>
   );
