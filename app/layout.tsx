@@ -3,6 +3,7 @@ import Providers from "./providers/Providers";
 import { getServerSession } from "next-auth";
 import "./globals.css";
 import Header from "./components/common/Header";
+import { authOptions } from "./api/auth/authOptions";
 
 export const metadata: Metadata = {
   title: "Megumi",
@@ -14,7 +15,7 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession();
+  const session = await getServerSession(authOptions);
   return (
     <html lang="en">
       <body>

@@ -6,7 +6,8 @@ import { SiweMessage } from "siwe";
 export const authOptions: AuthOptions = {
   providers: [
     CredentialsProvider({
-      name: "Ethereum",
+      id: "siwe",
+      name: "siwe",
       credentials: {
         message: {
           label: "Message",
@@ -31,7 +32,7 @@ export const authOptions: AuthOptions = {
             {
               signature: credentials?.signature || "",
               domain: nextAuthUrl.host,
-              nonce: await getCsrfToken({ req }),
+              nonce: await getCsrfToken({ req: { headers: req.headers } }),
             }, // { provider: PROVIDER }
           );
 
@@ -53,8 +54,7 @@ export const authOptions: AuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
     async session({ session, token }: { session: any; token: any }) {
-      session.address = token.sub;
-      session.user.name = token.sub;
+      session.user.address = token.sub;
       return session;
     },
   },

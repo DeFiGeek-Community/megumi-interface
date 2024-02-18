@@ -1,113 +1,41 @@
 "use client";
-import { ConnectButton as OriginalConnectButton } from "@rainbow-me/rainbowkit";
-import { Image } from "./chakra-ui";
+import { useEffect, useState } from "react";
+import { useAccount, useSignMessage } from "wagmi";
+import { chakra, Button } from "@chakra-ui/react";
+import { requireAuthAtom } from "@/app/stores/requireAuthAtom";
+import { useAtom } from "jotai";
+import { handleLogin } from "@/app/lib/auth/handleLogin";
 
-export default function ConnectButton({
-  requireAuthentication = true,
-  setRequiringStatus = () => {},
-  ...connectButtonParams
-}: {
-  requireAuthentication?: boolean;
-  setRequiringStatus?: () => void;
-} & Parameters<typeof OriginalConnectButton>[0]) {
-  // setRequiringStatus();
-  // return <OriginalConnectButton {...connectButtonParams} />;
-  // if (requireAuthentication) {
-  //   return <OriginalConnectButton {...connectButtonParams} />;
-  // } else {
+type ConnectButtonProps = {
+  requireSignIn?: boolean;
+  size?: "md" | "sm";
+  label?: string;
+  loadingLabel?: string;
+  disabled?: boolean;
+  balance?: "show" | "hide";
+};
+
+export default function ConnectButton({ requireSignIn = false, ...props }: ConnectButtonProps) {
+  const [mounted, setMounted] = useState(false);
+  const { address, isConnected, chain } = useAccount();
+  const { signMessageAsync } = useSignMessage();
+  const [, setRequireAuth] = useAtom(requireAuthAtom);
+
+  useEffect(() => setMounted(true), []);
+  if (!mounted) return <></>;
+
   return (
-    <OriginalConnectButton.Custom {...connectButtonParams}>
-      {({
-        account,
-        chain,
-        openAccountModal,
-        openChainModal,
-        openConnectModal,
-        authenticationStatus,
-        mounted,
-      }) => {
-        // Note: If your app doesn't use authentication, you
-        // can remove all 'authenticationStatus' checks
-        const ready = mounted && authenticationStatus !== "loading";
-        const connected =
-          ready &&
-          account &&
-          chain &&
-          (!authenticationStatus || authenticationStatus === "authenticated");
-        return (
-          <div
-            {...(!ready && {
-              "aria-hidden": true,
-              style: {
-                opacity: 0,
-                pointerEvents: "none",
-                userSelect: "none",
-              },
-            })}
-          >
-            {(() => {
-              if (!connected) {
-                return (
-                  <button
-                    onClick={() => {
-                      setRequiringStatus();
-                      setTimeout(() => {
-                        openConnectModal();
-                      }, 0);
-                    }}
-                    type="button"
-                  >
-                    Connect Wallet
-                  </button>
-                );
-              }
-              if (chain.unsupported) {
-                return (
-                  <button onClick={openChainModal} type="button">
-                    Wrong network
-                  </button>
-                );
-              }
-              return (
-                <div style={{ display: "flex", gap: 12 }}>
-                  <button
-                    onClick={openChainModal}
-                    style={{ display: "flex", alignItems: "center" }}
-                    type="button"
-                  >
-                    {chain.hasIcon && (
-                      <div
-                        style={{
-                          background: chain.iconBackground,
-                          width: 12,
-                          height: 12,
-                          borderRadius: 999,
-                          overflow: "hidden",
-                          marginRight: 4,
-                        }}
-                      >
-                        {chain.iconUrl && (
-                          <Image
-                            alt={chain.name ?? "Chain icon"}
-                            src={chain.iconUrl}
-                            style={{ width: 12, height: 12 }}
-                          />
-                        )}
-                      </div>
-                    )}
-                    {chain.name}
-                  </button>
-                  <button onClick={openAccountModal} type="button">
-                    {account.displayName}
-                    {account.displayBalance ? ` (${account.displayBalance})` : ""}
-                  </button>
-                </div>
-              );
-            })()}
-          </div>
-        );
-      }}
-    </OriginalConnectButton.Custom>
+    <>
+      {!isConnected && (
+        <chakra.span onClick={() => setRequireAuth(requireSignIn)}>
+          <w3m-button {...props} />
+        </chakra.span>
+      )}
+      {isConnected && (
+        <Button onClick={() => handleLogin({ chain, address, signMessageAsync })}>
+          Sign In With Ethereum
+        </Button>
+      )}
+    </>
   );
-  // }
 }
