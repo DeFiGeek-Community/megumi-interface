@@ -27,8 +27,9 @@ export const handleLogin = async ({ chain, address, signMessageAsync }: LoginPro
 
     const response = await signIn("siwe", {
       message: JSON.stringify(message),
-      redirect: false,
+      redirect: true,
       signature,
+      callbackUrl: "/dashboard",
     });
     if (response?.error) {
       console.log("Error occured:", response.error);

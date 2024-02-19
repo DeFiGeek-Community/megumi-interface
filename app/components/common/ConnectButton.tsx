@@ -5,6 +5,7 @@ import { chakra, Button } from "@chakra-ui/react";
 import { requireAuthAtom } from "@/app/stores/requireAuthAtom";
 import { useAtom } from "jotai";
 import { handleLogin } from "@/app/lib/auth/handleLogin";
+import { useIsMounted } from "@/app/hooks/common/useIsMounted";
 
 type ConnectButtonProps = {
   requireSignIn?: boolean;
@@ -16,13 +17,12 @@ type ConnectButtonProps = {
 };
 
 export default function ConnectButton({ requireSignIn = false, ...props }: ConnectButtonProps) {
-  const [mounted, setMounted] = useState(false);
+  const isMounted = useIsMounted();
   const { address, isConnected, chain } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const [, setRequireAuth] = useAtom(requireAuthAtom);
 
-  useEffect(() => setMounted(true), []);
-  if (!mounted) return <></>;
+  if (!isMounted) return <></>;
 
   return (
     <>

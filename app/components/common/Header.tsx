@@ -17,13 +17,14 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  ChevronDownIcon,
-} from "./chakra-ui";
+} from "@chakra-ui/react";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 import Router from "next/router";
 import { useAccount, useEnsAvatar, useEnsName, useDisconnect } from "wagmi";
 import { normalize } from "viem/ens";
 import { useSession } from "next-auth/react";
 import ConnectButton from "./ConnectButton";
+import { useIsMounted } from "@/app/hooks/common/useIsMounted";
 // import { useLocale } from "../../hooks/useLocale";
 
 type HeaderProps = {
@@ -43,12 +44,15 @@ export default function Header({ title }: HeaderProps) {
   const { disconnect } = useDisconnect();
   //   const { t, locale } = useLocale();
 
+  const isMounted = useIsMounted();
+  if (!isMounted) return <></>;
+
   return (
     <Box
       px={{ base: 0, md: 4 }}
       position={"sticky"}
       top={"0"}
-      zIndex={100}
+      zIndex={99}
       bg={"chakra-body-bg"}
       opacity={0.975}
     >
@@ -96,9 +100,12 @@ export default function Header({ title }: HeaderProps) {
                       <ChevronDownIcon />
                     </>
                   ) : (
-                    <Text fontSize={{ base: "xs", md: "sm" }} id="account">
-                      CONNECT_WALLET
-                    </Text>
+                    <>
+                      <Text fontSize={{ base: "xs", md: "sm" }} id="account">
+                        CONNECT_WALLET
+                      </Text>
+                      <ChevronDownIcon />
+                    </>
                   )}
                 </HStack>
               </MenuButton>
