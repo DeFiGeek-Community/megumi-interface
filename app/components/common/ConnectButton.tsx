@@ -1,11 +1,10 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useContext } from "react";
 import { useAccount, useSignMessage } from "wagmi";
 import { chakra, Button } from "@chakra-ui/react";
-import { requireAuthAtom } from "@/app/stores/requireAuthAtom";
-import { useAtom } from "jotai";
 import { handleLogin } from "@/app/lib/auth/handleLogin";
 import { useIsMounted } from "@/app/hooks/common/useIsMounted";
+import { RequireAuthContext } from "@/app/providers/AuthCallbackProvider";
 
 type ConnectButtonProps = {
   requireSignIn?: boolean;
@@ -20,7 +19,7 @@ export default function ConnectButton({ requireSignIn = false, ...props }: Conne
   const isMounted = useIsMounted();
   const { address, isConnected, chain } = useAccount();
   const { signMessageAsync } = useSignMessage();
-  const [, setRequireAuth] = useAtom(requireAuthAtom);
+  const { setRequireAuth } = useContext(RequireAuthContext);
 
   if (!isMounted) return <></>;
 

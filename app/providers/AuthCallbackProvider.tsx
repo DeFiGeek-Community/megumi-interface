@@ -1,18 +1,25 @@
 "use client";
-import { FC, ReactNode, useEffect } from "react";
+import { Dispatch, FC, ReactNode, SetStateAction, createContext, useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
 import { useAccount, useSignMessage } from "wagmi";
-import { useAtom } from "jotai";
-import { requireAuthAtom } from "@/app/stores/requireAuthAtom";
 import { usePrevious } from "@chakra-ui/react";
 import { handleLogin } from "@/app/lib/auth/handleLogin";
+
+export type RequireAuthContextType = {
+  requireAuth: boolean;
+  setRequireAuth: Dispatch<SetStateAction<boolean>>;
+};
+export const RequireAuthContext = createContext<RequireAuthContextType>({
+  requireAuth: false,
+  setRequireAuth: () => {},
+});
 
 type ProviderProps = {
   children: ReactNode;
 };
 const AuthCallbackProvider: FC<ProviderProps> = ({ children }) => {
   const { isConnected, address, chain } = useAccount();
-  const [requireAuth] = useAtom(requireAuthAtom);
+  const [requireAuth, setRequireAuth] = useState<boolean>(false);
   const prevIsConnected = usePrevious(isConnected);
   const { data: session } = useSession();
   const { signMessageAsync } = useSignMessage();
@@ -32,7 +39,11 @@ const AuthCallbackProvider: FC<ProviderProps> = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isConnected, requireAuth]);
 
-  return <>{children}</>;
+  return (
+    <RequireAuthContext.Provider value={{ requireAuth, setRequireAuth }}>
+      {children}
+    </RequireAuthContext.Provider>
+  );
 };
 
 export default AuthCallbackProvider;
