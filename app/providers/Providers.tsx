@@ -8,6 +8,7 @@ import { SessionProvider } from "next-auth/react";
 import AuthCallbackProvider from "./AuthCallbackProvider";
 import theme from "../theme";
 import { useIsMounted } from "../hooks/common/useIsMounted";
+import TxToastProvider from "./ToastProvider";
 
 type ProviderProps = {
   children: ReactNode;
@@ -25,7 +26,7 @@ const Providers: FC<ProviderProps> = ({ children, session }) => {
           <AuthCallbackProvider>
             <ChakraProvider theme={theme}>
               {isMounted && <ColorModeScript initialColorMode={"dark"} />}
-              {children}
+              <TxToastProvider>{children}</TxToastProvider>
             </ChakraProvider>
           </AuthCallbackProvider>
         </QueryClientProvider>
