@@ -9,7 +9,10 @@ erDiagram
         bytea contract_address "UNIQUE"
         bytea template_name "NOT NULL"
         bytea owner "NOT NULL"
-        bytea token "NOT NULL"
+        bytea token_address "NOT NULL UNIQUE"
+        VARCHAR token_name "NOT NULL"
+        VARCHAR token_symbol "NOT NULL"
+        INT token_decimals "NOT NULL"
         VARCHAR token_logo
         TIMESTAMP created_at "CURRENT_TIMESTAMP"
         TIMESTAMP updated_at "CURRENT_TIMESTAMP"
@@ -30,8 +33,8 @@ erDiagram
         BIGINT amount "NOT NULL"
     }
 
-    airdrops ||--o{ airdrop_claimer_maps : "has"
-    claimers ||--o{ airdrop_claimer_maps : "has"
+    airdrops ||--o{ airdrop_claimer_maps : "has many"
+    claimers ||--o{ airdrop_claimer_maps : "has many"
 
 ```
 
