@@ -9,7 +9,7 @@ erDiagram
         bytea contract_address "UNIQUE"
         bytea template_name "NOT NULL"
         bytea owner "NOT NULL"
-        bytea token_address "NOT NULL UNIQUE"
+        bytea token_address "NOT NULL"
         VARCHAR token_name "NOT NULL"
         VARCHAR token_symbol "NOT NULL"
         INT token_decimals "NOT NULL"
