@@ -10,7 +10,6 @@ import {
   Avatar,
   Text,
   VStack,
-  useToast,
   Divider,
   Link,
   Menu,
@@ -32,17 +31,17 @@ type HeaderProps = {
 };
 
 export default function Header({ title }: HeaderProps) {
-  const toast = useToast({ position: "top-right", isClosable: true });
-  const { address, isConnected, connector, chain } = useAccount();
+  const { address, isConnected } = useAccount();
   const { data: session } = useSession();
   const { data: ensName } = useEnsName({
-    address: session?.user ? session?.user.address : address,
+    address: session?.user ? session.user.address : address,
   });
   const { data: ensAvatar } = useEnsAvatar({
     name: normalize(ensName ? ensName.toString() : ""),
   });
   const { disconnect } = useDisconnect();
   //   const { t, locale } = useLocale();
+  const t = (key: string) => key; // TODO
 
   const isMounted = useIsMounted();
   if (!isMounted) return <></>;
@@ -89,11 +88,8 @@ export default function Header({ title }: HeaderProps) {
                           <chakra.span display={{ base: "none", md: "inline" }}>
                             {ensName
                               ? `${ensName}`
-                              : `${session?.user?.address?.slice(
-                                  0,
-                                  5,
-                                )}...${session?.user?.address?.slice(-4)}`}
-                            {session?.user?.address ? "でログイン中" : ""}
+                              : `${address?.slice(0, 5)}...${address?.slice(-4)}`}
+                            {session?.user?.address && "でログイン中"}
                           </chakra.span>
                         </Text>
                       </VStack>
@@ -102,7 +98,7 @@ export default function Header({ title }: HeaderProps) {
                   ) : (
                     <>
                       <Text fontSize={{ base: "xs", md: "sm" }} id="account">
-                        CONNECT_WALLET
+                        {t("CONNECT_WALLET")}
                       </Text>
                       <ChevronDownIcon />
                     </>
@@ -122,7 +118,7 @@ export default function Header({ title }: HeaderProps) {
                     display={{ base: "block", md: "none" }}
                     onClick={() => Router.push("/dashboard")}
                   >
-                    Dashboard
+                    {t("DASHBOARD")}
                   </MenuItem>
                 )}
                 {isConnected && (
@@ -130,19 +126,19 @@ export default function Header({ title }: HeaderProps) {
                     display={{ base: "block", md: "none" }}
                     onClick={() => Router.push("/airdrops")}
                   >
-                    View all airdrops
+                    {t("VIEW_ALL_AIRDROPS")}
                   </MenuItem>
                 )}
                 <Divider display={{ base: "block", md: "none" }} />
 
-                {isConnected && <MenuItem onClick={() => disconnect()}>Disconnect</MenuItem>}
+                {isConnected && <MenuItem onClick={() => disconnect()}>{t("DISCONNECT")}</MenuItem>}
 
                 {!isConnected && (
                   <>
                     <Flex align="center" px="2">
                       <Divider />
                       <Text p="2" color={"gray.400"} fontSize={"xs"} whiteSpace={"nowrap"}>
-                        JOIN_AIRDROP
+                        {t("JOIN_AIRDROP")}
                       </Text>
                       <Divider />
                     </Flex>
@@ -157,12 +153,16 @@ export default function Header({ title }: HeaderProps) {
                     <Flex align="center" px="2" mt="2">
                       <Divider />
                       <Text padding="2" color={"gray.400"} fontSize={"xs"} whiteSpace={"nowrap"}>
-                        Manage Airdrop
+                        {t("MANAGE_AIRDROP")}
                       </Text>
                       <Divider />
                     </Flex>
                     <chakra.div px={3} py={1}>
-                      <ConnectButton requireSignIn={true} label="Sign In With Ethereum" size="sm" />
+                      <ConnectButton
+                        requireSignIn={true}
+                        label={t("SIGN_IN_WITH_ETHEREUM")}
+                        size="sm"
+                      />
                     </chakra.div>
                   </>
                 )}

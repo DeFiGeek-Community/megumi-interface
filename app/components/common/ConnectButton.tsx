@@ -20,6 +20,7 @@ export default function ConnectButton({ requireSignIn = false, ...props }: Conne
   const { address, isConnected, chain } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const { setRequireAuth } = useContext(RequireAuthContext);
+  const t = (key: string) => key; // TODO
 
   if (!isMounted) return <></>;
 
@@ -31,8 +32,11 @@ export default function ConnectButton({ requireSignIn = false, ...props }: Conne
         </chakra.span>
       )}
       {isConnected && (
-        <Button onClick={() => handleLogin({ chain, address, signMessageAsync })}>
-          Sign In With Ethereum
+        <Button
+          colorScheme={"green"}
+          onClick={() => handleLogin({ chain, address, signMessageAsync })}
+        >
+          {t("SIGN_IN_WITH_ETHEREUM")}
         </Button>
       )}
     </>

@@ -27,7 +27,7 @@ const AuthCallbackProvider: FC<ProviderProps> = ({ children }) => {
   // Sign out when the wallet is disconnected
   useEffect(() => {
     if (session?.user && !isConnected) {
-      signOut({ redirect: false });
+      signOut({ redirect: true });
     }
   }, [isConnected, session?.user]);
 

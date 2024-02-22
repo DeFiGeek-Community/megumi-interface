@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import Providers from "./providers/Providers";
 import { getServerSession } from "next-auth";
-import "./globals.css";
-import Header from "./components/common/Header";
 import { authOptions } from "./api/auth/authOptions";
+import Providers from "./providers/Providers";
+import Header from "./components/common/Header";
+import Footer from "./components/common/Footer";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Megumi",
@@ -21,7 +22,8 @@ export default async function RootLayout({
       <body>
         <Providers session={session}>
           <Header />
-          {children}
+          <main>{children}</main>
+          <Footer />
         </Providers>
       </body>
     </html>
