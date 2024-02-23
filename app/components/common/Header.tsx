@@ -85,10 +85,10 @@ export default function Header({ title }: HeaderProps) {
                         ml="2"
                       >
                         <Text fontSize="sm" id="account">
+                          {ensName
+                            ? `${ensName}`
+                            : `${address?.slice(0, 5)}...${address?.slice(-4)}`}
                           <chakra.span display={{ base: "none", md: "inline" }}>
-                            {ensName
-                              ? `${ensName}`
-                              : `${address?.slice(0, 5)}...${address?.slice(-4)}`}
                             {session?.user?.address && "でログイン中"}
                           </chakra.span>
                         </Text>

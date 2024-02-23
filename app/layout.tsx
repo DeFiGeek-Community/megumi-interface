@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { cookies } from "next/headers";
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/authOptions";
 import Providers from "./providers/Providers";
@@ -17,8 +18,11 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   const session = await getServerSession(authOptions);
+  const cookieStore = cookies();
+  const locale = decodeURIComponent(cookieStore.get("locale")?.value ?? "en");
+
   return (
-    <html lang="en" data-theme="dark" style={{ colorScheme: "dark" }}>
+    <html lang={locale} data-theme="dark" style={{ colorScheme: "dark" }}>
       <body>
         <Providers session={session}>
           <Header />
