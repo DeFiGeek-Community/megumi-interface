@@ -12,15 +12,12 @@ import {
   Tooltip,
 } from "@chakra-ui/react";
 import { AiFillGithub } from "react-icons/ai";
+import { useTranslation } from "react-i18next";
 import gitbook from "@/public/images/gitbook.svg";
-// import { useLocale } from "../../hooks/useLocale";
 import SvgCommunityLogoBlack from "./CommunityLogoBlack";
 
 export default function Footer() {
-  // const { t, setLocale, locale } = useLocale();
-  const t = (key: string) => key; // TODO
-  const setLocale = (locale: "ja" | "en") => {}; // TODO
-  const locale = "ja"; // TODO
+  const { i18n } = useTranslation();
   return (
     <Box px={{ base: 0, md: 4 }} pb={4} top={"0"} zIndex={100} bg={"gray.900"} opacity={0.975}>
       <Container maxW="container.2xl" px={{ base: 2, md: 4 }}>
@@ -64,8 +61,8 @@ export default function Footer() {
             <Select
               w={"100px"}
               size={"xs"}
-              value={locale}
-              onChange={(e) => setLocale(e.target.value as "ja" | "en")}
+              value={i18n.language}
+              onChange={(e) => i18n.changeLanguage(e.target.value)}
               float={"right"}
             >
               <option value={"ja"}>Japanese</option>

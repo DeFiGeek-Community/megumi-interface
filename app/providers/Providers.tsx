@@ -3,22 +3,24 @@ import { FC, ReactNode } from "react";
 import { ChakraProvider, ColorModeScript } from "@chakra-ui/react";
 import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import type { Session } from "next-auth";
-import Web3Provider from "./Web3Provider";
 import { SessionProvider } from "next-auth/react";
-import AuthCallbackProvider from "./AuthCallbackProvider";
 import theme from "../theme";
 import { useIsMounted } from "../hooks/common/useIsMounted";
+import Web3Provider from "./Web3Provider";
+import AuthCallbackProvider from "./AuthCallbackProvider";
+import I18nProvider from "./I18nProvider";
 import TxToastProvider from "./ToastProvider";
 
 type ProviderProps = {
   children: ReactNode;
   session: Session | null;
+  locale: string;
 };
 
 const queryClient = new QueryClient();
 
-const Providers: FC<ProviderProps> = ({ children, session }) => {
-  const isMounted = useIsMounted();
+const Providers: FC<ProviderProps> = ({ children, session, locale }) => {
+  const isMounted: boolean = useIsMounted();
   return (
     <Web3Provider>
       <SessionProvider refetchInterval={0} session={session}>
@@ -26,7 +28,9 @@ const Providers: FC<ProviderProps> = ({ children, session }) => {
           <AuthCallbackProvider>
             <ChakraProvider theme={theme}>
               {isMounted && <ColorModeScript initialColorMode={"dark"} />}
-              <TxToastProvider>{children}</TxToastProvider>
+              <I18nProvider locale={locale}>
+                <TxToastProvider>{children}</TxToastProvider>
+              </I18nProvider>
             </ChakraProvider>
           </AuthCallbackProvider>
         </QueryClientProvider>

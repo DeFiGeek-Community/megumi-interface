@@ -5,12 +5,16 @@ import { authOptions } from "./api/auth/authOptions";
 import Providers from "./providers/Providers";
 import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
+import i18next from "../lib/i18nConfig";
 import "./globals.css";
 
-export const metadata: Metadata = {
-  title: "Megumi",
-  description: "Airdrop tool",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = i18next.t;
+  return {
+    title: `${t("appName")} | ${t("tagline")}`,
+    description: t("tagline"),
+  };
+}
 
 export default async function RootLayout({
   children,
@@ -19,12 +23,13 @@ export default async function RootLayout({
 }>) {
   const session = await getServerSession(authOptions);
   const cookieStore = cookies();
-  const locale = decodeURIComponent(cookieStore.get("locale")?.value ?? "en");
+  const locale = cookieStore.get("locale")?.value ?? "en";
+  await i18next.changeLanguage(locale);
 
   return (
-    <html lang={locale} data-theme="dark" style={{ colorScheme: "dark" }}>
+    <html lang={i18next.language} data-theme="dark" style={{ colorScheme: "dark" }}>
       <body>
-        <Providers session={session}>
+        <Providers session={session} locale={i18next.language}>
           <Header />
           <main>{children}</main>
           <Footer />

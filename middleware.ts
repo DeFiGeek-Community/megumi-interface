@@ -2,9 +2,10 @@ import { withAuth } from "next-auth/middleware";
 import { match } from "@formatjs/intl-localematcher";
 import { NextRequest, NextResponse } from "next/server";
 import Negotiator from "negotiator";
+import { i18nextInitOptions } from "./lib/i18nConfig";
 
-const acceptableLocales = new Set(["en", "ja"]);
-const defaultLocale = "en";
+const acceptableLocales = new Set(i18nextInitOptions.supportedLngs || []);
+const defaultLocale = i18nextInitOptions.lng || "en";
 const authPages = ["/dashboard"];
 
 const getUserLocale = (req: NextRequest): string => {
@@ -15,7 +16,7 @@ const getUserLocale = (req: NextRequest): string => {
   try {
     lang = match(languages, Array.from(acceptableLocales), defaultLocale);
   } catch (e) {
-    console.log("Error: detecting user's locale. Using default locale...");
+    console.warn("Failed to detect user's locale. Using default locale...");
   }
   return lang;
 };
