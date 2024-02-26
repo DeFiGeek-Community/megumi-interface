@@ -2,6 +2,8 @@ import { AuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
+import { ethers } from "ethers";
+import { getChain } from "@/app/lib/utils";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -25,15 +27,21 @@ export const authOptions: AuthOptions = {
           const siwe = new SiweMessage(JSON.parse(credentials?.message || "{}"));
           const nextAuthUrl = new URL(process.env.NEXTAUTH_URL!);
 
-          // TODO
-          // Add provider to accept EIP-1271 sig
-          // https://medium.com/mighty-bear-games/how-to-handle-gnosis-safe-connection-and-signature-e4b8e62cf14d
+          const chain = getChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID));
+          const chainName = chain.name.toLowerCase();
+          const provider = new ethers.JsonRpcProvider(
+            ["foundry", "hardhat", "localhost"].includes(chainName)
+              ? `http://localhost:8545`
+              : `https://${chainName}.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_API_KEY}`,
+          );
+
           const result = await siwe.verify(
             {
               signature: credentials?.signature || "",
               domain: nextAuthUrl.host,
               nonce: await getCsrfToken({ req: { headers: req.headers } }),
-            }, // { provider: PROVIDER }
+            },
+            { provider },
           );
 
           if (result.success) {

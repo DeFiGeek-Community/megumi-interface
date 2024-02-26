@@ -19,6 +19,7 @@ export const handleLogin = async ({ chain, address, signMessageAsync }: LoginPro
       version: "1",
       chainId: chain.id,
       nonce: await getCsrfToken(),
+      expirationTime: new Date(new Date().getTime() + 600000).toISOString(), // Requires to verify in 10 min
     });
 
     const signature = await signMessageAsync({

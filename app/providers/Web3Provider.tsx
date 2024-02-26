@@ -3,6 +3,7 @@ import { fallback, http, WagmiProvider } from "wagmi";
 import { mainnet, sepolia } from "wagmi/chains";
 import { createWeb3Modal } from "@web3modal/wagmi/react";
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
+import { getChain } from "../lib/utils";
 
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!;
 
@@ -10,10 +11,11 @@ const metadata = {
   name: "Megumi",
   description: "Connect your wallet to Megumi",
   url: "https://megumi.xyz",
-  icons: ["https://avatars.githubusercontent.com/u/37784886"],
+  icons: [],
 };
 
-const chains = [mainnet, sepolia] as const;
+const chain = getChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID));
+const chains = [chain] as const;
 
 const config = defaultWagmiConfig({
   // connectors,

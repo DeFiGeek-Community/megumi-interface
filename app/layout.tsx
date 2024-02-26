@@ -23,7 +23,7 @@ export default async function RootLayout({
 }>) {
   const session = await getServerSession(authOptions);
   const cookieStore = cookies();
-  const locale = cookieStore.get("locale")?.value ?? "en";
+  const locale = cookieStore.get("locale")?.value ?? i18next.options.lng;
   await i18next.changeLanguage(locale);
 
   return (
