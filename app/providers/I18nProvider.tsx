@@ -2,7 +2,7 @@
 import { FC, ReactNode, useEffect } from "react";
 import { setCookie } from "cookies-next";
 import { I18nextProvider } from "react-i18next";
-import i18next from "@/lib/i18nConfig";
+import i18next from "@/app/lib/i18nConfig";
 
 i18next.on("languageChanged", (lang: string) => {
   setCookie("locale", lang);

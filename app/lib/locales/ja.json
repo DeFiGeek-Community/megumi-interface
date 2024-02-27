@@ -1,0 +1,16 @@
+{
+    "appName": "Megumi",
+    "tagline": "エアドロップツール",
+    "common": {
+        "connectWallet": "ウォレットの接続",
+        "signInWithEthereum": "Ethereumでログイン",
+        "signedInAs": "{{name}}でログイン中",
+        "disconnect": "切断",
+        "joinAirdrop": "エアドロップに参加する",
+        "manageAirdrop": "エアドロップを管理する",
+        "viewAllAirdrops": "すべてのエアドロップを見る"
+    },
+    "dashboard": {
+        "title": "ダッシュボード"
+    }
+}

@@ -1,5 +1,6 @@
 "use client";
 import { useContext } from "react";
+import { useTranslation } from "react-i18next";
 import { useAccount, useSignMessage } from "wagmi";
 import { chakra, Button } from "@chakra-ui/react";
 import { handleLogin } from "@/app/lib/auth/handleLogin";
@@ -20,7 +21,7 @@ export default function ConnectButton({ requireSignIn = false, ...props }: Conne
   const { address, isConnected, chain } = useAccount();
   const { signMessageAsync } = useSignMessage();
   const { setRequireAuth } = useContext(RequireAuthContext);
-  const t = (key: string) => key; // TODO
+  const { t } = useTranslation();
 
   if (!isMounted) return <></>;
 
@@ -36,7 +37,7 @@ export default function ConnectButton({ requireSignIn = false, ...props }: Conne
           colorScheme={"green"}
           onClick={() => handleLogin({ chain, address, signMessageAsync })}
         >
-          {t("SIGN_IN_WITH_ETHEREUM")}
+          {t("common.signInWithEthereum")}
         </Button>
       )}
     </>

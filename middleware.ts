@@ -2,7 +2,7 @@ import { withAuth } from "next-auth/middleware";
 import { match } from "@formatjs/intl-localematcher";
 import { NextRequest, NextResponse } from "next/server";
 import Negotiator from "negotiator";
-import { i18nextInitOptions } from "./lib/i18nConfig";
+import { i18nextInitOptions } from "./app/lib/i18nConfig";
 
 const acceptableLocales = new Set(i18nextInitOptions.supportedLngs || []);
 const defaultLocale = i18nextInitOptions.lng || "en";

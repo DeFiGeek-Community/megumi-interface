@@ -16,7 +16,9 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
+  Button,
 } from "@chakra-ui/react";
+import { useTranslation } from "react-i18next";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import Router from "next/router";
 import { useAccount, useEnsAvatar, useEnsName, useDisconnect } from "wagmi";
@@ -24,14 +26,14 @@ import { normalize } from "viem/ens";
 import { useSession } from "next-auth/react";
 import ConnectButton from "./ConnectButton";
 import { useIsMounted } from "@/app/hooks/common/useIsMounted";
-// import { useLocale } from "../../hooks/useLocale";
+import { getEllipsizedAddress } from "@/app/lib/utils";
 
 type HeaderProps = {
   title?: string;
 };
 
 export default function Header({ title }: HeaderProps) {
-  const { address, isConnected } = useAccount();
+  const { address, isConnected, chain } = useAccount();
   const { data: session } = useSession();
   const { data: ensName } = useEnsName({
     address: session?.user ? session.user.address : address,
@@ -40,8 +42,7 @@ export default function Header({ title }: HeaderProps) {
     name: normalize(ensName ? ensName.toString() : ""),
   });
   const { disconnect } = useDisconnect();
-  //   const { t, locale } = useLocale();
-  const t = (key: string) => key; // TODO
+  const { t, i18n } = useTranslation();
 
   const isMounted = useIsMounted();
   if (!isMounted) return <></>;
@@ -66,13 +67,39 @@ export default function Header({ title }: HeaderProps) {
                   fontSize="xl"
                   fontWeight="extrabold"
                 >
-                  {title ? title : "Megumi"}
+                  {title ? title : t("appName")}
                 </Text>
               </Heading>
             </Link>
           </HStack>
           <Menu>
             <HStack spacing={{ base: 2, md: 4 }}>
+              {isConnected && (
+                <Button
+                  display={{ base: "none", md: "block" }}
+                  variant="ghost"
+                  size={{ base: "xs", md: "sm" }}
+                  onClick={() => Router.push("/dashboard")}
+                >
+                  {t("dashboard.title")}
+                </Button>
+              )}
+              <Button
+                variant="ghost"
+                display={{ base: "none", md: "block" }}
+                size={{ base: "xs", md: "sm" }}
+                onClick={() => Router.push("/airdrops")}
+              >
+                {t("common.viewAllAirdrops")}
+              </Button>
+              <Button
+                variant="ghost"
+                display={{ base: isConnected ? "none" : "block", md: "none" }}
+                size={{ base: "xs", md: "sm" }}
+                onClick={() => Router.push("/airdrops")}
+              >
+                {t("common.viewAllAirdrops")}
+              </Button>
               <MenuButton>
                 <HStack>
                   {isConnected ? (
@@ -85,12 +112,25 @@ export default function Header({ title }: HeaderProps) {
                         ml="2"
                       >
                         <Text fontSize="sm" id="account">
-                          {ensName
-                            ? `${ensName}`
-                            : `${address?.slice(0, 5)}...${address?.slice(-4)}`}
-                          <chakra.span display={{ base: "none", md: "inline" }}>
-                            {session?.user?.address && "でログイン中"}
-                          </chakra.span>
+                          {session?.user?.address ? (
+                            i18n.language === "ja" ? (
+                              <>
+                                {getEllipsizedAddress({ ensName, address })}
+                                <chakra.span display={{ base: "none", md: "inline" }}>
+                                  でログイン中
+                                </chakra.span>
+                              </>
+                            ) : (
+                              <>
+                                <chakra.span display={{ base: "none", md: "inline" }}>
+                                  Signed in as
+                                </chakra.span>{" "}
+                                {getEllipsizedAddress({ ensName, address })}
+                              </>
+                            )
+                          ) : (
+                            getEllipsizedAddress({ ensName, address })
+                          )}
                         </Text>
                       </VStack>
                       <ChevronDownIcon />
@@ -98,7 +138,7 @@ export default function Header({ title }: HeaderProps) {
                   ) : (
                     <>
                       <Text fontSize={{ base: "xs", md: "sm" }} id="account">
-                        {t("CONNECT_WALLET")}
+                        {t("common.connectWallet")}
                       </Text>
                       <ChevronDownIcon />
                     </>
@@ -106,44 +146,54 @@ export default function Header({ title }: HeaderProps) {
                 </HStack>
               </MenuButton>
               <MenuList zIndex={101}>
-                <HStack spacing={1} px={2} display={{ base: "block", md: "none" }}>
-                  {session?.user?.address && (
-                    <Tag size={"sm"} ml={1}>
-                      Signed in
-                    </Tag>
-                  )}
-                </HStack>
-                {session?.user && (
-                  <MenuItem
-                    display={{ base: "block", md: "none" }}
-                    onClick={() => Router.push("/dashboard")}
-                  >
-                    {t("DASHBOARD")}
-                  </MenuItem>
-                )}
                 {isConnected && (
-                  <MenuItem
-                    display={{ base: "block", md: "none" }}
-                    onClick={() => Router.push("/airdrops")}
-                  >
-                    {t("VIEW_ALL_AIRDROPS")}
-                  </MenuItem>
+                  <>
+                    <HStack spacing={1} px={2} display={{ base: "block", md: "none" }}>
+                      <Tag size={"sm"}>
+                        {typeof chain === "undefined" ? "Unsupported Chain" : chain?.name}
+                      </Tag>
+                      {session?.user?.address && (
+                        <Tag size={"sm"} ml={1}>
+                          Signed in
+                        </Tag>
+                      )}
+                    </HStack>
+                    <MenuItem
+                      display={{ base: "block", md: "none" }}
+                      onClick={() => Router.push("/dashboard")}
+                    >
+                      {t("dashboard.title")}
+                    </MenuItem>
+                    <MenuItem
+                      display={{ base: "block", md: "none" }}
+                      onClick={() => Router.push("/airdrops")}
+                    >
+                      {t("common.viewAllAirdrops")}
+                    </MenuItem>
+                  </>
                 )}
-                <Divider display={{ base: "block", md: "none" }} />
 
-                {isConnected && <MenuItem onClick={() => disconnect()}>{t("DISCONNECT")}</MenuItem>}
+                {isConnected && <Divider display={{ base: "block", md: "none" }} />}
+
+                {isConnected && (
+                  <MenuItem onClick={() => disconnect()}>{t("common.disconnect")}</MenuItem>
+                )}
 
                 {!isConnected && (
                   <>
                     <Flex align="center" px="2">
                       <Divider />
                       <Text p="2" color={"gray.400"} fontSize={"xs"} whiteSpace={"nowrap"}>
-                        {t("JOIN_AIRDROP")}
+                        {t("common.joinAirdrop")}
                       </Text>
                       <Divider />
                     </Flex>
                     <chakra.div px={3} py={1}>
-                      <ConnectButton requireSignIn={false} label="Connect Wallet" size="sm" />
+                      <ConnectButton
+                        requireSignIn={false}
+                        label={t("common.connectWallet")}
+                        size="sm"
+                      />
                     </chakra.div>
                   </>
                 )}
@@ -153,14 +203,14 @@ export default function Header({ title }: HeaderProps) {
                     <Flex align="center" px="2" mt="2">
                       <Divider />
                       <Text padding="2" color={"gray.400"} fontSize={"xs"} whiteSpace={"nowrap"}>
-                        {t("MANAGE_AIRDROP")}
+                        {t("common.manageAirdrop")}
                       </Text>
                       <Divider />
                     </Flex>
                     <chakra.div px={3} py={1}>
                       <ConnectButton
                         requireSignIn={true}
-                        label={t("SIGN_IN_WITH_ETHEREUM")}
+                        label={t("common.signInWithEthereum")}
                         size="sm"
                       />
                     </chakra.div>

@@ -7,3 +7,7 @@ body {
 main {
     height: 100%;
 }
+
+w3m-button, wui-connect-button {
+    width: 100% !important;
+}

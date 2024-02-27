@@ -1,3 +1,4 @@
+import type { GetEnsNameReturnType } from "viem/ens";
 import * as chains from "wagmi/chains";
 
 export const getEtherscanLink = (
@@ -15,4 +16,14 @@ export const getChain = (chainId: number): chains.Chain => {
     }
   }
   return chains.localhost;
+};
+
+export const getEllipsizedAddress = ({
+  address,
+  ensName,
+}: {
+  address?: `0x${string}`;
+  ensName?: GetEnsNameReturnType;
+}): string => {
+  return ensName ? `${ensName}` : `${address?.slice(0, 5)}...${address?.slice(-4)}`;
 };

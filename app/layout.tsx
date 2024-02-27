@@ -5,7 +5,7 @@ import { authOptions } from "./api/auth/authOptions";
 import Providers from "./providers/Providers";
 import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
-import i18next from "../lib/i18nConfig";
+import i18next from "./lib/i18nConfig";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {

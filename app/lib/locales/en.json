@@ -1,0 +1,16 @@
+{
+    "appName": "Megumi",
+    "tagline": "Airdrop tool",
+    "common": {
+        "connectWallet": "Connect Wallet",
+        "signInWithEthereum": "Sign in with Ethereum",
+        "signedInAs": "Signed in as {{name}}",
+        "disconnect": "Disconnect",
+        "joinAirdrop": "Join Airdrop",
+        "manageAirdrop": "Manage Airdrop",
+        "viewAllAirdrops": "View All Airdrops"
+    },
+    "dashboard": {
+        "title": "Dashboard"
+    }
+}
