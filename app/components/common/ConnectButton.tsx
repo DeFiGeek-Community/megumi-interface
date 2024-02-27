@@ -26,7 +26,7 @@ export default function ConnectButton({ requireSignIn = false, ...props }: Conne
   useEffect(() => {
     // Workaround to apply custome style to the connect button in shadow dom
     setTimeout(() => {
-      const shadowHosts = document.querySelectorAll("w3m-button");
+      const shadowHosts = document.querySelectorAll("header w3m-button");
       shadowHosts.forEach((shadowHost) => {
         if (!shadowHost.shadowRoot) return;
         const w3mShadowHost = shadowHost.shadowRoot.querySelector("w3m-connect-button");

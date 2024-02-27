@@ -42,9 +42,6 @@ createWeb3Modal({
   wagmiConfig: config,
   projectId,
   enableAnalytics: true,
-  themeVariables: {
-    "--w3m-border-radius-master": "0.125rem",
-  },
 });
 
 type Web3ProviderProps = {

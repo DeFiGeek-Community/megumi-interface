@@ -6,7 +6,9 @@ import { i18nextInitOptions } from "./app/lib/i18nConfig";
 
 const acceptableLocales = new Set(i18nextInitOptions.supportedLngs || []);
 const defaultLocale = i18nextInitOptions.lng || "en";
-const authPages = ["/dashboard"];
+// Set paths that requires auth
+// const authPages = ["/dashboard"];
+const authPages: string[] = []; //
 
 const getUserLocale = (req: NextRequest): string => {
   const languages = new Negotiator({
@@ -45,7 +47,7 @@ export default async function middleware(req: NextRequest) {
   );
   const isAuthPage = authPathRegex.test(req.nextUrl.pathname);
   let response;
-  if (isAuthPage) {
+  if (authPages.length > 0 && isAuthPage) {
     response = (await (withAuth as any)(req)) || NextResponse.next();
   } else {
     response = NextResponse.next();

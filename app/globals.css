@@ -8,6 +8,6 @@ main {
     height: 100%;
 }
 
-w3m-button, wui-connect-button {
+header w3m-button, header wui-connect-button {
     width: 100% !important;
 }

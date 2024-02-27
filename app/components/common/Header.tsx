@@ -20,7 +20,6 @@ import {
 } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import Router from "next/router";
 import { useAccount, useEnsAvatar, useEnsName, useDisconnect } from "wagmi";
 import { normalize } from "viem/ens";
 import { useSession } from "next-auth/react";
@@ -75,31 +74,34 @@ export default function Header({ title }: HeaderProps) {
           <Menu>
             <HStack spacing={{ base: 2, md: 4 }}>
               {isConnected && (
-                <Button
-                  display={{ base: "none", md: "block" }}
-                  variant="ghost"
-                  size={{ base: "xs", md: "sm" }}
-                  onClick={() => Router.push("/dashboard")}
-                >
-                  {t("dashboard.title")}
-                </Button>
+                <Link href="/dashboard" _hover={{ textDecor: "none" }}>
+                  <Button
+                    display={{ base: "none", md: "block" }}
+                    variant="ghost"
+                    size={{ base: "xs", md: "sm" }}
+                  >
+                    {t("dashboard.title")}
+                  </Button>
+                </Link>
               )}
-              <Button
-                variant="ghost"
-                display={{ base: "none", md: "block" }}
-                size={{ base: "xs", md: "sm" }}
-                onClick={() => Router.push("/airdrops")}
-              >
-                {t("common.viewAllAirdrops")}
-              </Button>
-              <Button
-                variant="ghost"
-                display={{ base: isConnected ? "none" : "block", md: "none" }}
-                size={{ base: "xs", md: "sm" }}
-                onClick={() => Router.push("/airdrops")}
-              >
-                {t("common.viewAllAirdrops")}
-              </Button>
+              <Link href="/airdrops" _hover={{ textDecor: "none" }}>
+                <Button
+                  variant="ghost"
+                  display={{ base: "none", md: "block" }}
+                  size={{ base: "xs", md: "sm" }}
+                >
+                  {t("common.viewAllAirdrops")}
+                </Button>
+              </Link>
+              <Link href="/airdrops" _hover={{ textDecor: "none" }}>
+                <Button
+                  variant="ghost"
+                  display={{ base: isConnected ? "none" : "block", md: "none" }}
+                  size={{ base: "xs", md: "sm" }}
+                >
+                  {t("common.viewAllAirdrops")}
+                </Button>
+              </Link>
               <MenuButton>
                 <HStack>
                   {isConnected ? (
@@ -158,18 +160,16 @@ export default function Header({ title }: HeaderProps) {
                         </Tag>
                       )}
                     </HStack>
-                    <MenuItem
-                      display={{ base: "block", md: "none" }}
-                      onClick={() => Router.push("/dashboard")}
-                    >
-                      {t("dashboard.title")}
-                    </MenuItem>
-                    <MenuItem
-                      display={{ base: "block", md: "none" }}
-                      onClick={() => Router.push("/airdrops")}
-                    >
-                      {t("common.viewAllAirdrops")}
-                    </MenuItem>
+                    <Link href="/dashboard" _hover={{ textDecor: "none" }}>
+                      <MenuItem display={{ base: "block", md: "none" }}>
+                        {t("dashboard.title")}
+                      </MenuItem>
+                    </Link>
+                    <Link href="/airdrops" _hover={{ textDecor: "none" }}>
+                      <MenuItem display={{ base: "block", md: "none" }}>
+                        {t("common.viewAllAirdrops")}
+                      </MenuItem>
+                    </Link>
                   </>
                 )}
 
