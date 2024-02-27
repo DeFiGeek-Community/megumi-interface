@@ -1,8 +1,9 @@
 "use client";
 import styles from "./page.module.css";
-import { Center, Container, Spinner } from "@chakra-ui/react";
+import { Center, Container, Heading, Spinner } from "@chakra-ui/react";
 import { useRequireAccount } from "@/app/hooks/common/useRequireAccount";
 import { useIsMounted } from "@/app/hooks/common/useIsMounted";
+import Test from "./test";
 
 export default function Dashboard() {
   const { address, isConnecting, isReconnecting } = useRequireAccount();
@@ -15,5 +16,10 @@ export default function Dashboard() {
       </Center>
     );
 
-  return <Container>Dashboard</Container>;
+  return (
+    <Container>
+      <Heading>Dashboard</Heading>
+      <Test />
+    </Container>
+  );
 }

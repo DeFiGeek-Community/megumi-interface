@@ -8,7 +8,9 @@
         "disconnect": "Disconnect",
         "joinAirdrop": "Join Airdrop",
         "manageAirdrop": "Manage Airdrop",
-        "viewAllAirdrops": "View All Airdrops"
+        "viewAllAirdrops": "View All Airdrops",
+        "transactionSent": "Transaction sent!",
+        "transactionConfirmed": "Transaction confirmed!"
     },
     "dashboard": {
         "title": "Dashboard"

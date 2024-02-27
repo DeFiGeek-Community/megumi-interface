@@ -1,5 +1,6 @@
 "use client";
 import { Dispatch, FC, ReactNode, SetStateAction, createContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useWaitForTransactionReceipt } from "wagmi";
 import { useToast } from "@chakra-ui/react";
 import TxToast from "@/app/components/common/TxToast";
@@ -26,14 +27,14 @@ const TxToastProvider: FC<ProviderProps> = ({ children }) => {
   const [txid, setTxid] = useState<`0x${string}`>();
   const [writePromise, setWritePromise] = useState<Promise<`0x${string}`>>();
   const result = useWaitForTransactionReceipt({ hash: txid });
-  const t = (key: string) => key; // TODO
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (writePromise) {
       writePromise
         .then((hash: `0x${string}`) => {
           toast({
-            title: t("TRANSACTION_SENT"),
+            title: t("common.transactionSent"),
             status: "success",
             duration: 5000,
             render: (props) => <TxToast txid={hash} {...props} />,
@@ -54,7 +55,7 @@ const TxToastProvider: FC<ProviderProps> = ({ children }) => {
   useEffect(() => {
     if (result.isSuccess) {
       toast({
-        title: t("TRANSACTION_CONFIRMED"),
+        title: t("common.transactionConfirmed"),
         status: "success",
         duration: 5000,
       });

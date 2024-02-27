@@ -8,7 +8,9 @@
         "disconnect": "切断",
         "joinAirdrop": "エアドロップに参加する",
         "manageAirdrop": "エアドロップを管理する",
-        "viewAllAirdrops": "すべてのエアドロップを見る"
+        "viewAllAirdrops": "すべてのエアドロップを見る",
+        "transactionSent": "トランザクションを送信しました",
+        "transactionConfirmed": "トランザクションが承認されました"
     },
     "dashboard": {
         "title": "ダッシュボード"
