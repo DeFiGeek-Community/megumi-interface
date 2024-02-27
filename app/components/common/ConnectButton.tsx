@@ -1,5 +1,5 @@
 "use client";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useAccount, useSignMessage } from "wagmi";
 import { chakra, Button } from "@chakra-ui/react";
@@ -23,6 +23,27 @@ export default function ConnectButton({ requireSignIn = false, ...props }: Conne
   const { setRequireAuth } = useContext(RequireAuthContext);
   const { t } = useTranslation();
 
+  useEffect(() => {
+    // Workaround to apply custome style to the connect button in shadow dom
+    setTimeout(() => {
+      const shadowHosts = document.querySelectorAll("w3m-button");
+      shadowHosts.forEach((shadowHost) => {
+        if (!shadowHost.shadowRoot) return;
+        const w3mShadowHost = shadowHost.shadowRoot.querySelector("w3m-connect-button");
+        if (!w3mShadowHost || !w3mShadowHost.shadowRoot) return;
+
+        const wuiShadowHost = w3mShadowHost.shadowRoot.querySelector("wui-connect-button");
+        if (!wuiShadowHost || !wuiShadowHost.shadowRoot) return;
+
+        const button = wuiShadowHost.shadowRoot.querySelector("button");
+        if (button) {
+          button.style.width = "100%";
+          button.style.borderRadius = "0.375rem";
+        }
+      });
+    }, 10);
+  }, [isConnected]);
+
   if (!isMounted) return <></>;
 
   return (
@@ -35,6 +56,7 @@ export default function ConnectButton({ requireSignIn = false, ...props }: Conne
       {isConnected && (
         <Button
           colorScheme={"green"}
+          w={"full"}
           onClick={() => handleLogin({ chain, address, signMessageAsync })}
         >
           {t("common.signInWithEthereum")}
