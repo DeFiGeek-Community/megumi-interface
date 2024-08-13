@@ -12,7 +12,17 @@
         "transactionSent": "Transaction sent!",
         "transactionConfirmed": "Transaction confirmed!"
     },
+    "airdrops": {
+        "title": "Airdrops"
+    },
     "dashboard": {
         "title": "Dashboard"
+    },
+    "airdrop": {
+        "eligible": "You are eligible for the airdrop",
+        "notEligible": "You are not eligible for the airdrop",
+        "claim": "Claim",
+        "claimed": "Claimed",
+        "feeNotice": "A claim fee of 0.0001 ETH and a platform fee of 0.0001 ETH, totaling 0.0002 ETH, will be required in addition to the transaction fee."
     }
 }

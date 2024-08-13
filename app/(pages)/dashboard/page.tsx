@@ -19,7 +19,7 @@ export default function Dashboard() {
   return (
     <Container>
       <Heading>Dashboard</Heading>
-      <Test />
+      {/* <Test /> */}
     </Container>
   );
 }

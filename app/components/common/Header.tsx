@@ -18,21 +18,22 @@ import {
   MenuItem,
   Button,
 } from "@chakra-ui/react";
+import NextLink from "next/link";
 import { useTranslation } from "react-i18next";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import { useAccount, useEnsAvatar, useEnsName, useDisconnect } from "wagmi";
 import { normalize } from "viem/ens";
 import { useSession } from "next-auth/react";
 import ConnectButton from "./ConnectButton";
-import { useIsMounted } from "@/app/hooks/common/useIsMounted";
 import { getEllipsizedAddress } from "@/app/lib/utils";
+import { useEffect, useState } from "react";
 
 type HeaderProps = {
   title?: string;
 };
 
 export default function Header({ title }: HeaderProps) {
-  const { address, isConnected, chain } = useAccount();
+  const { address, isConnected: isConnectedRaw, chain } = useAccount();
   const { data: session } = useSession();
   const { data: ensName } = useEnsName({
     address: session?.user ? session.user.address : address,
@@ -43,8 +44,8 @@ export default function Header({ title }: HeaderProps) {
   const { disconnect } = useDisconnect();
   const { t, i18n } = useTranslation();
 
-  const isMounted = useIsMounted();
-  if (!isMounted) return <></>;
+  const [isConnected, setIsConnected] = useState<boolean>(false);
+  useEffect(() => setIsConnected(isConnectedRaw), [isConnectedRaw]);
 
   return (
     <Box
@@ -58,7 +59,12 @@ export default function Header({ title }: HeaderProps) {
       <Container maxW="container.2xl" px={{ base: 2, md: 4 }}>
         <Flex as="header" py="4" justifyContent="space-between" alignItems="center">
           <HStack>
-            <Link href="/" textDecoration={"none"} _hover={{ textDecoration: "none" }}>
+            <Link
+              as={NextLink}
+              href="/"
+              textDecoration={"none"}
+              _hover={{ textDecoration: "none" }}
+            >
               <Heading as="h1" fontSize="xl">
                 <Text
                   bgGradient="linear(to-l, #7928CA, #FF0080)"
@@ -73,8 +79,8 @@ export default function Header({ title }: HeaderProps) {
           </HStack>
           <Menu>
             <HStack spacing={{ base: 2, md: 4 }}>
-              {isConnected && (
-                <Link href="/dashboard" _hover={{ textDecor: "none" }}>
+              {/* {isConnected && (
+                <Link as={NextLink} href="/dashboard" _hover={{ textDecor: "none" }}>
                   <Button
                     display={{ base: "none", md: "block" }}
                     variant="ghost"
@@ -83,8 +89,8 @@ export default function Header({ title }: HeaderProps) {
                     {t("dashboard.title")}
                   </Button>
                 </Link>
-              )}
-              <Link href="/airdrops" _hover={{ textDecor: "none" }}>
+              )} */}
+              <Link as={NextLink} href="/" _hover={{ textDecor: "none" }}>
                 <Button
                   variant="ghost"
                   display={{ base: "none", md: "block" }}
@@ -93,7 +99,7 @@ export default function Header({ title }: HeaderProps) {
                   {t("common.viewAllAirdrops")}
                 </Button>
               </Link>
-              <Link href="/airdrops" _hover={{ textDecor: "none" }}>
+              <Link as={NextLink} href="/" _hover={{ textDecor: "none" }}>
                 <Button
                   variant="ghost"
                   display={{ base: isConnected ? "none" : "block", md: "none" }}
@@ -160,12 +166,12 @@ export default function Header({ title }: HeaderProps) {
                         </Tag>
                       )}
                     </HStack>
-                    <Link href="/dashboard" _hover={{ textDecor: "none" }}>
+                    {/* <Link as={NextLink} href="/dashboard" _hover={{ textDecor: "none" }}>
                       <MenuItem display={{ base: "block", md: "none" }}>
                         {t("dashboard.title")}
                       </MenuItem>
-                    </Link>
-                    <Link href="/airdrops" _hover={{ textDecor: "none" }}>
+                    </Link> */}
+                    <Link as={NextLink} href="/" _hover={{ textDecor: "none" }}>
                       <MenuItem display={{ base: "block", md: "none" }}>
                         {t("common.viewAllAirdrops")}
                       </MenuItem>
@@ -198,7 +204,7 @@ export default function Header({ title }: HeaderProps) {
                   </>
                 )}
 
-                {!session?.user && (
+                {/* {!session?.user && (
                   <>
                     <Flex align="center" px="2" mt="2">
                       <Divider />
@@ -215,7 +221,7 @@ export default function Header({ title }: HeaderProps) {
                       />
                     </chakra.div>
                   </>
-                )}
+                )} */}
               </MenuList>
             </HStack>
           </Menu>
