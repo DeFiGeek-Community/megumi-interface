@@ -2,11 +2,12 @@ import type { GetEnsNameReturnType } from "viem/ens";
 import * as chains from "wagmi/chains";
 
 export const getEtherscanLink = (
-  chain: string,
+  chain: chains.Chain | undefined,
   hash: string,
   type: "tx" | "token" | "address" | "block",
 ): string => {
-  return `https://${chain === "mainnet" ? "" : `${chain}.`}etherscan.io/${type}/${hash}`;
+  if (typeof chain === "undefined" || typeof chain.blockExplorers === "undefined") return "";
+  return `${chain.blockExplorers.default.url}/${type}/${hash}`;
 };
 
 export const getChain = (chainId: number): chains.Chain => {

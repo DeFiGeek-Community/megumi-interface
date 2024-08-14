@@ -58,7 +58,7 @@ export default function TxSentToast({
         <AlertDescription display="block">
           {description}
           {chain && (
-            <Link href={getEtherscanLink(chain.name.toLowerCase(), txid, "tx")} target={"_blank"}>
+            <Link href={getEtherscanLink(chain, txid, "tx")} target={"_blank"}>
               Etherscan <ExternalLinkIcon ml={1} />
             </Link>
           )}
