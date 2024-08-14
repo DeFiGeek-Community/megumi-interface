@@ -11,6 +11,6 @@ export const CONTRACT_ADDRESSES: ContractAddresses = {
     PND_AIRDROP: "0xFIXME",
   },
   [sepolia.id]: {
-    PND_AIRDROP: "0x398D8d44F3f3A5FfdCE7e053277b85D64B0dcd0A",
+    PND_AIRDROP: "0x7E5EE2CE5Ba508c1E4E78142fB38b5e51d1d7599",
   },
 };
