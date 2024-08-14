@@ -1,19 +1,22 @@
 "use client";
 import styles from "./page.module.css";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Flex, Stack, Container, Heading, Button, chakra } from "@chakra-ui/react";
-import MerkleTree from "@/app/lib/constants/merkle-tree.json";
-import StandardABI from "@/app/lib/constants/abis/Standard.json";
+import { parseEther } from "viem";
 import {
   useAccount,
+  useBalance,
+  useReadContract,
   useSimulateContract,
   useWaitForTransactionReceipt,
   useWriteContract,
 } from "wagmi";
+import { Flex, Stack, Container, Heading, Button, chakra } from "@chakra-ui/react";
+import { WarningIcon } from "@chakra-ui/icons";
+import MerkleTree from "@/app/lib/constants/merkle-tree.json";
+import StandardABI from "@/app/lib/constants/abis/Standard.json";
 import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
 import ConnectButton from "@/app/components/common/ConnectButton";
-import { parseEther } from "viem";
-import { useCallback, useContext, useEffect, useState } from "react";
 import { TxToastsContext } from "@/app/providers/ToastProvider";
 
 export default function Airdrop({ params }: { params: { chainId: string; id: string } }) {
@@ -21,6 +24,8 @@ export default function Airdrop({ params }: { params: { chainId: string; id: str
   const UUID = "02183055-e991-f6e0-9efb-3bf10e405037";
   const { t } = useTranslation();
   const { address, isConnected: isConnectedRaw, chainId } = useAccount();
+
+  // TODO define as a hook --->
   const getClaimParameters = useCallback(() => {
     if (!address || !(address in MerkleTree.claims)) return [];
     const { index, amount, proof } = MerkleTree.claims[address as keyof typeof MerkleTree.claims];
@@ -36,12 +41,28 @@ export default function Airdrop({ params }: { params: { chainId: string; id: str
   const { writeContractAsync, status } = useWriteContract();
   const { setWritePromise } = useContext(TxToastsContext);
   const {} = useWaitForTransactionReceipt();
+  // <---
+
   const [isClaimed, setIsClaimed] = useState<boolean>(false);
   useEffect(() => {
     setIsClaimed(!!failureReason && failureReason.message.includes("Error: AlreadyClaimed()"));
   }, [failureReason]);
   const [isConnected, setIsConnected] = useState<boolean>(false);
   useEffect(() => setIsConnected(isConnectedRaw), [isConnectedRaw]);
+
+  // Get token
+  const { data: tokenData, isLoading: isLoadingToken } = useReadContract({
+    address: chainId ? CONTRACT_ADDRESSES[chainId].PND_AIRDROP : "0x",
+    abi: StandardABI,
+    functionName: "token",
+  });
+
+  // Get token balance on airdrop contract
+  const { data: balanceOnContract } = useBalance({
+    address: chainId ? CONTRACT_ADDRESSES[chainId].PND_AIRDROP : "0x",
+    token: !!tokenData ? (tokenData as `0x${string}`) : "0x",
+  });
+  // console.log("Token balance on contract: ", balanceOnContract?.value.toString());
 
   const handleWrite = async () => {
     try {
@@ -67,7 +88,7 @@ export default function Airdrop({ params }: { params: { chainId: string; id: str
         <Stack alignItems={"center"}>
           {isConnected && getClaimParameters().length > 0 && (
             <>
-              <chakra.div>{t("airdrop.eligible")}🎉</chakra.div>
+              <chakra.div>{t("airdrop.eligible")} 🎉</chakra.div>
               <chakra.div>
                 <chakra.span fontSize={"2xl"}>
                   {(BigInt((getClaimParameters() as any)[2]) / BigInt(10 ** 18)).toString()}
@@ -77,18 +98,28 @@ export default function Airdrop({ params }: { params: { chainId: string; id: str
             </>
           )}{" "}
           {isConnected && getClaimParameters().length === 0 && (
-            <chakra.div>{t("airdrop.notEligible")}😔</chakra.div>
+            <chakra.div>{t("airdrop.notEligible")} 😔</chakra.div>
           )}
           {isConnected ? (
-            <Button
-              mt={4}
-              isDisabled={!Boolean(data?.request) || status === "pending"}
-              isLoading={status === "pending"}
-              onClick={() => handleWrite()}
-              colorScheme={"green"}
-            >
-              {isClaimed ? t("airdrop.claimed") : t("airdrop.claim")}
-            </Button>
+            <>
+              <Button
+                mt={4}
+                isDisabled={!Boolean(data?.request) || status === "pending"}
+                isLoading={status === "pending"}
+                onClick={() => handleWrite()}
+                colorScheme={"green"}
+              >
+                {isClaimed ? t("airdrop.claimed") : t("airdrop.claim")}
+              </Button>
+              {!isClaimed &&
+                !!balanceOnContract &&
+                balanceOnContract.value < BigInt((getClaimParameters() as any)[2]) && (
+                  <chakra.p color="red">
+                    <WarningIcon mr={2} />
+                    Airdrop contract does not have enough token.
+                  </chakra.p>
+                )}
+            </>
           ) : (
             <chakra.div>
               <ConnectButton requireSignIn={false} label={t("common.connectWallet")} size="sm" />
