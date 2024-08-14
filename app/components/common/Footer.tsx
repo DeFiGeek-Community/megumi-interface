@@ -70,17 +70,6 @@ export default function Footer() {
             </Select>
           </chakra.div>
         </Flex>
-        <Flex justifyContent={"center"}>
-          <HStack fontSize={"xs"} spacing={1} color={"gray.400"}>
-            <chakra.span>Current interface version: </chakra.span>
-            <Link
-              href={`https://github.com/DeFiGeek-Community/megumi-interface/commit/${process.env.NEXT_PUBLIC_GIT_ID}`}
-              target={"_blank"}
-            >
-              {`${process.env.NEXT_PUBLIC_GIT_ID?.substring(0, 7)}`}
-            </Link>
-          </HStack>
-        </Flex>
         <Flex justifyContent={"center"} fontSize={"sm"} color={"gray.400"}>
           © DeFiGeek Community JAPAN
         </Flex>
