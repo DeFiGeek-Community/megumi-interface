@@ -46,7 +46,7 @@ export default function Airdrop({ params }: { params: { chainId: string; id: str
   const [isClaimed, setIsClaimed] = useState<boolean>(false);
   useEffect(() => {
     setIsClaimed(!!failureReason && failureReason.message.includes("Error: AlreadyClaimed()"));
-  }, [failureReason]);
+  }, [failureReason, status]);
   const [isConnected, setIsConnected] = useState<boolean>(false);
   useEffect(() => setIsConnected(isConnectedRaw), [isConnectedRaw]);
 
@@ -105,7 +105,12 @@ export default function Airdrop({ params }: { params: { chainId: string; id: str
             <>
               <Button
                 mt={4}
-                isDisabled={!Boolean(data?.request) || status === "pending"}
+                isDisabled={
+                  !Boolean(data?.request) ||
+                  status === "pending" ||
+                  status === "success" ||
+                  isClaimed
+                }
                 isLoading={status === "pending"}
                 onClick={() => handleWrite()}
                 colorScheme={"green"}
