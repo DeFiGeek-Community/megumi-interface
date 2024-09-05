@@ -46,7 +46,7 @@ export default function Airdrop({ params }: { params: { chainId: string; id: str
   const [isClaimed, setIsClaimed] = useState<boolean>(false);
   useEffect(() => {
     setIsClaimed(!!failureReason && failureReason.message.includes("Error: AlreadyClaimed()"));
-  }, [failureReason]);
+  }, [failureReason, status]);
   const [isConnected, setIsConnected] = useState<boolean>(false);
   useEffect(() => setIsConnected(isConnectedRaw), [isConnectedRaw]);
 
@@ -62,7 +62,6 @@ export default function Airdrop({ params }: { params: { chainId: string; id: str
     address: chainId ? CONTRACT_ADDRESSES[chainId].PND_AIRDROP : "0x",
     token: !!tokenData ? (tokenData as `0x${string}`) : "0x",
   });
-  // console.log("Token balance on contract: ", balanceOnContract?.value.toString());
 
   const handleWrite = async () => {
     try {
@@ -86,12 +85,14 @@ export default function Airdrop({ params }: { params: { chainId: string; id: str
       <Heading>TXJPホルダーPNDエアドロップ</Heading>
       <Flex py={8} justifyContent={"center"}>
         <Stack alignItems={"center"}>
-          {isConnected && getClaimParameters().length > 0 && (
+          {isConnected && getClaimParameters().length > 3 && (
             <>
               <chakra.div>{t("airdrop.eligible")} 🎉</chakra.div>
               <chakra.div>
                 <chakra.span fontSize={"2xl"}>
-                  {(BigInt((getClaimParameters() as any)[2]) / BigInt(10 ** 18)).toString()}
+                  {parseInt(
+                    (BigInt((getClaimParameters() as any)[2]) / BigInt(10 ** 16)).toString(),
+                  ) / 100}
                 </chakra.span>
                 <chakra.span fontSize={"md"}> {TOKEN_SYMBOL}</chakra.span>
               </chakra.div>
@@ -104,7 +105,12 @@ export default function Airdrop({ params }: { params: { chainId: string; id: str
             <>
               <Button
                 mt={4}
-                isDisabled={!Boolean(data?.request) || status === "pending"}
+                isDisabled={
+                  !Boolean(data?.request) ||
+                  status === "pending" ||
+                  status === "success" ||
+                  isClaimed
+                }
                 isLoading={status === "pending"}
                 onClick={() => handleWrite()}
                 colorScheme={"green"}
@@ -113,6 +119,7 @@ export default function Airdrop({ params }: { params: { chainId: string; id: str
               </Button>
               {!isClaimed &&
                 !!balanceOnContract &&
+                getClaimParameters().length > 3 &&
                 balanceOnContract.value < BigInt((getClaimParameters() as any)[2]) && (
                   <chakra.p color="red">
                     <WarningIcon mr={2} />
