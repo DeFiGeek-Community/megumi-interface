@@ -26,25 +26,25 @@ export default function DashBoardCard() {
         </Tabs>
       </Flex>
       <Flex justifyContent="flex-end" marginBottom="6">
-        <Button leftIcon={<AddIcon />} color="black" bg="gray.200" _hover={{ bg: "gray.300" }}>
+        <Button leftIcon={<AddIcon />} bg="gray.500" _hover={{ bg: "gray.600" }}>
           エアドロップを作成
         </Button>
       </Flex>
       <VStack spacing="4">
-        <Card color="black" bg="gray.100" width="100%">
+        <Card width="100%">
           <CardBody>
             <Flex justifyContent="space-between" width="100%">
-              <Text fontSize="sm" color="gray.600" textAlign="right" flex="1" paddingRight={4}>
+              <Text fontSize="sm" textAlign="right" flex="1" paddingRight={4}>
                 作成日: 2023-03-20
               </Text>
-              <Text fontSize="sm" color="gray.600" textAlign="right">
+              <Text fontSize="sm" textAlign="right">
                 公開日: 2023-03-20
               </Text>
             </Flex>
             <Flex alignItems="center" gap="4">
               <Box width="60%">
                 <Flex alignItems="center" gap="4">
-                  <Avatar size="lg" name="YMT" src="/placeholder.svg" bg="gray.700" />
+                  <Avatar size="lg" name="YMT" src="/placeholder.svg" bg="gray.500" />
                   <Box flex="1">
                     <Flex gap="2" marginBottom="1">
                       <Flex
@@ -78,7 +78,7 @@ export default function DashBoardCard() {
                       YMT Early Investors Airdrop
                     </Text>
                     <Box
-                      bg="gray.300"
+                      bg="gray.500"
                       borderRadius="md"
                       padding="1"
                       display="inline-flex"
@@ -132,25 +132,25 @@ export default function DashBoardCard() {
           </CardBody>
         </Card>
 
-        <Card color="black" bg="gray.100" width="100%">
+        <Card width="100%">
           <CardBody>
             <Flex justifyContent="space-between" width="100%">
-              <Text fontSize="sm" color="gray.600" textAlign="right" flex="1" paddingRight={4}>
+              <Text fontSize="sm" textAlign="right" flex="1" paddingRight={4}>
                 作成日: 2023-03-20
               </Text>
-              <Text fontSize="sm" color="gray.600" textAlign="right">
+              <Text fontSize="sm" textAlign="right">
                 公開日: -
               </Text>
             </Flex>
             <Flex alignItems="center" gap="4">
               <Box width="60%">
                 <Flex alignItems="center" gap="4">
-                  <Avatar size="lg" name="YMT" src="/placeholder.svg" bg="gray.700" />
+                  <Avatar size="lg" name="YMT" src="/placeholder.svg" bg="gray.500" />
                   <Box flex="1">
                     <Flex gap="2" marginBottom="1">
                       <Flex
                         alignItems="center"
-                        color="green.800"
+                        color="gray.400"
                         fontSize="xs"
                         fontWeight="medium"
                         px="2.5"
@@ -162,7 +162,7 @@ export default function DashBoardCard() {
                       </Flex>
                       <Flex
                         alignItems="center"
-                        color="blue.800"
+                        color="gray.400"
                         fontSize="xs"
                         fontWeight="medium"
                         px="2.5"
@@ -177,7 +177,7 @@ export default function DashBoardCard() {
                       YMT Early Investors Airdrop
                     </Text>
                     <Box
-                      bg="gray.300"
+                      bg="gray.500"
                       borderRadius="md"
                       padding="1"
                       display="inline-flex"
