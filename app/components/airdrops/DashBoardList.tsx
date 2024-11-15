@@ -15,7 +15,7 @@ import {
 import { AddIcon, CheckCircleIcon } from "@chakra-ui/icons";
 import { Center, Column, Row, RowOrColumn, useIsMobile } from "@/app/lib/chakra/chakraUtils";
 
-export default function DashBoardCard() {
+export default function DashBoardList() {
   const isMobile = useIsMobile();
   return (
     <Box maxWidth="1034px" margin="0 auto" padding="6">

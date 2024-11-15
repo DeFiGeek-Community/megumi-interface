@@ -2,7 +2,7 @@
 import styles from "./page.module.css";
 import { Center, Container, Heading, Spinner } from "@chakra-ui/react";
 import { useRequireAccount } from "@/app/hooks/common/useRequireAccount";
-import DashBoardCard from "@/app/components/airdrops/DashBoardCard";
+import DashBoardList from "@/app/components/airdrops/DashBoardList";
 import Test from "./test";
 
 export default function Dashboard() {
@@ -19,7 +19,7 @@ export default function Dashboard() {
     <Container maxW="1034px">
       <Heading>Dashboard</Heading>
       {/* <Test /> */}
-      <DashBoardCard />
+      <DashBoardList />
     </Container>
   );
 }
