@@ -1,15 +1,7 @@
 import { Box, Avatar, Card, CardBody, Flex, Text } from "@chakra-ui/react";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { Row, useIsMobile } from "@/app/lib/chakra/chakraUtils";
-
-interface DashBoardCardProps {
-  creationDate: string;
-  publicationDate: string;
-  totalAmount: string;
-  claimedAccounts: string;
-  vestingEndDate: string;
-  status: "registered" | "unregistered";
-}
+import { DashBoardCardProps } from "@/app/interfaces/dashboard";
 
 export default function DashBoardCard({
   creationDate,
@@ -111,7 +103,9 @@ export default function DashBoardCard({
                 <Box
                   bg="gray.500"
                   borderRadius="md"
-                  padding="1"
+                  px="3"
+                  py="1"
+                  mt="1.5"
                   display="inline-flex"
                   alignItems="center"
                 >
@@ -121,13 +115,13 @@ export default function DashBoardCard({
                   <Box
                     bg="white"
                     borderRadius="full"
-                    width="6"
-                    height="6"
+                    width="5"
+                    height="5"
                     display="flex"
                     alignItems="center"
                     justifyContent="center"
                   >
-                    <Text fontSize="sm">?</Text>
+                    <Text fontSize="sm" fontWeight="bold" color="black">?</Text>
                   </Box>
                 </Box>
               </Box>
