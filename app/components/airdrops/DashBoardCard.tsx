@@ -13,8 +13,10 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { AddIcon, CheckCircleIcon } from "@chakra-ui/icons";
+import { Center, Column, Row, RowOrColumn, useIsMobile } from "@/app/lib/chakra/chakraUtils";
 
 export default function DashBoardCard() {
+  const isMobile = useIsMobile();
   return (
     <Box maxWidth="1034px" margin="0 auto" padding="6">
       <Flex justifyContent="space-between" alignItems="center" marginBottom="4">
@@ -33,20 +35,30 @@ export default function DashBoardCard() {
       <VStack spacing="4">
         <Card width="100%">
           <CardBody>
-            <Flex justifyContent="space-between" width="100%">
+            <Row
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="flex-start"
+              justifyContent="space-between"
+              width="100%"
+            >
               <Text fontSize="sm" textAlign="right" flex="1" paddingRight={4}>
                 作成日: 2023-03-20
               </Text>
               <Text fontSize="sm" textAlign="right">
                 公開日: 2023-03-20
               </Text>
-            </Flex>
-            <Flex alignItems="center" gap="4">
+            </Row>
+            <Row mainAxisAlignment="center" crossAxisAlignment="center" gap="4">
               <Box width="60%">
-                <Flex alignItems="center" gap="4">
+                <Row mainAxisAlignment="center" crossAxisAlignment="center" gap="4">
                   <Avatar size="lg" name="YMT" src="/placeholder.svg" bg="gray.500" />
                   <Box flex="1">
-                    <Flex gap="2" marginBottom="1">
+                    <Row
+                      mainAxisAlignment="flex-start"
+                      crossAxisAlignment="center"
+                      gap="2"
+                      marginBottom="1"
+                    >
                       <Flex
                         alignItems="center"
                         bg="green.100"
@@ -73,7 +85,7 @@ export default function DashBoardCard() {
                         <CheckCircleIcon boxSize="3" marginRight="1" />
                         コントラクト登録済
                       </Flex>
-                    </Flex>
+                    </Row>
                     <Text fontSize="30px" fontWeight="400">
                       YMT Early Investors Airdrop
                     </Text>
@@ -100,54 +112,64 @@ export default function DashBoardCard() {
                       </Box>
                     </Box>
                   </Box>
-                </Flex>
+                </Row>
               </Box>
               <Box textAlign="right" width="40%">
-                <Flex justifyContent="space-between" width="100%">
+                <Row mainAxisAlignment="space-between" crossAxisAlignment="center" width="100%">
                   <Text flex="1" textAlign="left" fontWeight="medium">
                     エアドロップ総額
                   </Text>
                   <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
                     500,000 YMT
                   </Text>
-                </Flex>
-                <Flex justifyContent="space-between" width="100%">
+                </Row>
+                <Row mainAxisAlignment="space-between" crossAxisAlignment="center" width="100%">
                   <Text flex="1" textAlign="left" fontWeight="medium">
                     クレーム済みアカウント
                   </Text>
                   <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
                     314 / 20,214
                   </Text>
-                </Flex>
-                <Flex justifyContent="space-between" width="100%">
+                </Row>
+                <Row mainAxisAlignment="space-between" crossAxisAlignment="center" width="100%">
                   <Text flex="1" textAlign="left" fontWeight="medium">
                     ベスティング期限終了
                   </Text>
                   <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
                     2025/12/01
                   </Text>
-                </Flex>
+                </Row>
               </Box>
-            </Flex>
+            </Row>
           </CardBody>
         </Card>
 
         <Card width="100%">
           <CardBody>
-            <Flex justifyContent="space-between" width="100%">
+            <Row
+              mainAxisAlignment="flex-start"
+              crossAxisAlignment="flex-start"
+              justifyContent="space-between"
+              width="100%"
+            >
               <Text fontSize="sm" textAlign="right" flex="1" paddingRight={4}>
                 作成日: 2023-03-20
               </Text>
               <Text fontSize="sm" textAlign="right">
                 公開日: -
               </Text>
-            </Flex>
-            <Flex alignItems="center" gap="4">
+            </Row>
+            <Row mainAxisAlignment="center" crossAxisAlignment="center" gap="4">
               <Box width="60%">
-                <Flex alignItems="center" gap="4">
+                <Row mainAxisAlignment="center" crossAxisAlignment="center" gap="4">
                   <Avatar size="lg" name="YMT" src="/placeholder.svg" bg="gray.500" />
                   <Box flex="1">
-                    <Flex gap="2" marginBottom="1">
+                    <Row
+                      mainAxisAlignment="flex-start"
+                      crossAxisAlignment="center"
+                      gap="2"
+                      marginBottom="1"
+                    >
                       <Flex
                         alignItems="center"
                         color="gray.400"
@@ -172,7 +194,7 @@ export default function DashBoardCard() {
                         <CheckCircleIcon boxSize="3" marginRight="1" color="gray.400" />
                         コントラクト未登録
                       </Flex>
-                    </Flex>
+                    </Row>
                     <Text fontSize="30px" fontWeight="400">
                       YMT Early Investors Airdrop
                     </Text>
@@ -199,31 +221,31 @@ export default function DashBoardCard() {
                       </Box>
                     </Box>
                   </Box>
-                </Flex>
+                </Row>
               </Box>
               <Box textAlign="right" width="40%">
-                <Flex justifyContent="space-between" width="100%">
+                <Row mainAxisAlignment="space-between" crossAxisAlignment="center" width="100%">
                   <Text flex="1" textAlign="left" fontWeight="medium">
                     エアドロップ総額
                   </Text>
                   <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
                     -
                   </Text>
-                </Flex>
-                <Flex justifyContent="space-between" width="100%">
+                </Row>
+                <Row mainAxisAlignment="space-between" crossAxisAlignment="center" width="100%">
                   <Text flex="1" textAlign="left" fontWeight="medium">
                     クレーム済みアカウント
                   </Text>
                   <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
                     -
                   </Text>
-                </Flex>
-                <Flex justifyContent="space-between" width="100%">
+                </Row>
+                <Row mainAxisAlignment="space-between" crossAxisAlignment="center" width="100%">
                   <Text flex="1" textAlign="left" fontWeight="medium"></Text>
                   <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg"></Text>
-                </Flex>
+                </Row>
               </Box>
-            </Flex>
+            </Row>
           </CardBody>
         </Card>
       </VStack>
