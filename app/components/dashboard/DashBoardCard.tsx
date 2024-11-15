@@ -13,6 +13,7 @@ export default function DashBoardCard({
 }: DashBoardCardProps) {
   const isMobile = useIsMobile();
   return (
+    !isMobile ? (
     <Card width="100%">
       <CardBody>
         <Row
@@ -154,7 +155,12 @@ export default function DashBoardCard({
             </Row>
           </Box>
         </Row>
-      </CardBody>
-    </Card>
+        </CardBody>
+      </Card>
+    ) : (
+        <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
+        海洋調査船
+      </Text>
+    )
   );
 };
