@@ -1,3 +1,4 @@
+"use client";
 import { Box, Avatar, Card, CardBody, Flex, Text } from "@chakra-ui/react";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { Row, useIsMobile } from "@/app/lib/chakra/chakraUtils";
