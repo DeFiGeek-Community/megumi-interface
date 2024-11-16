@@ -2,7 +2,7 @@
 import { Box, Button, Flex, Tab, TabList, Tabs, Text, VStack } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import DashBoardCard from "./DashBoardCard";
-import { Column, Row, useIsMobile } from "@/app/lib/chakra/chakraUtils";
+import { useIsMobile } from "@/app/lib/chakra/chakraUtils";
 
 export default function DashBoardList() {
   const isMobile = useIsMobile();
