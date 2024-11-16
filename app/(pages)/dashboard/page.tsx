@@ -18,7 +18,7 @@ export default function Dashboard() {
     );
 
   return (
-    <Container maxW="1034px" height="100%">
+    <Container maxW="1034px">
       <Heading fontSize={isMobile ? "xl" : "3xl"}>Dashboard</Heading>
       {/* <Test /> */}
       <DashBoardList />
