@@ -16,7 +16,7 @@ export default function Dashboard() {
     );
 
   return (
-    <Container maxW="1034px">
+    <Container maxW="1034px" height="100%">
       <Heading>Dashboard</Heading>
       {/* <Test /> */}
       <DashBoardList />

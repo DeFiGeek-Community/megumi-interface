@@ -2,10 +2,12 @@
 import { Box, Button, Flex, Tab, TabList, Tabs, Text, VStack } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import DashBoardCard from "./DashBoardCard";
+import { useIsMobile } from "@/app/lib/chakra/chakraUtils";
 
 export default function DashBoardList() {
+  const isMobile = useIsMobile();
   return (
-    <Box maxWidth="1034px" margin="0 auto" padding="6">
+    <Box maxWidth={isMobile ? "387px" : "1034px"} margin="0 auto" padding={isMobile ? "0" : "6"}>
       <Flex justifyContent="space-between" alignItems="center" marginBottom="4">
         <Tabs width="400px">
           <TabList>
@@ -29,6 +31,30 @@ export default function DashBoardList() {
           status="registered"
         />
 
+        <DashBoardCard
+          creationDate="2023-03-20"
+          publicationDate="-"
+          totalAmount="-"
+          claimedAccounts="-"
+          vestingEndDate=""
+          status="unregistered"
+        />
+        <DashBoardCard
+          creationDate="2023-03-20"
+          publicationDate="-"
+          totalAmount="-"
+          claimedAccounts="-"
+          vestingEndDate=""
+          status="unregistered"
+        />
+        <DashBoardCard
+          creationDate="2023-03-20"
+          publicationDate="-"
+          totalAmount="-"
+          claimedAccounts="-"
+          vestingEndDate=""
+          status="unregistered"
+        />
         <DashBoardCard
           creationDate="2023-03-20"
           publicationDate="-"
