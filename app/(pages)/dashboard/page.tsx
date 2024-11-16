@@ -4,9 +4,11 @@ import { Center, Container, Heading, Spinner } from "@chakra-ui/react";
 import { useRequireAccount } from "@/app/hooks/common/useRequireAccount";
 import DashBoardList from "@/app/components/dashboard/DashBoardList";
 import Test from "./test";
+import { useIsMobile } from "@/app/lib/chakra/chakraUtils";
 
 export default function Dashboard() {
   const { address, isConnecting, isReconnecting } = useRequireAccount();
+  const isMobile = useIsMobile();
 
   if (!address)
     return (
@@ -17,7 +19,7 @@ export default function Dashboard() {
 
   return (
     <Container maxW="1034px" height="100%">
-      <Heading>Dashboard</Heading>
+      <Heading fontSize={isMobile ? "xl" : "3xl"}>Dashboard</Heading>
       {/* <Test /> */}
       <DashBoardList />
     </Container>
