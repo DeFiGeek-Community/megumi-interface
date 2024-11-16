@@ -9,15 +9,24 @@ export default function DashBoardList() {
   return (
     <Box maxWidth={isMobile ? "387px" : "1034px"} margin="0 auto" padding={isMobile ? "0" : "6"}>
       <Flex justifyContent="space-between" alignItems="center" marginBottom="4">
-        <Tabs width="400px">
+        <Tabs width={isMobile ? "387px" : "400px"}>
           <TabList>
-            <Tab flex="1">あなたのエアドロップ</Tab>
-            <Tab flex="1">対象のエアドロップ</Tab>
+            <Tab flex="1" fontSize={isMobile ? "sm" : "md"}>
+              あなたのエアドロップ
+            </Tab>
+            <Tab flex="1" fontSize={isMobile ? "sm" : "md"}>
+              対象のエアドロップ
+            </Tab>
           </TabList>
         </Tabs>
       </Flex>
       <Flex justifyContent="flex-end" marginBottom="6">
-        <Button leftIcon={<AddIcon />} bg="gray.500" _hover={{ bg: "gray.600" }}>
+        <Button
+          leftIcon={<AddIcon />}
+          bg="gray.500"
+          _hover={{ bg: "gray.600" }}
+          fontSize={isMobile ? "sm" : "md"}
+        >
           エアドロップを作成
         </Button>
       </Flex>
@@ -31,30 +40,6 @@ export default function DashBoardList() {
           status="registered"
         />
 
-        <DashBoardCard
-          creationDate="2023-03-20"
-          publicationDate="-"
-          totalAmount="-"
-          claimedAccounts="-"
-          vestingEndDate=""
-          status="unregistered"
-        />
-        <DashBoardCard
-          creationDate="2023-03-20"
-          publicationDate="-"
-          totalAmount="-"
-          claimedAccounts="-"
-          vestingEndDate=""
-          status="unregistered"
-        />
-        <DashBoardCard
-          creationDate="2023-03-20"
-          publicationDate="-"
-          totalAmount="-"
-          claimedAccounts="-"
-          vestingEndDate=""
-          status="unregistered"
-        />
         <DashBoardCard
           creationDate="2023-03-20"
           publicationDate="-"
