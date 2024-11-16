@@ -31,7 +31,7 @@ export default function DashBoardCard({
         <Row mainAxisAlignment="center" crossAxisAlignment="center" gap="4">
           <Box width="60%">
             <Row mainAxisAlignment="center" crossAxisAlignment="center" gap="4">
-              <Avatar size="lg" name="YMT" src="/placeholder.svg" bg="gray.500" />
+              <Avatar size="lg" name="YMT" bg="gray.500" />
               <Box flex="1">
                 <Row
                   mainAxisAlignment="flex-start"
@@ -177,7 +177,7 @@ export default function DashBoardCard({
         <Row mainAxisAlignment="center" crossAxisAlignment="center" gap="4">
           <Box width="60%">
             <Row mainAxisAlignment="center" crossAxisAlignment="center" gap="4">
-              <Avatar size="lg" name="YMT" src="/placeholder.svg" bg="gray.500" />
+              <Avatar size="lg" name="YMT" bg="gray.500" />
               <Box flex="1">
                 <Row
                   mainAxisAlignment="flex-start"
