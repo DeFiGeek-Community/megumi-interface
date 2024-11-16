@@ -7,7 +7,7 @@ import { useIsMobile } from "@/app/lib/chakra/chakraUtils";
 export default function DashBoardList() {
   const isMobile = useIsMobile();
   return (
-    <Box maxWidth={isMobile ? "387px" : "1034px"} margin="0 auto" padding={isMobile ? "0" : "6"}>
+    <Box margin="0 auto" py={isMobile ? "0" : "6"}>
       <Flex justifyContent="space-between" alignItems="center" marginBottom="4">
         <Tabs width={isMobile ? "387px" : "400px"}>
           <TabList>
