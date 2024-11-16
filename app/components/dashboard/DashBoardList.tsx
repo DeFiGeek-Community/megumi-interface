@@ -9,7 +9,7 @@ export default function DashBoardList() {
   return (
     <Box margin="0 auto" py={isMobile ? "3" : "6"}>
       <Flex justifyContent="space-between" alignItems="center" marginBottom="4">
-      <Tabs width={isMobile ? "387px" : "400px"}>
+        <Tabs width={isMobile ? "387px" : "400px"}>
           <TabList>
             <Tab flex="1" fontSize={isMobile ? "sm" : "md"}>
               あなたのエアドロップ
