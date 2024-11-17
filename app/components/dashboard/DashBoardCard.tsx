@@ -17,60 +17,41 @@ export default function DashBoardCard({
 
   const renderStatus = () => {
     const isResistered = resisteredStatus === true;
-    return isResistered ? (
+    return (
       <>
         <Flex
           alignItems="center"
-          bg="green.100"
-          color="green.800"
+          bg={isResistered ? "green.100" : undefined}
+          color={isResistered ? "green.800" : "gray.400"}
           fontSize="xs"
           fontWeight="medium"
           px="2.5"
           py="0.5"
           borderRadius="full"
         >
-          <CheckCircleIcon boxSize="3" marginRight="1" />
+          <CheckCircleIcon
+            boxSize="3"
+            marginRight="1"
+            color={isResistered ? undefined : "gray.400"}
+          />
           エアドロップリスト登録済
         </Flex>
         <Flex
           alignItems="center"
-          bg="blue.100"
-          color="blue.800"
+          bg={isResistered ? "blue.100" : undefined}
+          color={isResistered ? "blue.800" : "gray.400"}
           fontSize="xs"
           fontWeight="medium"
           px="2.5"
           py="0.5"
           borderRadius="full"
         >
-          <CheckCircleIcon boxSize="3" marginRight="1" />
+          <CheckCircleIcon
+            boxSize="3"
+            marginRight="1"
+            color={isResistered ? undefined : "gray.400"}
+          />
           コントラクト登録済
-        </Flex>
-      </>
-    ) : (
-      <>
-        <Flex
-          alignItems="center"
-          color="gray.400"
-          fontSize="xs"
-          fontWeight="medium"
-          px="2.5"
-          py="0.5"
-          borderRadius="full"
-        >
-          <CheckCircleIcon boxSize="3" marginRight="1" color="gray.400" />
-          エアドロップリスト未登録
-        </Flex>
-        <Flex
-          alignItems="center"
-          color="gray.400"
-          fontSize="xs"
-          fontWeight="medium"
-          px="2.5"
-          py="0.5"
-          borderRadius="full"
-        >
-          <CheckCircleIcon boxSize="3" marginRight="1" color="gray.400" />
-          コントラクト未登録
         </Flex>
       </>
     );
