@@ -38,7 +38,7 @@ export default function DashBoardList() {
           totalAmount="500,000 YMT"
           claimedAccounts="314 / 20,214"
           vestingEndDate="2025/12/01"
-          status="registered"
+          resisteredStatus={true}
         />
 
         <DashBoardCard
@@ -48,7 +48,7 @@ export default function DashBoardList() {
           totalAmount="-"
           claimedAccounts="-"
           vestingEndDate=""
-          status="unregistered"
+          resisteredStatus={false}
         />
       </VStack>
     </Box>

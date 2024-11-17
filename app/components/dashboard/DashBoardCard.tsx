@@ -11,12 +11,13 @@ export default function DashBoardCard({
   totalAmount,
   claimedAccounts,
   vestingEndDate,
-  status,
+  resisteredStatus,
 }: DashBoardCardProps) {
   const isMobile = useIsMobile();
 
   const renderStatus = () => {
-    return status === "registered" ? (
+    const isResistered = resisteredStatus === true;
+    return isResistered ? (
       <>
         <Flex
           alignItems="center"
@@ -127,7 +128,7 @@ export default function DashBoardCard({
                   alignItems="center"
                 >
                   <Text fontSize="md" marginRight="1">
-                    {status === "registered" ? "Linear vesting" : "Standard"}
+                    {resisteredStatus === true ? "Linear vesting" : "Standard"}
                   </Text>
                   <Box
                     bg="white"
@@ -232,7 +233,7 @@ export default function DashBoardCard({
                     alignItems="center"
                   >
                     <Text fontSize="sm" marginRight="1">
-                      {status === "registered" ? "Linear vesting" : "Standard"}
+                      {resisteredStatus === true ? "Linear vesting" : "Standard"}
                     </Text>
                     <Box
                       bg="white"

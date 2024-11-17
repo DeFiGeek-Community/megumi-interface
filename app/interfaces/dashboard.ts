@@ -5,5 +5,5 @@ export interface DashBoardCardProps {
   totalAmount: string;
   claimedAccounts: string;
   vestingEndDate: string;
-  status: "registered" | "unregistered";
+  resisteredStatus: boolean;
 }
