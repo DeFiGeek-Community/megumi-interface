@@ -1,57 +1,23 @@
 "use client";
-import { Box, Avatar, Card, CardBody, Text } from "@chakra-ui/react";
+import { Box, Avatar, Card, CardBody } from "@chakra-ui/react";
 import { Column, Row, useIsMobile } from "@/app/lib/chakra/chakraUtils";
 import { DashBoardCardProps } from "@/app/interfaces/dashboard";
 import RenderStatus from "@/app/components/dashboard/RenderStatus";
 import RenderDateContent from "@/app/components/dashboard/RenderDateContent";
 import RenderDetailedInfo from "@/app/components/dashboard/RenderDetailedInfo";
+import RenderAirdropInfo from "@/app/components/dashboard/RenderAirdropInfo";
 
 export default function DashBoardCard({
   creationDate,
   publicationDate,
   airdropTitle,
+  vestingType,
   totalAmount,
   claimedAccounts,
   vestingEndDate,
   resisteredStatus,
 }: DashBoardCardProps) {
   const isMobile = useIsMobile();
-
-  const renderAirdropInfo = () => {
-    return (
-      <>
-        <Text fontSize={isMobile ? "25px" : "30px"} fontWeight={isMobile ? "600" : "400"}>
-          {airdropTitle}
-        </Text>
-        <Box
-          bg="gray.500"
-          borderRadius="md"
-          px={isMobile ? "1" : "3"}
-          py={isMobile ? "0.5" : "1"}
-          mt="1.5"
-          display="inline-flex"
-          alignItems="center"
-        >
-          <Text fontSize={isMobile ? "sm" : "md"} marginRight="1">
-            {resisteredStatus === true ? "Linear vesting" : "Standard"}
-          </Text>
-          <Box
-            bg="white"
-            borderRadius="full"
-            width={isMobile ? "4" : "5"}
-            height={isMobile ? "4" : "5"}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Text fontSize="sm" fontWeight="bold" color="black">
-              ?
-            </Text>
-          </Box>
-        </Box>
-      </>
-    );
-  };
 
   const renderCardContent = () => {
     return (
@@ -72,7 +38,7 @@ export default function DashBoardCard({
                     >
                       <RenderStatus isResistered={resisteredStatus} />
                     </Row>
-                    {renderAirdropInfo()}
+                    <RenderAirdropInfo airdropTitle={airdropTitle} vestingType={vestingType} isMobile={isMobile}/>
                   </Box>
                 </Row>
               </Box>
@@ -108,7 +74,7 @@ export default function DashBoardCard({
                   <Row mainAxisAlignment="center" crossAxisAlignment="center" gap="4">
                     <Avatar size="md" name="YMT" bg="gray.500" />
                     <Box flex="1">
-                    {renderAirdropInfo()}
+                    <RenderAirdropInfo airdropTitle={airdropTitle} vestingType={vestingType} isMobile={isMobile}/>
                     </Box>
                   </Row>
                 </Box>

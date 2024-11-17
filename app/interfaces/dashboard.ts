@@ -2,6 +2,7 @@ export interface DashBoardCardProps {
   creationDate: string;
   publicationDate: string;
   airdropTitle: string;
+  vestingType:"Linear vesting"|"Standard";
   totalAmount: string;
   claimedAccounts: string;
   vestingEndDate: string;
@@ -22,4 +23,10 @@ export interface RenderDetailedInfoProps{
   totalAmount: string;
   claimedAccounts: string;
   vestingEndDate: string;
+}
+
+export interface RenderAirdropInfoProps{
+  airdropTitle: string;
+  vestingType:"Linear vesting"|"Standard";
+  isMobile: boolean;
 }
