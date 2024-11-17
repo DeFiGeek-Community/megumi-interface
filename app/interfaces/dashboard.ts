@@ -7,3 +7,7 @@ export interface DashBoardCardProps {
   vestingEndDate: string;
   resisteredStatus: boolean;
 }
+
+export interface RenderStatusProps {
+  isResistered: boolean;
+}

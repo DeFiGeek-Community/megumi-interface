@@ -3,6 +3,7 @@ import { Box, Avatar, Card, CardBody, Flex, Text } from "@chakra-ui/react";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { Column, Row, useIsMobile } from "@/app/lib/chakra/chakraUtils";
 import { DashBoardCardProps } from "@/app/interfaces/dashboard";
+import RenderStatus from "@/app/components/dashboard/RenderStatus";
 
 export default function DashBoardCard({
   creationDate,
@@ -14,48 +15,6 @@ export default function DashBoardCard({
   resisteredStatus,
 }: DashBoardCardProps) {
   const isMobile = useIsMobile();
-
-  const renderStatus = () => {
-    const isResistered = resisteredStatus === true;
-    return (
-      <>
-        <Flex
-          alignItems="center"
-          bg={isResistered ? "green.100" : undefined}
-          color={isResistered ? "green.800" : "gray.400"}
-          fontSize="xs"
-          fontWeight="medium"
-          px="2.5"
-          py="0.5"
-          borderRadius="full"
-        >
-          <CheckCircleIcon
-            boxSize="3"
-            marginRight="1"
-            color={isResistered ? undefined : "gray.400"}
-          />
-          エアドロップリスト登録済
-        </Flex>
-        <Flex
-          alignItems="center"
-          bg={isResistered ? "blue.100" : undefined}
-          color={isResistered ? "blue.800" : "gray.400"}
-          fontSize="xs"
-          fontWeight="medium"
-          px="2.5"
-          py="0.5"
-          borderRadius="full"
-        >
-          <CheckCircleIcon
-            boxSize="3"
-            marginRight="1"
-            color={isResistered ? undefined : "gray.400"}
-          />
-          コントラクト登録済
-        </Flex>
-      </>
-    );
-  };
 
   const renderDateContent = () => {
     return (
@@ -175,7 +134,7 @@ export default function DashBoardCard({
                       gap="2"
                       marginBottom="1"
                     >
-                      {renderStatus()}
+                      <RenderStatus isResistered={resisteredStatus} />
                     </Row>
                     {renderAirdropInfo()}
                   </Box>
@@ -198,7 +157,7 @@ export default function DashBoardCard({
                     gap="2"
                     marginBottom="1"
                   >
-                    {renderStatus()}
+                    <RenderStatus isResistered={resisteredStatus} />
                   </Row>
                 </Box>
               </Row>
