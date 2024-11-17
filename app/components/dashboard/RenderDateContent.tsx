@@ -2,7 +2,11 @@ import { Text } from "@chakra-ui/react";
 import { Row } from "@/app/lib/chakra/chakraUtils";
 import { RenderDateContentProps } from "@/app/interfaces/dashboard";
 
-export default function RenderDateContent({ creationDate, publicationDate, isMobile }: RenderDateContentProps) {
+export default function RenderDateContent({
+  creationDate,
+  publicationDate,
+  isMobile,
+}: RenderDateContentProps) {
   return (
     <Row
       mainAxisAlignment="flex-start"
@@ -18,4 +22,4 @@ export default function RenderDateContent({ creationDate, publicationDate, isMob
       </Text>
     </Row>
   );
-};
+}

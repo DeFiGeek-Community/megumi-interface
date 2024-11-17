@@ -1,7 +1,11 @@
 import { Box, Text } from "@chakra-ui/react";
 import { RenderAirdropInfoProps } from "@/app/interfaces/dashboard";
 
-export default function RenderAirdropInfo({ airdropTitle, vestingType, isMobile }: RenderAirdropInfoProps) { 
+export default function RenderAirdropInfo({
+  airdropTitle,
+  vestingType,
+  isMobile,
+}: RenderAirdropInfoProps) {
   return (
     <>
       <Text fontSize={isMobile ? "25px" : "30px"} fontWeight={isMobile ? "600" : "400"}>
@@ -35,4 +39,4 @@ export default function RenderAirdropInfo({ airdropTitle, vestingType, isMobile 
       </Box>
     </>
   );
-};
+}

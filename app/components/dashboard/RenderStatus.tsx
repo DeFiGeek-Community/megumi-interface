@@ -20,7 +20,7 @@ export default function RenderStatus({ isResistered }: RenderStatusProps): JSX.E
           marginRight="1"
           color={isResistered ? undefined : "gray.400"}
         />
-        {isResistered?"エアドロップリスト登録済":"エアドロップリスト未登録"}
+        {isResistered ? "エアドロップリスト登録済" : "エアドロップリスト未登録"}
       </Flex>
       <Flex
         alignItems="center"
@@ -37,8 +37,8 @@ export default function RenderStatus({ isResistered }: RenderStatusProps): JSX.E
           marginRight="1"
           color={isResistered ? undefined : "gray.400"}
         />
-        {isResistered?"コントラクト登録済":"コントラクト未登録"}
+        {isResistered ? "コントラクト登録済" : "コントラクト未登録"}
       </Flex>
     </>
   );
-};
+}
