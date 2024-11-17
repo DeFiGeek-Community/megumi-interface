@@ -34,6 +34,7 @@ export default function DashBoardList() {
         <DashBoardCard
           creationDate="2023-03-20"
           publicationDate="2023-03-20"
+          airdropTitle="YMT Early Investors Airdrop"
           totalAmount="500,000 YMT"
           claimedAccounts="314 / 20,214"
           vestingEndDate="2025/12/01"
@@ -43,6 +44,7 @@ export default function DashBoardList() {
         <DashBoardCard
           creationDate="2023-03-20"
           publicationDate="-"
+          airdropTitle="YMT Early Investors Airdrop"
           totalAmount="-"
           claimedAccounts="-"
           vestingEndDate=""

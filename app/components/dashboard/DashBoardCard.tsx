@@ -7,6 +7,7 @@ import { DashBoardCardProps } from "@/app/interfaces/dashboard";
 export default function DashBoardCard({
   creationDate,
   publicationDate,
+  airdropTitle,
   totalAmount,
   claimedAccounts,
   vestingEndDate,
@@ -94,7 +95,7 @@ export default function DashBoardCard({
                   )}
                 </Row>
                 <Text fontSize="30px" fontWeight="400">
-                  YMT Early Investors Airdrop
+                  {airdropTitle}
                 </Text>
                 <Box
                   bg="gray.500"
@@ -251,7 +252,7 @@ export default function DashBoardCard({
                 <Avatar size="md" name="YMT" bg="gray.500" />
                 <Box flex="1">
                   <Text fontSize="25px" fontWeight="600">
-                    YMT Early Investors Airdrop
+                    {airdropTitle}
                   </Text>
                   <Box
                     bg="gray.500"
