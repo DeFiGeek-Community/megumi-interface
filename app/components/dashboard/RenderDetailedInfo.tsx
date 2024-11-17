@@ -1,12 +1,14 @@
 import { Text } from "@chakra-ui/react";
 import { Row } from "@/app/lib/chakra/chakraUtils";
 import { RenderDetailedInfoProps } from "@/app/interfaces/dashboard";
+import { useTranslation } from "react-i18next";
 
 export default function RenderDetailedInfo({
   totalAmount,
   claimedAccounts,
   vestingEndDate,
 }: RenderDetailedInfoProps) {
+  const { t } = useTranslation();
   return (
     <>
       <Row
@@ -17,7 +19,7 @@ export default function RenderDetailedInfo({
         paddingX="2"
       >
         <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
-          エアドロップ総額
+          {t("dashboard.totalAmount")}
         </Text>
         <Text flex="1" textAlign="right" fontSize="lg" fontWeight="medium">
           {totalAmount}
@@ -25,7 +27,7 @@ export default function RenderDetailedInfo({
       </Row>
       <Row mainAxisAlignment="space-between" crossAxisAlignment="center" width="100%" paddingX="2">
         <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
-          クレーム済みアカウント
+        {t("dashboard.claimedAccount")}
         </Text>
         <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
           {claimedAccounts}
@@ -33,7 +35,7 @@ export default function RenderDetailedInfo({
       </Row>
       <Row mainAxisAlignment="space-between" crossAxisAlignment="center" width="100%" paddingX="2">
         <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
-          ベスティング期限終了
+          {t("dashboard.vestingDeadline")}
         </Text>
         <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
           {vestingEndDate}

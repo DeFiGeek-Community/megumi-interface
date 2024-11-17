@@ -1,12 +1,14 @@
 import { Text } from "@chakra-ui/react";
 import { Row } from "@/app/lib/chakra/chakraUtils";
 import { RenderDateContentProps } from "@/app/interfaces/dashboard";
+import { useTranslation } from "react-i18next";
 
 export default function RenderDateContent({
   creationDate,
   publicationDate,
   isMobile,
 }: RenderDateContentProps) {
+  const { t } = useTranslation();
   return (
     <Row
       mainAxisAlignment="flex-start"
@@ -15,10 +17,10 @@ export default function RenderDateContent({
       paddingX={isMobile ? "1" : undefined}
     >
       <Text fontSize="sm" textAlign="right" flex="1" paddingRight={4}>
-        作成日: {creationDate}
+        {t("dashboard.creationDate")} {creationDate}
       </Text>
       <Text fontSize="sm" textAlign="right">
-        公開日: {publicationDate}
+        {t("dashboard.publicationDate")} {publicationDate}
       </Text>
     </Row>
   );

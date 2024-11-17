@@ -1,11 +1,13 @@
 import { Box, Text } from "@chakra-ui/react";
 import { RenderAirdropInfoProps } from "@/app/interfaces/dashboard";
+import { useTranslation } from "react-i18next";
 
 export default function RenderAirdropInfo({
   airdropTitle,
   vestingType,
   isMobile,
 }: RenderAirdropInfoProps) {
+  const { t } = useTranslation();
   return (
     <>
       <Text fontSize={isMobile ? "25px" : "30px"} fontWeight={isMobile ? "600" : "400"}>
@@ -21,7 +23,8 @@ export default function RenderAirdropInfo({
         alignItems="center"
       >
         <Text fontSize={isMobile ? "sm" : "md"} marginRight="1">
-          {vestingType}
+          {vestingType==="Linear vesting"&&t("dashboard.linearVesting")}
+          {vestingType==="Standard"&&t("dashboard.standard")}
         </Text>
         <Box
           bg="white"

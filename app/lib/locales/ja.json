@@ -16,7 +16,21 @@
     "title": "エアドロップ一覧"
   },
   "dashboard": {
-    "title": "ダッシュボード"
+    "claimedAccount": "クレーム済みアカウント",
+    "createAirdrop": "エアドロップを作成",
+    "creationDate": "作成日:",
+    "linearVesting":"線形べスティング",
+    "publicationDate": "公開日:",
+    "registeredAirdropList": "エアドロップリスト登録済",
+    "registeredContract": "コントラクト登録済",
+    "standard":"スタンダード",
+    "targetAirdrops": "対象のエアドロップ",
+    "title": "ダッシュボード",
+    "totalAmount":"エアドロップ総額",
+    "unregisteredAirdropList": "エアドロップリスト未登録",
+    "unregisteredContract": "コントラクト未登録",
+    "vestingDeadline":"ベスティング期限終了",
+    "yourAirdrops": "あなたのエアドロップ"
   },
   "airdrop": {
     "eligible": "エアドロップの対象です",

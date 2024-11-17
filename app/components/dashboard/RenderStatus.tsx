@@ -1,8 +1,10 @@
 import { Flex } from "@chakra-ui/react";
 import { CheckCircleIcon } from "@chakra-ui/icons";
 import { RenderStatusProps } from "@/app/interfaces/dashboard";
+import { useTranslation } from "react-i18next";
 
 export default function RenderStatus({ isResistered }: RenderStatusProps): JSX.Element {
+  const { t } = useTranslation();
   return (
     <>
       <Flex
@@ -20,7 +22,7 @@ export default function RenderStatus({ isResistered }: RenderStatusProps): JSX.E
           marginRight="1"
           color={isResistered ? undefined : "gray.400"}
         />
-        {isResistered ? "エアドロップリスト登録済" : "エアドロップリスト未登録"}
+        {isResistered ? t("dashboard.registeredAirdropList") : t("dashboard.unregisteredAirdropList")}
       </Flex>
       <Flex
         alignItems="center"
@@ -37,7 +39,7 @@ export default function RenderStatus({ isResistered }: RenderStatusProps): JSX.E
           marginRight="1"
           color={isResistered ? undefined : "gray.400"}
         />
-        {isResistered ? "コントラクト登録済" : "コントラクト未登録"}
+        {isResistered ? t("dashboard.registeredContract") : t("dashboard.unregisteredContract")}
       </Flex>
     </>
   );

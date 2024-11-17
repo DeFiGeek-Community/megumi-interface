@@ -3,19 +3,21 @@ import { Box, Button, Flex, Tab, TabList, Tabs, Text, VStack } from "@chakra-ui/
 import { AddIcon } from "@chakra-ui/icons";
 import DashBoardCard from "./DashBoardCard";
 import { useIsMobile } from "@/app/lib/chakra/chakraUtils";
+import { useTranslation } from "react-i18next";
 
 export default function DashBoardList() {
   const isMobile = useIsMobile();
+  const { t } = useTranslation();
   return (
     <Box margin="0 auto" py={isMobile ? "3" : "6"}>
       <Flex justifyContent="space-between" alignItems="center" marginBottom="4">
         <Tabs width={isMobile ? "387px" : "400px"}>
           <TabList>
             <Tab flex="1" fontSize={isMobile ? "sm" : "md"}>
-              あなたのエアドロップ
+              {t("dashboard.yourAirdrops")}
             </Tab>
             <Tab flex="1" fontSize={isMobile ? "sm" : "md"}>
-              対象のエアドロップ
+              {t("dashboard.targetAirdrops")}
             </Tab>
           </TabList>
         </Tabs>
@@ -27,7 +29,7 @@ export default function DashBoardList() {
           _hover={{ bg: "gray.600" }}
           fontSize={isMobile ? "sm" : "md"}
         >
-          エアドロップを作成
+          {t("dashboard.createAirdrop")}
         </Button>
       </Flex>
       <VStack spacing="4">
