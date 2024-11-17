@@ -75,6 +75,53 @@ export default function DashBoardCard({
     );
   };
 
+  const renderDetailedInfo = () => {
+    return (
+      <>
+        <Row
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            width="100%"
+            paddingTop="4"
+            paddingX="2"
+          >
+            <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
+              エアドロップ総額
+            </Text>
+            <Text flex="1" textAlign="right" fontSize="lg" fontWeight="medium">
+              {totalAmount}
+            </Text>
+          </Row>
+          <Row
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            width="100%"
+            paddingX="2"
+          >
+            <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
+              クレーム済みアカウント
+            </Text>
+            <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
+              {claimedAccounts}
+            </Text>
+          </Row>
+          <Row
+            mainAxisAlignment="space-between"
+            crossAxisAlignment="center"
+            width="100%"
+            paddingX="2"
+          >
+            <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
+              ベスティング期限終了
+            </Text>
+            <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
+              {vestingEndDate}
+            </Text>
+          </Row>
+      </>
+    );
+  };
+
   const renderCardContent = () => {
     return <></>;
   };
@@ -129,46 +176,7 @@ export default function DashBoardCard({
             </Row>
           </Box>
           <Box textAlign="right" width="40%">
-            <Row
-              mainAxisAlignment="space-between"
-              crossAxisAlignment="center"
-              width="100%"
-              paddingTop="4"
-              paddingX="2"
-            >
-              <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
-                エアドロップ総額
-              </Text>
-              <Text flex="1" textAlign="right" fontSize="lg" fontWeight="medium">
-                {totalAmount}
-              </Text>
-            </Row>
-            <Row
-              mainAxisAlignment="space-between"
-              crossAxisAlignment="center"
-              width="100%"
-              paddingX="2"
-            >
-              <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
-                クレーム済みアカウント
-              </Text>
-              <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
-                {claimedAccounts}
-              </Text>
-            </Row>
-            <Row
-              mainAxisAlignment="space-between"
-              crossAxisAlignment="center"
-              width="100%"
-              paddingX="2"
-            >
-              <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
-                ベスティング期限終了
-              </Text>
-              <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
-                {vestingEndDate}
-              </Text>
-            </Row>
+            {renderDetailedInfo()}
           </Box>
         </Row>
       </CardBody>
@@ -234,46 +242,7 @@ export default function DashBoardCard({
               </Row>
             </Box>
           </Row>
-          <Row
-            mainAxisAlignment="space-between"
-            crossAxisAlignment="center"
-            width="100%"
-            paddingTop="4"
-            paddingX="2"
-          >
-            <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
-              エアドロップ総額
-            </Text>
-            <Text flex="1" textAlign="right" fontSize="lg" fontWeight="medium">
-              {totalAmount}
-            </Text>
-          </Row>
-          <Row
-            mainAxisAlignment="space-between"
-            crossAxisAlignment="center"
-            width="100%"
-            paddingX="2"
-          >
-            <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
-              クレーム済みアカウント
-            </Text>
-            <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
-              {claimedAccounts}
-            </Text>
-          </Row>
-          <Row
-            mainAxisAlignment="space-between"
-            crossAxisAlignment="center"
-            width="100%"
-            paddingX="2"
-          >
-            <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
-              ベスティング期限終了
-            </Text>
-            <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
-              {vestingEndDate}
-            </Text>
-          </Row>
+          {renderDetailedInfo()}
         </Column>
       </CardBody>
     </Card>
