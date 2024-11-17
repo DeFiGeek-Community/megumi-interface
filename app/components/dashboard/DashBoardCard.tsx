@@ -75,17 +75,32 @@ export default function DashBoardCard({
     );
   };
 
+  const renderDateContent = () => {
+    return (
+      <Row
+        mainAxisAlignment="flex-start"
+        crossAxisAlignment="flex-start"
+        width={isMobile ? "100%" : undefined}
+        paddingX={isMobile ? "1" : undefined}
+      >
+        <Text fontSize="sm" textAlign="right" flex="1" paddingRight={4}>
+          作成日: {creationDate}
+        </Text>
+        <Text fontSize="sm" textAlign="right">
+          公開日: {publicationDate}
+        </Text>
+      </Row>
+    );
+  };
+
+  const renderCardContent = () => {
+    return <></>;
+  };
+
   return !isMobile ? (
     <Card width="100%">
       <CardBody>
-        <Row mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
-          <Text fontSize="sm" textAlign="right" flex="1" paddingRight={4}>
-            作成日: {creationDate}
-          </Text>
-          <Text fontSize="sm" textAlign="right">
-            公開日: {publicationDate}
-          </Text>
-        </Row>
+        {renderDateContent()}
         <Row mainAxisAlignment="center" crossAxisAlignment="center" gap="4">
           <Box width="60%">
             <Row mainAxisAlignment="center" crossAxisAlignment="center" gap="4">
@@ -180,19 +195,7 @@ export default function DashBoardCard({
     <Card width="100%">
       <CardBody paddingX="1">
         <Column mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
-          <Row
-            mainAxisAlignment="flex-start"
-            crossAxisAlignment="flex-start"
-            width="100%"
-            paddingX="1"
-          >
-            <Text fontSize="sm" textAlign="right" flex="1" paddingRight={4}>
-              作成日: {creationDate}
-            </Text>
-            <Text fontSize="sm" textAlign="right">
-              公開日: {publicationDate}
-            </Text>
-          </Row>
+          {renderDateContent()}
           <Row mainAxisAlignment="center" crossAxisAlignment="center" gap="4" marginTop="3">
             <Box flex="1">
               <Row
