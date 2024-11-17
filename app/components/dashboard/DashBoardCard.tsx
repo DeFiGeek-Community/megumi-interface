@@ -1,10 +1,10 @@
 "use client";
-import { Box, Avatar, Card, CardBody, Flex, Text } from "@chakra-ui/react";
-import { CheckCircleIcon } from "@chakra-ui/icons";
+import { Box, Avatar, Card, CardBody, Text } from "@chakra-ui/react";
 import { Column, Row, useIsMobile } from "@/app/lib/chakra/chakraUtils";
 import { DashBoardCardProps } from "@/app/interfaces/dashboard";
 import RenderStatus from "@/app/components/dashboard/RenderStatus";
 import RenderDateContent from "@/app/components/dashboard/RenderDateContent";
+import RenderDetailedInfo from "@/app/components/dashboard/RenderDetailedInfo";
 
 export default function DashBoardCard({
   creationDate,
@@ -16,53 +16,6 @@ export default function DashBoardCard({
   resisteredStatus,
 }: DashBoardCardProps) {
   const isMobile = useIsMobile();
-
-  const renderDetailedInfo = () => {
-    return (
-      <>
-        <Row
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          width="100%"
-          paddingTop="4"
-          paddingX="2"
-        >
-          <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
-            エアドロップ総額
-          </Text>
-          <Text flex="1" textAlign="right" fontSize="lg" fontWeight="medium">
-            {totalAmount}
-          </Text>
-        </Row>
-        <Row
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          width="100%"
-          paddingX="2"
-        >
-          <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
-            クレーム済みアカウント
-          </Text>
-          <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
-            {claimedAccounts}
-          </Text>
-        </Row>
-        <Row
-          mainAxisAlignment="space-between"
-          crossAxisAlignment="center"
-          width="100%"
-          paddingX="2"
-        >
-          <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
-            ベスティング期限終了
-          </Text>
-          <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
-            {vestingEndDate}
-          </Text>
-        </Row>
-      </>
-    );
-  };
 
   const renderAirdropInfo = () => {
     return (
@@ -124,7 +77,7 @@ export default function DashBoardCard({
                 </Row>
               </Box>
               <Box textAlign="right" width="40%">
-                {renderDetailedInfo()}
+                <RenderDetailedInfo totalAmount = {totalAmount} claimedAccounts={claimedAccounts}vestingEndDate={vestingEndDate}/>
               </Box>
             </Row>
           </>
@@ -160,7 +113,7 @@ export default function DashBoardCard({
                   </Row>
                 </Box>
               </Row>
-              {renderDetailedInfo()}
+              <RenderDetailedInfo totalAmount = {totalAmount} claimedAccounts={claimedAccounts}vestingEndDate={vestingEndDate}/>
             </Column>
           </>
         )}

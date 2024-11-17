@@ -17,3 +17,9 @@ export interface RenderDateContentProps {
   publicationDate: string;
   isMobile: boolean;
 }
+
+export interface RenderDetailedInfoProps{
+  totalAmount: string;
+  claimedAccounts: string;
+  vestingEndDate: string;
+}
