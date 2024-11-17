@@ -4,6 +4,7 @@ import { CheckCircleIcon } from "@chakra-ui/icons";
 import { Column, Row, useIsMobile } from "@/app/lib/chakra/chakraUtils";
 import { DashBoardCardProps } from "@/app/interfaces/dashboard";
 import RenderStatus from "@/app/components/dashboard/RenderStatus";
+import RenderDateContent from "@/app/components/dashboard/RenderDateContent";
 
 export default function DashBoardCard({
   creationDate,
@@ -15,24 +16,6 @@ export default function DashBoardCard({
   resisteredStatus,
 }: DashBoardCardProps) {
   const isMobile = useIsMobile();
-
-  const renderDateContent = () => {
-    return (
-      <Row
-        mainAxisAlignment="flex-start"
-        crossAxisAlignment="flex-start"
-        width={isMobile ? "100%" : undefined}
-        paddingX={isMobile ? "1" : undefined}
-      >
-        <Text fontSize="sm" textAlign="right" flex="1" paddingRight={4}>
-          作成日: {creationDate}
-        </Text>
-        <Text fontSize="sm" textAlign="right">
-          公開日: {publicationDate}
-        </Text>
-      </Row>
-    );
-  };
 
   const renderDetailedInfo = () => {
     return (
@@ -122,7 +105,7 @@ export default function DashBoardCard({
       <>
         {!isMobile ? (
           <>
-            {renderDateContent()}
+            <RenderDateContent creationDate={creationDate} publicationDate={publicationDate} isMobile={isMobile}/>
             <Row mainAxisAlignment="center" crossAxisAlignment="center" gap="4">
               <Box width="60%">
                 <Row mainAxisAlignment="center" crossAxisAlignment="center" gap="4">
@@ -148,7 +131,7 @@ export default function DashBoardCard({
         ) : (
           <>
             <Column mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
-              {renderDateContent()}
+            <RenderDateContent creationDate={creationDate} publicationDate={publicationDate} isMobile={isMobile}/>
               <Row mainAxisAlignment="center" crossAxisAlignment="center" gap="4" marginTop="3">
                 <Box flex="1">
                   <Row

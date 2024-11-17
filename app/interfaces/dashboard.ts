@@ -11,3 +11,9 @@ export interface DashBoardCardProps {
 export interface RenderStatusProps {
   isResistered: boolean;
 }
+
+export interface RenderDateContentProps {
+  creationDate: string;
+  publicationDate: string;
+  isMobile: boolean;
+}
