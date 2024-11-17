@@ -14,6 +14,67 @@ export default function DashBoardCard({
   status,
 }: DashBoardCardProps) {
   const isMobile = useIsMobile();
+
+  const renderStatus = () => {
+    return status === "registered" ? (
+      <>
+        <Flex
+          alignItems="center"
+          bg="green.100"
+          color="green.800"
+          fontSize="xs"
+          fontWeight="medium"
+          px="2.5"
+          py="0.5"
+          borderRadius="full"
+        >
+          <CheckCircleIcon boxSize="3" marginRight="1" />
+          エアドロップリスト登録済
+        </Flex>
+        <Flex
+          alignItems="center"
+          bg="blue.100"
+          color="blue.800"
+          fontSize="xs"
+          fontWeight="medium"
+          px="2.5"
+          py="0.5"
+          borderRadius="full"
+        >
+          <CheckCircleIcon boxSize="3" marginRight="1" />
+          コントラクト登録済
+        </Flex>
+      </>
+    ) : (
+      <>
+        <Flex
+          alignItems="center"
+          color="gray.400"
+          fontSize="xs"
+          fontWeight="medium"
+          px="2.5"
+          py="0.5"
+          borderRadius="full"
+        >
+          <CheckCircleIcon boxSize="3" marginRight="1" color="gray.400" />
+          エアドロップリスト未登録
+        </Flex>
+        <Flex
+          alignItems="center"
+          color="gray.400"
+          fontSize="xs"
+          fontWeight="medium"
+          px="2.5"
+          py="0.5"
+          borderRadius="full"
+        >
+          <CheckCircleIcon boxSize="3" marginRight="1" color="gray.400" />
+          コントラクト未登録
+        </Flex>
+      </>
+    );
+  };
+
   return !isMobile ? (
     <Card width="100%">
       <CardBody>
@@ -36,63 +97,7 @@ export default function DashBoardCard({
                   gap="2"
                   marginBottom="1"
                 >
-                  {status === "registered" ? (
-                    <>
-                      <Flex
-                        alignItems="center"
-                        bg="green.100"
-                        color="green.800"
-                        fontSize="xs"
-                        fontWeight="medium"
-                        px="2.5"
-                        py="0.5"
-                        borderRadius="full"
-                      >
-                        <CheckCircleIcon boxSize="3" marginRight="1" />
-                        エアドロップリスト登録済
-                      </Flex>
-                      <Flex
-                        alignItems="center"
-                        bg="blue.100"
-                        color="blue.800"
-                        fontSize="xs"
-                        fontWeight="medium"
-                        px="2.5"
-                        py="0.5"
-                        borderRadius="full"
-                      >
-                        <CheckCircleIcon boxSize="3" marginRight="1" />
-                        コントラクト登録済
-                      </Flex>
-                    </>
-                  ) : (
-                    <>
-                      <Flex
-                        alignItems="center"
-                        color="gray.400"
-                        fontSize="xs"
-                        fontWeight="medium"
-                        px="2.5"
-                        py="0.5"
-                        borderRadius="full"
-                      >
-                        <CheckCircleIcon boxSize="3" marginRight="1" color="gray.400" />
-                        エアドロップリスト未登録
-                      </Flex>
-                      <Flex
-                        alignItems="center"
-                        color="gray.400"
-                        fontSize="xs"
-                        fontWeight="medium"
-                        px="2.5"
-                        py="0.5"
-                        borderRadius="full"
-                      >
-                        <CheckCircleIcon boxSize="3" marginRight="1" color="gray.400" />
-                        コントラクト未登録
-                      </Flex>
-                    </>
-                  )}
+                  {renderStatus()}
                 </Row>
                 <Text fontSize="30px" fontWeight="400">
                   {airdropTitle}
@@ -127,24 +132,40 @@ export default function DashBoardCard({
             </Row>
           </Box>
           <Box textAlign="right" width="40%">
-            <Row mainAxisAlignment="space-between" crossAxisAlignment="center" width="100%">
-              <Text flex="1" textAlign="left" fontWeight="medium">
+            <Row
+              mainAxisAlignment="space-between"
+              crossAxisAlignment="center"
+              width="100%"
+              paddingTop="4"
+              paddingX="2"
+            >
+              <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
                 エアドロップ総額
               </Text>
-              <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
+              <Text flex="1" textAlign="right" fontSize="lg" fontWeight="medium">
                 {totalAmount}
               </Text>
             </Row>
-            <Row mainAxisAlignment="space-between" crossAxisAlignment="center" width="100%">
-              <Text flex="1" textAlign="left" fontWeight="medium">
+            <Row
+              mainAxisAlignment="space-between"
+              crossAxisAlignment="center"
+              width="100%"
+              paddingX="2"
+            >
+              <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
                 クレーム済みアカウント
               </Text>
               <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
                 {claimedAccounts}
               </Text>
             </Row>
-            <Row mainAxisAlignment="space-between" crossAxisAlignment="center" width="100%">
-              <Text flex="1" textAlign="left" fontWeight="medium">
+            <Row
+              mainAxisAlignment="space-between"
+              crossAxisAlignment="center"
+              width="100%"
+              paddingX="2"
+            >
+              <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
                 ベスティング期限終了
               </Text>
               <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
@@ -180,63 +201,7 @@ export default function DashBoardCard({
                 gap="2"
                 marginBottom="1"
               >
-                {status === "registered" ? (
-                  <>
-                    <Flex
-                      alignItems="center"
-                      bg="green.100"
-                      color="green.800"
-                      fontSize="xs"
-                      fontWeight="medium"
-                      px="2.5"
-                      py="0.5"
-                      borderRadius="full"
-                    >
-                      <CheckCircleIcon boxSize="3" marginRight="1" />
-                      エアドロップリスト登録済
-                    </Flex>
-                    <Flex
-                      alignItems="center"
-                      bg="blue.100"
-                      color="blue.800"
-                      fontSize="xs"
-                      fontWeight="medium"
-                      px="2.5"
-                      py="0.5"
-                      borderRadius="full"
-                    >
-                      <CheckCircleIcon boxSize="3" marginRight="1" />
-                      コントラクト登録済
-                    </Flex>
-                  </>
-                ) : (
-                  <>
-                    <Flex
-                      alignItems="center"
-                      color="gray.400"
-                      fontSize="xs"
-                      fontWeight="medium"
-                      px="2.5"
-                      py="0.5"
-                      borderRadius="full"
-                    >
-                      <CheckCircleIcon boxSize="3" marginRight="1" color="gray.400" />
-                      エアドロップリスト未登録
-                    </Flex>
-                    <Flex
-                      alignItems="center"
-                      color="gray.400"
-                      fontSize="xs"
-                      fontWeight="medium"
-                      px="2.5"
-                      py="0.5"
-                      borderRadius="full"
-                    >
-                      <CheckCircleIcon boxSize="3" marginRight="1" color="gray.400" />
-                      コントラクト未登録
-                    </Flex>
-                  </>
-                )}
+                {renderStatus()}
               </Row>
             </Box>
           </Row>
