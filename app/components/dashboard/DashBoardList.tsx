@@ -1,5 +1,5 @@
 "use client";
-import { Box, Button, Flex, Tab, TabList, Tabs, Text, VStack } from "@chakra-ui/react";
+import { Box, Button, Flex, Tab, TabList, Tabs, VStack } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import DashBoardCard from "./DashBoardCard";
 import { useIsMobile } from "@/app/lib/chakra/chakraUtils";
