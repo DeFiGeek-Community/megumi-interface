@@ -324,35 +324,6 @@ export default function DashBoardCard({
               {vestingEndDate}
             </Text>
           </Row>
-          {/* <Row mainAxisAlignment="flex-start" crossAxisAlignment="flex-start" gap="4" marginTop="4">
-            <Box width="100%">
-              
-              <Row mainAxisAlignment="space-between" crossAxisAlignment="center" width="100%">
-                <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
-                  エアドロップ総額
-                </Text>
-                <Text flex="1" textAlign="right" fontSize="lg" fontWeight="medium">
-                  {totalAmount}
-                </Text>
-              </Row>
-              <Row mainAxisAlignment="space-between" crossAxisAlignment="center" width="100%">
-                <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
-                  クレーム済みアカウント
-                </Text>
-                <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
-                  {claimedAccounts}
-                </Text>
-              </Row>
-              <Row mainAxisAlignment="space-between" crossAxisAlignment="center" width="100%">
-                <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
-                  ベスティング期限終了
-                </Text>
-                <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
-                  {vestingEndDate}
-                </Text>
-              </Row>
-            </Box>
-          </Row> */}
         </Column>
       </CardBody>
     </Card>
