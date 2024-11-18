@@ -39,7 +39,7 @@ export default async function RootLayout({
 
   return (
     <html lang={i18next.language} data-theme="dark" style={{ colorScheme: "dark" }}>
-      <body suppressHydrationWarning={true}>
+      <body>
         <Providers session={session} locale={i18next.language}>
           <Box display="flex" flexDirection="column" justifyContent="flex-start" minHeight="100vh">
             <Header />
