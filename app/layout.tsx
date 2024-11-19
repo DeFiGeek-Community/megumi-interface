@@ -39,7 +39,11 @@ export default async function RootLayout({
 
   return (
     <html lang={i18next.language} data-theme="dark" style={{ colorScheme: "dark" }}>
-      <body>
+      {/* 
+      Adding className="chakra-ui-dark" to avoid warning
+      https://github.com/chakra-ui/chakra-ui/issues/7040#issuecomment-1655818781
+       */}
+      <body className="chakra-ui-dark">
         <Providers session={session} locale={i18next.language}>
           <Box display="flex" flexDirection="column" justifyContent="flex-start" minHeight="100vh">
             <Header />
