@@ -2,10 +2,7 @@ import { Box, Text } from "@chakra-ui/react";
 import { RenderAirdropInfoProps } from "@/app/interfaces/dashboard";
 import { useTranslation } from "react-i18next";
 
-export default function RenderAirdropInfo({
-  airdropTitle,
-  vestingType,
-}: RenderAirdropInfoProps) {
+export default function RenderAirdropInfo({ airdropTitle, vestingType }: RenderAirdropInfoProps) {
   const { t } = useTranslation();
   return (
     <>

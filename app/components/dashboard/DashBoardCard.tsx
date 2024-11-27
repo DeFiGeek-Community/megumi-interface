@@ -13,7 +13,6 @@ export default function DashBoardCard({
   vestingEndDate,
   resisteredStatus,
 }: DashBoardCardProps) {
-
   return (
     <Card width="100%">
       <CardBody paddingX={{ base: "1", sm: "5" }}>

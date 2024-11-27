@@ -16,7 +16,7 @@ export default function RenderCardContent({
   claimedAccounts,
   vestingEndDate,
   resisteredStatus,
-}: DashBoardCardProps ): JSX.Element {
+}: DashBoardCardProps): JSX.Element {
   return (
     <>
       <Box display={{ base: "none", md: "block" }}>
