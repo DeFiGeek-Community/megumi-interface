@@ -6,15 +6,14 @@ import { useTranslation } from "react-i18next";
 export default function RenderDateContent({
   creationDate,
   publicationDate,
-  isMobile,
 }: RenderDateContentProps) {
   const { t } = useTranslation();
   return (
     <Row
       mainAxisAlignment="flex-start"
       crossAxisAlignment="flex-start"
-      width={isMobile ? "100%" : undefined}
-      paddingX={isMobile ? "1" : undefined}
+      width="100%"
+      paddingX={{ base: "1", sm: "1.5" }}
     >
       <Text fontSize="sm" textAlign="right" flex="1" paddingRight={4}>
         {t("dashboard.creationDate")} {creationDate}

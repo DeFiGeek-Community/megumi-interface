@@ -16,7 +16,6 @@ export interface RenderStatusProps {
 export interface RenderDateContentProps {
   creationDate: string;
   publicationDate: string;
-  isMobile: boolean;
 }
 
 export interface RenderDetailedInfoProps {
@@ -28,5 +27,4 @@ export interface RenderDetailedInfoProps {
 export interface RenderAirdropInfoProps {
   airdropTitle: string;
   vestingType: "Linear vesting" | "Standard";
-  isMobile: boolean;
 }

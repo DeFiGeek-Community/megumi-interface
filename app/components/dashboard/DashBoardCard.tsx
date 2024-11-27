@@ -1,6 +1,5 @@
 "use client";
 import { Card, CardBody } from "@chakra-ui/react";
-import { useIsMobile } from "@/app/lib/chakra/chakraUtils";
 import { DashBoardCardProps } from "@/app/interfaces/dashboard";
 import RenderCardContent from "@/app/components/dashboard/RenderCardContent";
 
@@ -14,11 +13,10 @@ export default function DashBoardCard({
   vestingEndDate,
   resisteredStatus,
 }: DashBoardCardProps) {
-  const isMobile = useIsMobile();
 
   return (
     <Card width="100%">
-      <CardBody paddingX={isMobile ? "1" : undefined}>
+      <CardBody paddingX={{ base: "1", sm: "5" }}>
         <RenderCardContent
           creationDate={creationDate}
           publicationDate={publicationDate}
@@ -28,7 +26,6 @@ export default function DashBoardCard({
           claimedAccounts={claimedAccounts}
           vestingEndDate={vestingEndDate}
           resisteredStatus={resisteredStatus}
-          isMobile={isMobile}
         />
       </CardBody>
     </Card>

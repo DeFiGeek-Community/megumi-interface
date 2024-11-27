@@ -22,7 +22,9 @@ export default function RenderStatus({ isResistered }: RenderStatusProps): JSX.E
           marginRight="1"
           color={isResistered ? undefined : "gray.400"}
         />
-        {isResistered ? t("dashboard.registeredAirdropList") : t("dashboard.unregisteredAirdropList")}
+        {isResistered
+          ? t("dashboard.registeredAirdropList")
+          : t("dashboard.unregisteredAirdropList")}
       </Flex>
       <Flex
         alignItems="center"

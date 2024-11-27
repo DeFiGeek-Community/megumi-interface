@@ -2,21 +2,19 @@
 import { Box, Button, Flex, Tab, TabList, Tabs, VStack } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import DashBoardCard from "./DashBoardCard";
-import { useIsMobile } from "@/app/lib/chakra/chakraUtils";
 import { useTranslation } from "react-i18next";
 
 export default function DashBoardList() {
-  const isMobile = useIsMobile();
   const { t } = useTranslation();
   return (
-    <Box margin="0 auto" py={isMobile ? "3" : "6"}>
+    <Box margin="0 auto" py={{ base: "3", sm: "6" }}>
       <Flex justifyContent="space-between" alignItems="center" marginBottom="4">
-        <Tabs width={isMobile ? "387px" : "400px"}>
+        <Tabs width={{ base: "387px", sm: "400px" }}>
           <TabList>
-            <Tab flex="1" fontSize={isMobile ? "sm" : "md"}>
+            <Tab flex="1" fontSize={{ base: "sm", sm: "md" }}>
               {t("dashboard.yourAirdrops")}
             </Tab>
-            <Tab flex="1" fontSize={isMobile ? "sm" : "md"}>
+            <Tab flex="1" fontSize={{ base: "sm", sm: "md" }}>
               {t("dashboard.targetAirdrops")}
             </Tab>
           </TabList>
@@ -27,7 +25,7 @@ export default function DashBoardList() {
           leftIcon={<AddIcon />}
           bg="gray.500"
           _hover={{ bg: "gray.600" }}
-          fontSize={isMobile ? "sm" : "md"}
+          fontSize={{ base: "sm", sm: "md" }}
         >
           {t("dashboard.createAirdrop")}
         </Button>

@@ -27,7 +27,7 @@ export default function RenderDetailedInfo({
       </Row>
       <Row mainAxisAlignment="space-between" crossAxisAlignment="center" width="100%" paddingX="2">
         <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
-        {t("dashboard.claimedAccount")}
+          {t("dashboard.claimedAccount")}
         </Text>
         <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
           {claimedAccounts}

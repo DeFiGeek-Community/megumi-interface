@@ -183,7 +183,6 @@ export const RowOrColumn = ({
  *  Hooks
  *    - useWindowSize.ts
  *    - useLockedViewHeight.ts
- *    - useIsMobile.ts
  *    - useSpacedLayout.ts
  *
  ***************************************
@@ -225,15 +224,3 @@ export const useWindowSize = (): WindowSize => {
   }, []);
   return windowSize;
 };
-
-/**
- * useIsMobile.ts
- *
- * Returns whether the width of the window makes it likely a mobile device.
- * */
-export function useIsMobile() {
-  const { width } = useWindowSize();
-
-  // widthがundefinedの場合はfalseを返し、そうでない場合はwidth < 768の評価結果を返す
-  return width !== undefined ? width < 768 : false;
-}

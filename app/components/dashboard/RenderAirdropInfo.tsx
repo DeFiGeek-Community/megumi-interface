@@ -5,32 +5,31 @@ import { useTranslation } from "react-i18next";
 export default function RenderAirdropInfo({
   airdropTitle,
   vestingType,
-  isMobile,
 }: RenderAirdropInfoProps) {
   const { t } = useTranslation();
   return (
     <>
-      <Text fontSize={isMobile ? "25px" : "30px"} fontWeight={isMobile ? "600" : "400"}>
+      <Text fontSize={{ base: "25px", sm: "30px" }} fontWeight={{ base: "600", sm: "400" }}>
         {airdropTitle}
       </Text>
       <Box
         bg="gray.500"
         borderRadius="md"
-        px={isMobile ? "1" : "3"}
-        py={isMobile ? "0.5" : "1"}
+        px={{ base: "1", sm: "3" }}
+        py={{ base: "0.5", sm: "1" }}
         mt="1.5"
         display="inline-flex"
         alignItems="center"
       >
-        <Text fontSize={isMobile ? "sm" : "md"} marginRight="1">
-          {vestingType==="Linear vesting"&&t("dashboard.linearVesting")}
-          {vestingType==="Standard"&&t("dashboard.standard")}
+        <Text fontSize={{ base: "sm", sm: "md" }} marginRight="1">
+          {vestingType === "Linear vesting" && t("dashboard.linearVesting")}
+          {vestingType === "Standard" && t("dashboard.standard")}
         </Text>
         <Box
           bg="white"
           borderRadius="full"
-          width={isMobile ? "4" : "5"}
-          height={isMobile ? "4" : "5"}
+          width={{ base: "4", sm: "5" }}
+          height={{ base: "4", sm: "5" }}
           display="flex"
           alignItems="center"
           justifyContent="center"
