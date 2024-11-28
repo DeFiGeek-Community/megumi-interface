@@ -1,5 +1,5 @@
 import React from "react";
-import { Box, Avatar } from "@chakra-ui/react";
+import { Box, Avatar, Flex } from "@chakra-ui/react";
 import { Column, Row } from "@/app/lib/chakra/chakraUtils";
 import RenderStatus from "@/app/components/dashboard/RenderStatus";
 import RenderDateContent from "@/app/components/dashboard/RenderDateContent";
@@ -18,39 +18,22 @@ export default function RenderCardContent({
   resisteredStatus,
 }: DashBoardCardProps): JSX.Element {
   return (
-    <>
-      <Box display={{ base: "none", md: "block" }}>
-        <RenderDateContent creationDate={creationDate} publicationDate={publicationDate} />
-        <Row mainAxisAlignment="center" crossAxisAlignment="center" gap="4">
-          <Box width="60%">
-            <Row mainAxisAlignment="center" crossAxisAlignment="center" gap="4">
-              <Avatar size="lg" name="YMT" bg="gray.500" />
-              <Box flex="1">
-                <Row
-                  mainAxisAlignment="flex-start"
-                  crossAxisAlignment="center"
-                  gap="2"
-                  marginBottom="1"
-                >
-                  <RenderStatus isResistered={resisteredStatus} />
-                </Row>
-                <RenderAirdropInfo airdropTitle={airdropTitle} vestingType={vestingType} />
-              </Box>
-            </Row>
-          </Box>
-          <Box textAlign="right" width="40%">
-            <RenderDetailedInfo
-              totalAmount={totalAmount}
-              claimedAccounts={claimedAccounts}
-              vestingEndDate={vestingEndDate}
-            />
-          </Box>
-        </Row>
-      </Box>
-      <Box display={{ base: "block", md: "none" }}>
-        <Column mainAxisAlignment="flex-start" crossAxisAlignment="flex-start">
-          <RenderDateContent creationDate={creationDate} publicationDate={publicationDate} />
-          <Row mainAxisAlignment="center" crossAxisAlignment="center" gap="4" marginTop="3">
+    <Box>
+      <RenderDateContent creationDate={creationDate} publicationDate={publicationDate} />
+      <Flex
+        flexDirection={{ base: "column", md: "row" }}
+        justifyContent="center"
+        alignItems="center"
+        gap="4"
+      >
+        <Box width={{ base: "full", md: "60%" }}>
+          <Row
+            mainAxisAlignment="center"
+            crossAxisAlignment="center"
+            gap="4"
+            marginTop="3"
+            display={{ base: "block", md: "none" }}
+          >
             <Box flex="1">
               <Row
                 mainAxisAlignment="flex-start"
@@ -66,25 +49,32 @@ export default function RenderCardContent({
             mainAxisAlignment="center"
             crossAxisAlignment="center"
             gap="4"
-            marginTop="2"
-            paddingX="1"
+            marginTop={{ base: "2", md: "0" }}
+            paddingX={{ base: "1", md: "0" }}
           >
-            <Box width="100%">
-              <Row mainAxisAlignment="center" crossAxisAlignment="center" gap="4">
-                <Avatar size="md" name="YMT" bg="gray.500" />
-                <Box flex="1">
-                  <RenderAirdropInfo airdropTitle={airdropTitle} vestingType={vestingType} />
-                </Box>
+            <Avatar size={{ base: "md", md: "lg" }} name="YMT" bg="gray.500" />
+            <Box flex="1">
+              <Row
+                mainAxisAlignment="flex-start"
+                crossAxisAlignment="center"
+                gap="2"
+                marginBottom="1"
+                display={{ base: "none", md: "flex" }}
+              >
+                <RenderStatus isResistered={resisteredStatus} />
               </Row>
+              <RenderAirdropInfo airdropTitle={airdropTitle} vestingType={vestingType} />
             </Box>
           </Row>
+        </Box>
+        <Box textAlign="right" width={{ base: "full", md: "40%" }}>
           <RenderDetailedInfo
             totalAmount={totalAmount}
             claimedAccounts={claimedAccounts}
             vestingEndDate={vestingEndDate}
           />
-        </Column>
-      </Box>
-    </>
+        </Box>
+      </Flex>
+    </Box>
   );
 }

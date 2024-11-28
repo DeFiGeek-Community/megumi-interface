@@ -15,7 +15,7 @@ export default function RenderDetailedInfo({
         mainAxisAlignment="space-between"
         crossAxisAlignment="center"
         width="100%"
-        paddingTop="4"
+        paddingTop={{ base: "0.5", md: "4" }}
         paddingX="2"
       >
         <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
