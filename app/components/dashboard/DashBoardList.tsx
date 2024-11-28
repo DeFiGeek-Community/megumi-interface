@@ -7,9 +7,9 @@ import { useTranslation } from "react-i18next";
 export default function DashBoardList() {
   const { t } = useTranslation();
   return (
-    <Box margin="0 auto" py={{ base: "3", sm: "6" }}>
+    <Box margin="0 auto" py={{ base: "3",md: "6" }}>
       <Flex justifyContent="space-between" alignItems="center" marginBottom="4">
-        <Tabs width={{ base: "387px", sm: "400px" }}>
+        <Tabs width={{ base: "387px", md: "400px" }}>
           <TabList>
             <Tab flex="1" fontSize={{ base: "sm", sm: "md" }}>
               {t("dashboard.yourAirdrops")}

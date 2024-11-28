@@ -18,7 +18,7 @@ export default function Dashboard() {
 
   return (
     <Container maxW={"container.xl"}>
-      <Heading fontSize={{ base: "xl", sm: "3xl" }}>Dashboard</Heading>
+      <Heading fontSize={{ base: "xl", md: "3xl" }}>Dashboard</Heading>
       {/* <Test /> */}
       <DashBoardList />
     </Container>
