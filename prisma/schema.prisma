@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Airdrop {
+  id            String   @id @default(uuid())
+  contractAddress Bytes?  @unique
+  templateName   Bytes
+  owner          Bytes
+  tokenAddress   Bytes
+  tokenName      String
+  tokenSymbol    String
+  tokenDecimals  Int
+  tokenLogo      String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  AirdropClaimerMap AirdropClaimerMap[]
+}
+
+model Claimer {
+  id       String  @id @default(uuid())
+  address  Bytes   @unique
+  AirdropClaimerMap AirdropClaimerMap[]
+}
+
+model AirdropClaimerMap {
+  id         String  @id @default(uuid())
+  airdropId  String
+  claimerId  String
+  isClaimed  Boolean @default(false)
+  proofs     Bytes[]
+  index      Int
+  amount     BigInt
+
+  airdrop Airdrop @relation(fields: [airdropId], references: [id])
+  claimer Claimer @relation(fields: [claimerId], references: [id])
+
+  @@index([airdropId])
+  @@index([claimerId])
+}
