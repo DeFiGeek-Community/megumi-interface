@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Avatar, Flex } from "@chakra-ui/react";
-import { Column, Row } from "@/app/lib/chakra/chakraUtils";
+import { Row } from "@/app/lib/chakra/chakraUtils";
 import RenderStatus from "@/app/components/dashboard/RenderStatus";
 import RenderDateContent from "@/app/components/dashboard/RenderDateContent";
 import RenderDetailedInfo from "@/app/components/dashboard/RenderDetailedInfo";
