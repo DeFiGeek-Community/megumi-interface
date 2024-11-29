@@ -1,7 +1,7 @@
 "use client";
 import { Card, CardBody } from "@chakra-ui/react";
 import { DashBoardCardProps } from "@/app/interfaces/dashboard";
-import RenderCardContent from "@/app/components/dashboard/RenderCardContent";
+import RenderCardContent from "@/app/components/airdrops/cards/RenderCardContent";
 
 export default function DashBoardCard({
   creationDate,

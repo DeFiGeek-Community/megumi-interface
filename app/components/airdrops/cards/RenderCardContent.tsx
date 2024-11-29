@@ -1,10 +1,10 @@
 import React from "react";
 import { Box, Avatar, Flex } from "@chakra-ui/react";
 import { Row } from "@/app/lib/chakra/chakraUtils";
-import RenderStatus from "@/app/components/dashboard/RenderStatus";
-import RenderDateContent from "@/app/components/dashboard/RenderDateContent";
-import RenderDetailedInfo from "@/app/components/dashboard/RenderDetailedInfo";
-import RenderAirdropInfo from "@/app/components/dashboard/RenderAirdropInfo";
+import RenderStatus from "@/app/components/airdrops/cards/RenderStatus";
+import RenderDateContent from "@/app/components/airdrops/cards/RenderDateContent";
+import RenderDetailedInfo from "@/app/components/airdrops/cards/RenderDetailedInfo";
+import RenderAirdropInfo from "@/app/components/airdrops/cards/RenderAirdropInfo";
 import { DashBoardCardProps } from "@/app/interfaces/dashboard";
 
 export default function RenderCardContent({
