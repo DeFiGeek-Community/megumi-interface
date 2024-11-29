@@ -1,7 +1,6 @@
 import styles from "./page.module.css";
 import NextLink from "next/link";
 import { Container, Heading, HStack, Link } from "@/app/components/common/chakra-ui";
-
 export default async function Home() {
   return (
     <Container maxW={"container.lg"} py={8}>

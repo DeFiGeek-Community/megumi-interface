@@ -6,6 +6,7 @@ import Providers from "./providers/Providers";
 import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
 import i18next from "./lib/i18nConfig";
+import { Box } from "@chakra-ui/react";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -38,11 +39,19 @@ export default async function RootLayout({
 
   return (
     <html lang={i18next.language} data-theme="dark" style={{ colorScheme: "dark" }}>
-      <body>
+      {/* 
+      Adding className="chakra-ui-dark" to avoid warning
+      https://github.com/chakra-ui/chakra-ui/issues/7040#issuecomment-1655818781
+       */}
+      <body className="chakra-ui-dark">
         <Providers session={session} locale={i18next.language}>
-          <Header />
-          <main>{children}</main>
-          <Footer />
+          <Box display="flex" flexDirection="column" justifyContent="flex-start" minHeight="100vh">
+            <Header />
+            <Box flex="1">
+              <main>{children}</main>
+            </Box>
+            <Footer />
+          </Box>
         </Providers>
       </body>
     </html>

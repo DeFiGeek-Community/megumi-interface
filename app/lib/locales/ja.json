@@ -1,27 +1,41 @@
 {
-    "appName": "Megumi",
-    "tagline": "エアドロップツール",
-    "common": {
-        "connectWallet": "ウォレットの接続",
-        "signInWithEthereum": "Ethereumでログイン",
-        "signedInAs": "{{name}}でログイン中",
-        "disconnect": "切断",
-        "joinAirdrop": "エアドロップに参加する",
-        "manageAirdrop": "エアドロップを管理する",
-        "viewAllAirdrops": "すべてのエアドロップを見る",
-        "transactionSent": "トランザクションを送信しました",
-        "transactionConfirmed": "トランザクションが承認されました"
-    },
-    "airdrops": {
-        "title": "エアドロップ一覧"
-    },
-    "dashboard": {
-        "title": "ダッシュボード"
-    },
-    "airdrop": {
-        "eligible": "エアドロップの対象です",
-        "claim": "請求する",
-        "claimed": "請求済み",
-        "feeNotice": "請求時にクレーム手数料0.0001ETH、プラットフォーム手数料0.0001ETH、合計0.0002ETHがトランザクション手数料の他に必要です"
-    }
+  "appName": "Megumi",
+  "tagline": "エアドロップツール",
+  "common": {
+    "connectWallet": "ウォレットの接続",
+    "signInWithEthereum": "Ethereumでログイン",
+    "signedInAs": "{{name}}でログイン中",
+    "disconnect": "切断",
+    "joinAirdrop": "エアドロップに参加する",
+    "manageAirdrop": "エアドロップを管理する",
+    "viewAllAirdrops": "すべてのエアドロップを見る",
+    "transactionSent": "トランザクションを送信しました",
+    "transactionConfirmed": "トランザクションが承認されました"
+  },
+  "airdrops": {
+    "title": "エアドロップ一覧"
+  },
+  "dashboard": {
+    "claimedAccount": "クレーム済みアカウント",
+    "createAirdrop": "エアドロップを作成",
+    "creationDate": "作成日:",
+    "linearVesting": "線形べスティング",
+    "publicationDate": "公開日:",
+    "registeredAirdropList": "エアドロップリスト登録済",
+    "registeredContract": "コントラクト登録済",
+    "standard": "スタンダード",
+    "targetAirdrops": "対象のエアドロップ",
+    "title": "ダッシュボード",
+    "totalAmount": "エアドロップ総額",
+    "unregisteredAirdropList": "エアドロップリスト未登録",
+    "unregisteredContract": "コントラクト未登録",
+    "vestingDeadline": "ベスティング期限終了",
+    "yourAirdrops": "あなたのエアドロップ"
+  },
+  "airdrop": {
+    "eligible": "エアドロップの対象です",
+    "claim": "請求する",
+    "claimed": "請求済み",
+    "feeNotice": "請求時にクレーム手数料0.0001ETH、プラットフォーム手数料0.0001ETH、合計0.0002ETHがトランザクション手数料の他に必要です"
+  }
 }
