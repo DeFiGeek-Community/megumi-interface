@@ -1,6 +1,6 @@
-FROM node:18.17.0-alpine
+FROM node:20.18.1
 
-# RUN apk add g++ make py3-pip
+RUN apt update && apt install -y openssl g++ make python3
 
 WORKDIR /app
 
