@@ -2,6 +2,7 @@
 import { Card, CardBody } from "@chakra-ui/react";
 import { DashBoardCardProps } from "@/app/interfaces/dashboard";
 import RenderCardContent from "@/app/components/airdrops/cards/RenderCardContent";
+import { Airdrop } from "@/app/interfaces/dashboard";
 
 export default function DashBoardCard({
   creationDate,
@@ -12,7 +13,8 @@ export default function DashBoardCard({
   claimedAccounts,
   vestingEndDate,
   resisteredStatus,
-}: DashBoardCardProps) {
+  airdrop, // ここにAirdrop型を追加
+}: DashBoardCardProps & { airdrop?: Airdrop }) { // 型を更新
   return (
     <Card width="100%">
       <CardBody paddingX={{ base: "1", sm: "5" }}>

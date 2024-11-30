@@ -3,6 +3,45 @@ import { Box, Button, Flex, Tab, TabList, Tabs, VStack } from "@chakra-ui/react"
 import { AddIcon } from "@chakra-ui/icons";
 import DashBoardCard from "./DashBoardCard";
 import { useTranslation } from "react-i18next";
+import { TemplateType } from "@/app/interfaces/dashboard";
+import { Airdrop } from "@/app/interfaces/dashboard";
+
+function RenderAirdrop () {
+  const airdrops: Airdrop[] = [
+    {
+      id: "asdf",
+      title: "Vesting",
+      templateName: TemplateType.LINEAR_VESTING,
+      owner: "0x",
+      tokenAddress: "0x",
+      createdAt: 1731897560,
+      merkleTreeUploadedAt: 1731897560,
+      contractAddress: "0x",
+      totalAirdropAmount: BigInt(50 * 1e18),
+      eligibleUsersNum: 1000,
+      claimedUsersNum: 40,
+      contractDeployedAt: 1731897560,
+      vestingEndsAt: 1731897560,
+    },
+    {
+      id: "zxcv",
+      title: "Standard",
+      templateName: TemplateType.STANDARD,
+      owner: "0x",
+      tokenAddress: "0x",
+      createdAt: 1731897560,
+      merkleTreeUploadedAt: 1731897560,
+      contractAddress: "0x",
+      totalAirdropAmount: BigInt(50 * 1e18),
+      eligibleUsersNum: 1000,
+      claimedUsersNum: 40,
+      contractDeployedAt: 1731897560,
+    },
+  ];
+  // return airdrops.map((airdrop) => {
+  //   <DashBoardCard key={airdrop.id} airdrop={airdrop} />;
+  // });
+}
 
 export default function DashBoardList() {
   const { t } = useTranslation();
