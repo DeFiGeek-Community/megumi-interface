@@ -102,26 +102,10 @@ export default function DashBoardList() {
       </Flex>
       <VStack spacing="4">
         <DashBoardCard
-          creationDate="2023-03-20"
-          publicationDate="2023-03-20"
-          airdropTitle="YMT Early Investors Airdrop"
-          templeteType="Linear vesting"
-          totalAmount="500,000 YMT"
-          claimedAccounts="314 / 20,214"
-          vestingEndDate="2025/12/01"
-          resisteredStatus={true}
           airdrop={airdrops[0]}
         />
 
         <DashBoardCard
-          creationDate="2023-03-20"
-          publicationDate="-"
-          airdropTitle="YMT Early Investors Airdrop"
-          templeteType="Standard"
-          totalAmount="-"
-          claimedAccounts="-"
-          vestingEndDate=""
-          resisteredStatus={false}
           airdrop={airdrops[1]}
         />
       </VStack>
