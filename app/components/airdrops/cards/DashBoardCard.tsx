@@ -51,7 +51,7 @@ export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
   return (
     <Card width="100%">
       <CardBody paddingX={{ base: "1", sm: "5" }}>
-        {airdrop && <RenderCardContent {...renderCardProps} />}
+        <RenderCardContent {...renderCardProps} />
       </CardBody>
     </Card>
   );

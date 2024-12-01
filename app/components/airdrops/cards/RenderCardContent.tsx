@@ -7,20 +7,13 @@ import RenderDetailedInfo from "@/app/components/airdrops/cards/RenderDetailedIn
 import RenderAirdropInfo from "@/app/components/airdrops/cards/RenderAirdropInfo";
 import { DashBoardCardProps } from "@/app/interfaces/dashboard";
 
-export default function RenderCardContent({
-  creationDate,
-  publicationDate,
-  airdropTitle,
-  templeteType,
-  totalAmount,
-  claimedAccounts,
-  vestingEndDate,
-  resisteredAirdropStatus,
-  resisteredContractStatus,
-}: DashBoardCardProps): JSX.Element {
+export default function RenderCardContent(props: DashBoardCardProps): JSX.Element {
   return (
     <Box>
-      <RenderDateContent creationDate={creationDate} publicationDate={publicationDate} />
+      <RenderDateContent
+        creationDate={props.creationDate}
+        publicationDate={props.publicationDate}
+      />
       <Flex
         flexDirection={{ base: "column", md: "row" }}
         justifyContent="center"
@@ -43,8 +36,8 @@ export default function RenderCardContent({
                 marginBottom="1"
               >
                 <RenderStatus
-                  isAirdropResistered={resisteredAirdropStatus}
-                  isContractResistered={resisteredContractStatus}
+                  isAirdropResistered={props.resisteredAirdropStatus}
+                  isContractResistered={props.resisteredContractStatus}
                 />
               </Row>
             </Box>
@@ -66,19 +59,22 @@ export default function RenderCardContent({
                 display={{ base: "none", md: "flex" }}
               >
                 <RenderStatus
-                  isAirdropResistered={resisteredAirdropStatus}
-                  isContractResistered={resisteredContractStatus}
+                  isAirdropResistered={props.resisteredAirdropStatus}
+                  isContractResistered={props.resisteredContractStatus}
                 />
               </Row>
-              <RenderAirdropInfo airdropTitle={airdropTitle} templeteType={templeteType} />
+              <RenderAirdropInfo
+                airdropTitle={props.airdropTitle}
+                templeteType={props.templeteType}
+              />
             </Box>
           </Row>
         </Box>
         <Box textAlign="right" width={{ base: "full", md: "40%" }}>
           <RenderDetailedInfo
-            totalAmount={totalAmount}
-            claimedAccounts={claimedAccounts}
-            vestingEndDate={vestingEndDate}
+            totalAmount={props.totalAmount}
+            claimedAccounts={props.claimedAccounts}
+            vestingEndDate={props.vestingEndDate}
           />
         </Box>
       </Flex>
