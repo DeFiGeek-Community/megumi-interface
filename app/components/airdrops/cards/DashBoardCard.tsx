@@ -22,21 +22,17 @@ export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
     currentResisteredAirdropStatus = false,
     currentResisteredContractStatus = false;
 
-  if (airdrop) {
-    airdropContractDeployedAt = formatDate(airdrop.contractDeployedAt);
-    airdropCreatedAt = formatDate(airdrop.createdAt);
-    currentTempleteType = formatTempleteType(airdrop.templateName);
-    currentTotalAirdropAmount = formatTotalAirdropAmount(airdrop.totalAirdropAmount);
-    currentClaimedAccounts = formatClaimedAccounts(
-      airdrop.eligibleUsersNum,
-      airdrop.claimedUsersNum,
-    );
-    if ("vestingEndsAt" in airdrop) {
-      currentVestingEndsAt = formatVestingEndsAt(airdrop.vestingEndsAt);
-    }
-    currentResisteredAirdropStatus = handleResisteredStatus(airdrop.merkleTreeUploadedAt);
-    currentResisteredContractStatus = handleResisteredStatus(airdrop.contractAddress);
+  airdropContractDeployedAt = formatDate(airdrop.contractDeployedAt);
+  airdropCreatedAt = formatDate(airdrop.createdAt);
+  currentTempleteType = formatTempleteType(airdrop.templateName);
+  currentTotalAirdropAmount = formatTotalAirdropAmount(airdrop.totalAirdropAmount);
+  currentClaimedAccounts = formatClaimedAccounts(airdrop.eligibleUsersNum, airdrop.claimedUsersNum);
+  if ("vestingEndsAt" in airdrop) {
+    currentVestingEndsAt = formatVestingEndsAt(airdrop.vestingEndsAt);
   }
+  currentResisteredAirdropStatus = handleResisteredStatus(airdrop.merkleTreeUploadedAt);
+  currentResisteredContractStatus = handleResisteredStatus(airdrop.contractAddress);
+
   const renderCardProps = {
     creationDate: airdropCreatedAt,
     publicationDate: airdropContractDeployedAt,
