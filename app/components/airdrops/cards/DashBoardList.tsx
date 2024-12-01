@@ -30,8 +30,8 @@ function RenderAirdrop() {
       owner: "0x",
       tokenAddress: "0x",
       createdAt: 1731897560,
-      merkleTreeUploadedAt: 1731897560,
-      contractAddress: "0x",
+      merkleTreeUploadedAt: undefined,
+      contractAddress: undefined,
       totalAirdropAmount: BigInt(50 * 1e18),
       eligibleUsersNum: 1000,
       claimedUsersNum: 40,
@@ -68,8 +68,8 @@ export default function DashBoardList() {
       owner: "0x",
       tokenAddress: "0x",
       createdAt: 1731897560,
-      merkleTreeUploadedAt: 1731897560,
-      contractAddress: "0x",
+      merkleTreeUploadedAt: undefined,
+      contractAddress: undefined,
       totalAirdropAmount: BigInt(0.005 * 1e18),
       eligibleUsersNum: 1000,
       claimedUsersNum: 40,
@@ -101,13 +101,9 @@ export default function DashBoardList() {
         </Button>
       </Flex>
       <VStack spacing="4">
-        <DashBoardCard
-          airdrop={airdrops[0]}
-        />
+        <DashBoardCard airdrop={airdrops[0]} />
 
-        <DashBoardCard
-          airdrop={airdrops[1]}
-        />
+        <DashBoardCard airdrop={airdrops[1]} />
       </VStack>
     </Box>
   );

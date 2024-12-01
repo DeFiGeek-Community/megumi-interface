@@ -15,7 +15,8 @@ export default function RenderCardContent({
   totalAmount,
   claimedAccounts,
   vestingEndDate,
-  resisteredStatus,
+  resisteredAirdropStatus,
+  resisteredContractStatus,
 }: DashBoardCardProps): JSX.Element {
   return (
     <Box>
@@ -41,7 +42,10 @@ export default function RenderCardContent({
                 gap="2"
                 marginBottom="1"
               >
-                <RenderStatus isResistered={resisteredStatus} />
+                <RenderStatus
+                  isAirdropResistered={resisteredAirdropStatus}
+                  isContractResistered={resisteredContractStatus}
+                />
               </Row>
             </Box>
           </Row>
@@ -61,7 +65,10 @@ export default function RenderCardContent({
                 marginBottom="1"
                 display={{ base: "none", md: "flex" }}
               >
-                <RenderStatus isResistered={resisteredStatus} />
+                <RenderStatus
+                  isAirdropResistered={resisteredAirdropStatus}
+                  isContractResistered={resisteredContractStatus}
+                />
               </Row>
               <RenderAirdropInfo airdropTitle={airdropTitle} templeteType={templeteType} />
             </Box>
