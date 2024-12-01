@@ -3,7 +3,14 @@ import { Card, CardBody } from "@chakra-ui/react";
 import RenderCardContent from "@/app/components/airdrops/cards/RenderCardContent";
 import { TemplateTypeString } from "@/app/interfaces/dashboard";
 import { Airdrop } from "@/app/interfaces/dashboard";
-import { formatDate, formatTempleteType, formatTotalAirdropAmount, formatClaimedAccounts, formatVestingEndsAt, handleResisteredStatus } from "@/app/lib/airdrop/airdropUtils";
+import {
+  formatDate,
+  formatTempleteType,
+  formatTotalAirdropAmount,
+  formatClaimedAccounts,
+  formatVestingEndsAt,
+  handleResisteredStatus,
+} from "@/app/lib/airdrop/airdropUtils";
 
 export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
   let airdropContractDeployedAt = "-",
@@ -44,9 +51,7 @@ export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
   return (
     <Card width="100%">
       <CardBody paddingX={{ base: "1", sm: "5" }}>
-        {airdrop && (
-          <RenderCardContent {...renderCardProps} />
-        )}
+        {airdrop && <RenderCardContent {...renderCardProps} />}
       </CardBody>
     </Card>
   );
