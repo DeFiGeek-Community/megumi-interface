@@ -25,14 +25,20 @@ export default function DashBoardCard({
   const formatTempleteType = (tempTempleteType: string) => {
     return tempTempleteType === TemplateType.STANDARD ? "Standard" : "Linear vesting";
   };
+  const formatTotalAirdropAmount = (tempTotalAirdropAmount: bigint | undefined) => {
+    const temp = tempTotalAirdropAmount ? tempTotalAirdropAmount.toString() : "0"
+    return temp + " YMT";
+  };
 
   let airdropContractDeployedAt = "-",
     airdropCreatedAt = "-",
-    currentTempleteType: TemplateTypeString = "Standard";
+    currentTempleteType: TemplateTypeString = "Standard",
+    currentTotalAirdropAmount = "0";
   if (airdrop) {
     airdropContractDeployedAt = formatDate(airdrop.contractDeployedAt);
     airdropCreatedAt = formatDate(airdrop.createdAt);
     currentTempleteType = formatTempleteType(airdrop.templateName);
+    currentTotalAirdropAmount = formatTotalAirdropAmount(airdrop.totalAirdropAmount);
   } 
   return (
     <Card width="100%">
@@ -43,7 +49,7 @@ export default function DashBoardCard({
             publicationDate={airdropContractDeployedAt}
             airdropTitle={airdrop.title}
             templeteType={currentTempleteType}
-            totalAmount={totalAmount}
+            totalAmount={currentTotalAirdropAmount}
             claimedAccounts={claimedAccounts}
             vestingEndDate={vestingEndDate}
             resisteredStatus={resisteredStatus}
