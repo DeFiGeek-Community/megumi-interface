@@ -1,42 +1,11 @@
 "use client";
 import { Card, CardBody } from "@chakra-ui/react";
-import { DashBoardCardProps } from "@/app/interfaces/dashboard";
 import RenderCardContent from "@/app/components/airdrops/cards/RenderCardContent";
 import { TemplateTypeString } from "@/app/interfaces/dashboard";
-import { TemplateType } from "@/app/interfaces/dashboard";
 import { Airdrop } from "@/app/interfaces/dashboard";
+import { formatDate, formatTempleteType, formatTotalAirdropAmount, formatClaimedAccounts, formatVestingEndsAt, handleResisteredStatus } from "@/app/lib/airdrop/airdropUtils";
 
 export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
-  const formatDate = (timestamp: number | undefined) => {
-    // sv-SE locale returns date string in YYYY-MM-DD format.
-    // The default is YYYYY/MM/DD format.
-    return timestamp ? new Date(timestamp * 1000).toLocaleDateString("sv-SE") : "-";
-  };
-  const handleTempleteType = (tempTempleteType: string) => {
-    return tempTempleteType === TemplateType.STANDARD;
-  };
-  const formatTempleteType = (tempTempleteType: string) => {
-    return handleTempleteType(tempTempleteType) ? "Standard" : "Linear vesting";
-  };
-  const formatTotalAirdropAmount = (tempTotalAirdropAmount: bigint | undefined) => {
-    const temp = tempTotalAirdropAmount ? tempTotalAirdropAmount.toString() : "0";
-    return temp + " YMT";
-  };
-  const formatClaimedAccounts = (
-    tempEligibleUsersNum: number | undefined,
-    tempClaimedUsersNum: number | undefined,
-  ) => {
-    return tempClaimedUsersNum && tempEligibleUsersNum
-      ? `${tempClaimedUsersNum} / ${tempEligibleUsersNum}`
-      : "0 / 0";
-  };
-  const formatVestingEndsAt = (tempVestingEndsAt?: number | undefined) => {
-    return tempVestingEndsAt ? formatDate(tempVestingEndsAt) : "-";
-  };
-  const handleResisteredStatus = (temp: number | string | undefined) => {
-    return temp ? true : false;
-  };
-
   let airdropContractDeployedAt = "-",
     airdropCreatedAt = "-",
     currentTempleteType: TemplateTypeString = "Standard",
@@ -61,21 +30,22 @@ export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
     currentResisteredAirdropStatus = handleResisteredStatus(airdrop.merkleTreeUploadedAt);
     currentResisteredContractStatus = handleResisteredStatus(airdrop.contractAddress);
   }
+  const renderCardProps = {
+    creationDate: airdropCreatedAt,
+    publicationDate: airdropContractDeployedAt,
+    airdropTitle: airdrop.title,
+    templeteType: currentTempleteType,
+    totalAmount: currentTotalAirdropAmount,
+    claimedAccounts: currentClaimedAccounts,
+    vestingEndDate: currentVestingEndsAt,
+    resisteredAirdropStatus: currentResisteredAirdropStatus,
+    resisteredContractStatus: currentResisteredContractStatus,
+  };
   return (
     <Card width="100%">
       <CardBody paddingX={{ base: "1", sm: "5" }}>
         {airdrop && (
-          <RenderCardContent
-            creationDate={airdropCreatedAt}
-            publicationDate={airdropContractDeployedAt}
-            airdropTitle={airdrop.title}
-            templeteType={currentTempleteType}
-            totalAmount={currentTotalAirdropAmount}
-            claimedAccounts={currentClaimedAccounts}
-            vestingEndDate={currentVestingEndsAt}
-            resisteredAirdropStatus={currentResisteredAirdropStatus}
-            resisteredContractStatus={currentResisteredContractStatus}
-          />
+          <RenderCardContent {...renderCardProps} />
         )}
       </CardBody>
     </Card>
