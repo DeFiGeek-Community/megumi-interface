@@ -6,7 +6,7 @@ import { useTranslation } from "react-i18next";
 import { TemplateType } from "@/app/interfaces/dashboard";
 import { Airdrop } from "@/app/interfaces/dashboard";
 
-function RenderAirdrop () {
+function RenderAirdrop() {
   const airdrops: Airdrop[] = [
     {
       id: "asdf",
@@ -45,8 +45,39 @@ function RenderAirdrop () {
 
 export default function DashBoardList() {
   const { t } = useTranslation();
+  const airdrops: Airdrop[] = [
+    {
+      id: "asdf",
+      title: "Vesting",
+      templateName: TemplateType.LINEAR_VESTING,
+      owner: "0x",
+      tokenAddress: "0x",
+      createdAt: 1731897560,
+      merkleTreeUploadedAt: 1731897560,
+      contractAddress: "0x",
+      totalAirdropAmount: BigInt(50 * 1e18),
+      eligibleUsersNum: 1000,
+      claimedUsersNum: 40,
+      contractDeployedAt: 1731897560,
+      vestingEndsAt: 1731897560,
+    },
+    {
+      id: "zxcv",
+      title: "Standard",
+      templateName: TemplateType.STANDARD,
+      owner: "0x",
+      tokenAddress: "0x",
+      createdAt: 1731897560,
+      merkleTreeUploadedAt: 1731897560,
+      contractAddress: "0x",
+      totalAirdropAmount: BigInt(50 * 1e18),
+      eligibleUsersNum: 1000,
+      claimedUsersNum: 40,
+      contractDeployedAt: 1731897560,
+    },
+  ];
   return (
-    <Box margin="0 auto" py={{ base: "3",md: "6" }}>
+    <Box margin="0 auto" py={{ base: "3", md: "6" }}>
       <Flex justifyContent="space-between" alignItems="center" marginBottom="4">
         <Tabs width={{ base: "387px", md: "400px" }}>
           <TabList>
@@ -74,22 +105,24 @@ export default function DashBoardList() {
           creationDate="2023-03-20"
           publicationDate="2023-03-20"
           airdropTitle="YMT Early Investors Airdrop"
-          vestingType="Linear vesting"
+          templeteType="Linear vesting"
           totalAmount="500,000 YMT"
           claimedAccounts="314 / 20,214"
           vestingEndDate="2025/12/01"
           resisteredStatus={true}
+          airdrop={airdrops[0]}
         />
 
         <DashBoardCard
           creationDate="2023-03-20"
           publicationDate="-"
           airdropTitle="YMT Early Investors Airdrop"
-          vestingType="Standard"
+          templeteType="Standard"
           totalAmount="-"
           claimedAccounts="-"
           vestingEndDate=""
           resisteredStatus={false}
+          airdrop={airdrops[1]}
         />
       </VStack>
     </Box>

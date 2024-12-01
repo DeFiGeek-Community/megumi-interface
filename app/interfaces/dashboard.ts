@@ -2,7 +2,7 @@ export interface DashBoardCardProps {
   creationDate: string;
   publicationDate: string;
   airdropTitle: string;
-  vestingType: "Linear vesting" | "Standard";
+  templeteType: TemplateTypeString;
   totalAmount: string;
   claimedAccounts: string;
   vestingEndDate: string;
@@ -26,8 +26,10 @@ export interface RenderDetailedInfoProps {
 
 export interface RenderAirdropInfoProps {
   airdropTitle: string;
-  vestingType: "Linear vesting" | "Standard";
+  templeteType: TemplateTypeString;
 }
+
+export type TemplateTypeString = "Standard" | "Linear vesting";
 
 export const TemplateType = {
   STANDARD: "0x5374616e64617264000000000000000000000000000000000000000000000000",

@@ -11,7 +11,7 @@ export default function RenderCardContent({
   creationDate,
   publicationDate,
   airdropTitle,
-  vestingType,
+  templeteType,
   totalAmount,
   claimedAccounts,
   vestingEndDate,
@@ -63,7 +63,7 @@ export default function RenderCardContent({
               >
                 <RenderStatus isResistered={resisteredStatus} />
               </Row>
-              <RenderAirdropInfo airdropTitle={airdropTitle} vestingType={vestingType} />
+              <RenderAirdropInfo airdropTitle={airdropTitle} templeteType={templeteType} />
             </Box>
           </Row>
         </Box>
