@@ -31,7 +31,3 @@ export const formatClaimedAccounts = (
 export const formatVestingEndsAt = (tempVestingEndsAt?: number | undefined) => {
   return tempVestingEndsAt ? formatDate(tempVestingEndsAt) : "-";
 };
-
-export const handleResisteredStatus = (temp: number | string | undefined) => {
-  return temp ? true : false;
-};

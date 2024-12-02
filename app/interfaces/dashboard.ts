@@ -6,8 +6,8 @@ export interface DashBoardCardProps {
   totalAmount: string;
   claimedAccounts: string;
   vestingEndDate: string;
-  resisteredAirdropStatus: boolean;
-  resisteredContractStatus: boolean;
+  isResisteredAirdrop: boolean;
+  isResisteredContract: boolean;
 }
 
 export interface StatusProps {

@@ -9,7 +9,6 @@ import {
   formatTotalAirdropAmount,
   formatClaimedAccounts,
   formatVestingEndsAt,
-  handleResisteredStatus,
 } from "@/app/lib/airdrop/airdropUtils";
 
 export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
@@ -19,8 +18,8 @@ export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
     currentTotalAirdropAmount = "0",
     currentClaimedAccounts = "0 / 0",
     currentVestingEndsAt = "-",
-    currentResisteredAirdropStatus = false,
-    currentResisteredContractStatus = false;
+    isResisteredAirdrop = false,
+    isResisteredContract = false;
 
   airdropContractDeployedAt = formatDate(airdrop.contractDeployedAt);
   airdropCreatedAt = formatDate(airdrop.createdAt);
@@ -30,8 +29,8 @@ export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
   if ("vestingEndsAt" in airdrop) {
     currentVestingEndsAt = formatVestingEndsAt(airdrop.vestingEndsAt);
   }
-  currentResisteredAirdropStatus = handleResisteredStatus(airdrop.merkleTreeUploadedAt);
-  currentResisteredContractStatus = handleResisteredStatus(airdrop.contractAddress);
+  isResisteredAirdrop = !!airdrop.merkleTreeUploadedAt;
+  isResisteredContract = !!airdrop.contractAddress;
 
   const renderCardProps = {
     creationDate: airdropCreatedAt,
@@ -41,8 +40,8 @@ export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
     totalAmount: currentTotalAirdropAmount,
     claimedAccounts: currentClaimedAccounts,
     vestingEndDate: currentVestingEndsAt,
-    resisteredAirdropStatus: currentResisteredAirdropStatus,
-    resisteredContractStatus: currentResisteredContractStatus,
+    isResisteredAirdrop: isResisteredAirdrop,
+    isResisteredContract: isResisteredContract,
   };
   return (
     <Card width="100%">
