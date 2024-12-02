@@ -1,8 +1,8 @@
 import { Box, Text } from "@chakra-ui/react";
-import { RenderAirdropInfoProps } from "@/app/interfaces/dashboard";
+import { AirdropInfoProps } from "@/app/interfaces/dashboard";
 import { useTranslation } from "react-i18next";
 
-export default function RenderAirdropInfo({ airdropTitle, templeteType }: RenderAirdropInfoProps) {
+export default function AirdropInfo({ airdropTitle, templeteType }: AirdropInfoProps) {
   const { t } = useTranslation();
   return (
     <>

@@ -1,6 +1,6 @@
 "use client";
 import { Card, CardBody } from "@chakra-ui/react";
-import RenderCardContent from "@/app/components/airdrops/cards/RenderCardContent";
+import CardContent from "@/app/components/airdrops/cards/CardContent";
 import { TemplateTypeString } from "@/app/interfaces/dashboard";
 import { Airdrop } from "@/app/interfaces/dashboard";
 import {
@@ -47,7 +47,7 @@ export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
   return (
     <Card width="100%">
       <CardBody paddingX={{ base: "1", sm: "5" }}>
-        <RenderCardContent {...renderCardProps} />
+        <CardContent {...renderCardProps} />
       </CardBody>
     </Card>
   );

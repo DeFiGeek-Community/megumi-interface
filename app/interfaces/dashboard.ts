@@ -10,23 +10,23 @@ export interface DashBoardCardProps {
   resisteredContractStatus: boolean;
 }
 
-export interface RenderStatusProps {
+export interface StatusProps {
   isAirdropResistered: boolean;
   isContractResistered: boolean;
 }
 
-export interface RenderDateContentProps {
+export interface DateContentProps {
   creationDate: string;
   publicationDate: string;
 }
 
-export interface RenderDetailedInfoProps {
+export interface DetailedInfoProps {
   totalAmount: string;
   claimedAccounts: string;
   vestingEndDate: string;
 }
 
-export interface RenderAirdropInfoProps {
+export interface AirdropInfoProps {
   airdropTitle: string;
   templeteType: TemplateTypeString;
 }

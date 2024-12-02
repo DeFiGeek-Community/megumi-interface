@@ -2,7 +2,7 @@
 import { Box, Button, Flex, Tab, TabList, Tabs, VStack } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 import { useTranslation } from "react-i18next";
-import RenderAirdrop from "./RenderAirdrop";
+import Airdrops from "./Airdrops";
 
 export default function DashBoardList() {
   const { t } = useTranslation();
@@ -31,7 +31,7 @@ export default function DashBoardList() {
         </Button>
       </Flex>
       <VStack spacing="4">
-        <RenderAirdrop />
+        <Airdrops />
       </VStack>
     </Box>
   );

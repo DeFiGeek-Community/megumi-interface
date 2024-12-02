@@ -1,16 +1,16 @@
 import React from "react";
 import { Box, Avatar, Flex } from "@chakra-ui/react";
 import { Row } from "@/app/lib/chakra/chakraUtils";
-import RenderStatus from "@/app/components/airdrops/cards/RenderStatus";
-import RenderDateContent from "@/app/components/airdrops/cards/RenderDateContent";
-import RenderDetailedInfo from "@/app/components/airdrops/cards/RenderDetailedInfo";
-import RenderAirdropInfo from "@/app/components/airdrops/cards/RenderAirdropInfo";
+import Status from "@/app/components/airdrops/cards/Status";
+import DateContent from "@/app/components/airdrops/cards/DateContent";
+import DetailedInfo from "@/app/components/airdrops/cards/DetailedInfo";
+import AirdropInfo from "@/app/components/airdrops/cards/AirdropInfo";
 import { DashBoardCardProps } from "@/app/interfaces/dashboard";
 
-export default function RenderCardContent(props: DashBoardCardProps): JSX.Element {
+export default function CardContent(props: DashBoardCardProps): JSX.Element {
   return (
     <Box>
-      <RenderDateContent
+      <DateContent
         creationDate={props.creationDate}
         publicationDate={props.publicationDate}
       />
@@ -35,7 +35,7 @@ export default function RenderCardContent(props: DashBoardCardProps): JSX.Elemen
                 gap="2"
                 marginBottom="1"
               >
-                <RenderStatus
+                <Status
                   isAirdropResistered={props.resisteredAirdropStatus}
                   isContractResistered={props.resisteredContractStatus}
                 />
@@ -58,12 +58,12 @@ export default function RenderCardContent(props: DashBoardCardProps): JSX.Elemen
                 marginBottom="1"
                 display={{ base: "none", md: "flex" }}
               >
-                <RenderStatus
+                <Status
                   isAirdropResistered={props.resisteredAirdropStatus}
                   isContractResistered={props.resisteredContractStatus}
                 />
               </Row>
-              <RenderAirdropInfo
+              <AirdropInfo
                 airdropTitle={props.airdropTitle}
                 templeteType={props.templeteType}
               />
@@ -71,7 +71,7 @@ export default function RenderCardContent(props: DashBoardCardProps): JSX.Elemen
           </Row>
         </Box>
         <Box textAlign="right" width={{ base: "full", md: "40%" }}>
-          <RenderDetailedInfo
+          <DetailedInfo
             totalAmount={props.totalAmount}
             claimedAccounts={props.claimedAccounts}
             vestingEndDate={props.vestingEndDate}

@@ -1,12 +1,12 @@
 import { Flex } from "@chakra-ui/react";
 import { CheckCircleIcon } from "@chakra-ui/icons";
-import { RenderStatusProps } from "@/app/interfaces/dashboard";
+import { StatusProps } from "@/app/interfaces/dashboard";
 import { useTranslation } from "react-i18next";
 
-export default function RenderStatus({
+export default function Status({
   isAirdropResistered,
   isContractResistered,
-}: RenderStatusProps): JSX.Element {
+}: StatusProps): JSX.Element {
   const { t } = useTranslation();
   return (
     <>

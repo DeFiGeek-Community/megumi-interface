@@ -3,7 +3,7 @@ import DashBoardCard from "./DashBoardCard";
 import { TemplateType } from "@/app/interfaces/dashboard";
 import { Airdrop } from "@/app/interfaces/dashboard";
 
-export default function RenderAirdrop() {
+export default function Airdrops() {
   const airdrops: Airdrop[] = [
     {
       id: "asdf",

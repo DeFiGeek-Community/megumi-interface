@@ -1,13 +1,13 @@
 import { Text } from "@chakra-ui/react";
 import { Row } from "@/app/lib/chakra/chakraUtils";
-import { RenderDetailedInfoProps } from "@/app/interfaces/dashboard";
+import { DetailedInfoProps } from "@/app/interfaces/dashboard";
 import { useTranslation } from "react-i18next";
 
-export default function RenderDetailedInfo({
+export default function DetailedInfo({
   totalAmount,
   claimedAccounts,
   vestingEndDate,
-}: RenderDetailedInfoProps) {
+}: DetailedInfoProps) {
   const { t } = useTranslation();
   return (
     <>
