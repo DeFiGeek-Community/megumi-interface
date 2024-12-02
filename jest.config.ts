@@ -72,6 +72,7 @@ const config = {
     "ts-jest": {
       tsConfig: "tsconfig.json",
       useESM: true,
+      target: "ES2020",
     },
   },
 

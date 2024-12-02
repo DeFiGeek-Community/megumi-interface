@@ -1,8 +1,10 @@
 import type { GetEnsNameReturnType } from "viem/ens";
-import * as chains from "wagmi/chains";
+// import * as chains from "wagmi/chains";
+import { type Chain, localhost, mainnet, sepolia, base, baseSepolia } from "viem/chains";
 
+const chains = { mainnet, sepolia, base, baseSepolia };
 export const getEtherscanLink = (
-  chain: chains.Chain | undefined,
+  chain: Chain | undefined,
   hash: string,
   type: "tx" | "token" | "address" | "block",
 ): string => {
@@ -10,13 +12,13 @@ export const getEtherscanLink = (
   return `${chain.blockExplorers.default.url}/${type}/${hash}`;
 };
 
-export const getChain = (chainId: number): chains.Chain => {
+export const getChain = (chainId: number): Chain => {
   for (const chain of Object.values(chains)) {
     if (chain.id === chainId) {
       return chain;
     }
   }
-  return chains.localhost;
+  return localhost;
 };
 
 export const getEllipsizedAddress = ({
