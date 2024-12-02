@@ -3,10 +3,7 @@ import { Row } from "@/app/lib/chakra/chakraUtils";
 import { DateContentProps } from "@/app/interfaces/dashboard";
 import { useTranslation } from "react-i18next";
 
-export default function DateContent({
-  creationDate,
-  publicationDate,
-}: DateContentProps) {
+export default function DateContent({ creationDate, publicationDate }: DateContentProps) {
   const { t } = useTranslation();
   return (
     <Row

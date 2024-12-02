@@ -1,11 +1,10 @@
 "use client";
 import { Card, CardBody } from "@chakra-ui/react";
 import CardContent from "@/app/components/airdrops/cards/CardContent";
-import { TemplateTypeString } from "@/app/interfaces/dashboard";
 import { Airdrop } from "@/app/interfaces/dashboard";
 import {
   formatDate,
-  formatTempleteType,
+  isStandard,
   formatTotalAirdropAmount,
   formatClaimedAccounts,
   formatVestingEndsAt,
@@ -14,7 +13,7 @@ import {
 export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
   let airdropContractDeployedAt = "-",
     airdropCreatedAt = "-",
-    currentTempleteType: TemplateTypeString = "Standard",
+    isStandardTempleteType = false,
     currentTotalAirdropAmount = "0",
     currentClaimedAccounts = "0 / 0",
     currentVestingEndsAt = "-",
@@ -23,7 +22,7 @@ export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
 
   airdropContractDeployedAt = formatDate(airdrop.contractDeployedAt);
   airdropCreatedAt = formatDate(airdrop.createdAt);
-  currentTempleteType = formatTempleteType(airdrop.templateName);
+  isStandardTempleteType = isStandard(airdrop.templateName);
   currentTotalAirdropAmount = formatTotalAirdropAmount(airdrop.totalAirdropAmount);
   currentClaimedAccounts = formatClaimedAccounts(airdrop.eligibleUsersNum, airdrop.claimedUsersNum);
   if ("vestingEndsAt" in airdrop) {
@@ -32,11 +31,11 @@ export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
   isResisteredAirdrop = !!airdrop.merkleTreeUploadedAt;
   isResisteredContract = !!airdrop.contractAddress;
 
-  const renderCardProps = {
+  const CardContentProps = {
     creationDate: airdropCreatedAt,
     publicationDate: airdropContractDeployedAt,
     airdropTitle: airdrop.title,
-    templeteType: currentTempleteType,
+    isStandard: isStandardTempleteType,
     totalAmount: currentTotalAirdropAmount,
     claimedAccounts: currentClaimedAccounts,
     vestingEndDate: currentVestingEndsAt,
@@ -46,7 +45,7 @@ export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
   return (
     <Card width="100%">
       <CardBody paddingX={{ base: "1", sm: "5" }}>
-        <CardContent {...renderCardProps} />
+        <CardContent {...CardContentProps} />
       </CardBody>
     </Card>
   );

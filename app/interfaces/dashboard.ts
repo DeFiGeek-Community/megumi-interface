@@ -2,7 +2,7 @@ export interface DashBoardCardProps {
   creationDate: string;
   publicationDate: string;
   airdropTitle: string;
-  templeteType: TemplateTypeString;
+  isStandard: boolean;
   totalAmount: string;
   claimedAccounts: string;
   vestingEndDate: string;
@@ -28,7 +28,7 @@ export interface DetailedInfoProps {
 
 export interface AirdropInfoProps {
   airdropTitle: string;
-  templeteType: TemplateTypeString;
+  isStandard: boolean;
 }
 
 export type TemplateTypeString = "Standard" | "Linear vesting";

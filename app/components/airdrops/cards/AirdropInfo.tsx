@@ -2,7 +2,7 @@ import { Box, Text } from "@chakra-ui/react";
 import { AirdropInfoProps } from "@/app/interfaces/dashboard";
 import { useTranslation } from "react-i18next";
 
-export default function AirdropInfo({ airdropTitle, templeteType }: AirdropInfoProps) {
+export default function AirdropInfo({ airdropTitle, isStandard }: AirdropInfoProps) {
   const { t } = useTranslation();
   return (
     <>
@@ -19,8 +19,7 @@ export default function AirdropInfo({ airdropTitle, templeteType }: AirdropInfoP
         alignItems="center"
       >
         <Text fontSize={{ base: "sm", sm: "md" }} marginRight="1">
-          {templeteType === "Linear vesting" && t("dashboard.linearVesting")}
-          {templeteType === "Standard" && t("dashboard.standard")}
+          {isStandard ? t("dashboard.standard") : t("dashboard.linearVesting")}
         </Text>
         <Box
           bg="white"
