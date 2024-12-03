@@ -1,6 +1,12 @@
 "use client";
 import { Card, CardBody } from "@chakra-ui/react";
-import CardContent from "@/app/components/airdrops/cards/CardContent";
+import React from "react";
+import { Box, Avatar, Flex } from "@chakra-ui/react";
+import { Row } from "@/app/lib/chakra/chakraUtils";
+import Status from "@/app/components/airdrops/cards/Status";
+import DateContent from "@/app/components/airdrops/cards/DateContent";
+import DetailedInfo from "@/app/components/airdrops/cards/DetailedInfo";
+import AirdropInfo from "@/app/components/airdrops/cards/AirdropInfo";
 import { Airdrop } from "@/app/interfaces/dashboard";
 import {
   formatDate,
@@ -28,21 +34,76 @@ export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
   isRegisteredAirdrop = !!airdrop.merkleTreeUploadedAt;
   isRegisteredContract = !!airdrop.contractAddress;
 
-  const CardContentProps = {
-    creationDate: airdropCreatedAt,
-    publicationDate: airdropContractDeployedAt,
-    airdropTitle: airdrop.title,
-    templateType: airdrop.templateName,
-    totalAmount: currentTotalAirdropAmount,
-    claimedAccounts: currentClaimedAccounts,
-    vestingEndDate: currentVestingEndsAt,
-    isRegisteredAirdrop: isRegisteredAirdrop,
-    isRegisteredContract: isRegisteredContract,
-  };
   return (
     <Card width="100%">
       <CardBody paddingX={{ base: "1", sm: "5" }}>
-        <CardContent {...CardContentProps} />
+        <Box>
+          <DateContent
+            creationDate={airdropCreatedAt}
+            publicationDate={airdropContractDeployedAt}
+          />
+          <Flex
+            flexDirection={{ base: "column", md: "row" }}
+            justifyContent="center"
+            alignItems="center"
+            gap="4"
+          >
+            <Box width={{ base: "full", md: "60%" }}>
+              <Row
+                mainAxisAlignment="center"
+                crossAxisAlignment="center"
+                gap="4"
+                marginTop="3"
+                display={{ base: "block", md: "none" }}
+              >
+                <Box flex="1">
+                  <Row
+                    mainAxisAlignment="flex-start"
+                    crossAxisAlignment="center"
+                    gap="2"
+                    marginBottom="1"
+                  >
+                    <Status
+                      isAirdropRegistered={isRegisteredAirdrop}
+                      isContractRegistered={isRegisteredContract}
+                    />
+                  </Row>
+                </Box>
+              </Row>
+              <Row
+                mainAxisAlignment="center"
+                crossAxisAlignment="center"
+                gap="4"
+                marginTop={{ base: "2", md: "0" }}
+                paddingX={{ base: "1", md: "0" }}
+              >
+                <Avatar size={{ base: "md", md: "lg" }} name="YMT" bg="gray.500" />
+                <Box flex="1">
+                  <Row
+                    mainAxisAlignment="flex-start"
+                    crossAxisAlignment="center"
+                    gap="2"
+                    marginBottom="1"
+                    display={{ base: "none", md: "flex" }}
+                  >
+                    <Status
+                      isAirdropRegistered={isRegisteredAirdrop}
+                      isContractRegistered={isRegisteredContract}
+                    />
+                  </Row>
+                  <AirdropInfo airdropTitle={airdrop.title} templateType={airdrop.templateName} />
+                </Box>
+              </Row>
+            </Box>
+            <Box textAlign="right" width={{ base: "full", md: "40%" }}>
+              <DetailedInfo
+                totalAmount={currentTotalAirdropAmount}
+                claimedAccounts={currentClaimedAccounts}
+                vestingEndDate={currentVestingEndsAt}
+              />
+            </Box>
+          </Flex>
+        </Box>
       </CardBody>
     </Card>
   );
