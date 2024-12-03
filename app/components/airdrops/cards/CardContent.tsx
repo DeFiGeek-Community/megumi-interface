@@ -10,10 +10,7 @@ import { DashBoardCardProps } from "@/app/interfaces/dashboard";
 export default function CardContent(props: DashBoardCardProps): JSX.Element {
   return (
     <Box>
-      <DateContent
-        creationDate={props.creationDate}
-        publicationDate={props.publicationDate}
-      />
+      <DateContent creationDate={props.creationDate} publicationDate={props.publicationDate} />
       <Flex
         flexDirection={{ base: "column", md: "row" }}
         justifyContent="center"
@@ -63,10 +60,7 @@ export default function CardContent(props: DashBoardCardProps): JSX.Element {
                   isContractRegistered={props.isRegisteredContract}
                 />
               </Row>
-              <AirdropInfo
-                airdropTitle={props.airdropTitle}
-                templateType={props.templateType}
-              />
+              <AirdropInfo airdropTitle={props.airdropTitle} templateType={props.templateType} />
             </Box>
           </Row>
         </Box>
