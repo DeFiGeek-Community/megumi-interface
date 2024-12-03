@@ -18,10 +18,10 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 
     const formattedAirdrop = {
       ...airdrop,
-      contractAddress: airdrop.contractAddress ? airdrop.contractAddress.toString("hex") : null,
-      templateName: airdrop.templateName.toString("hex"),
-      owner: airdrop.owner.toString("hex"),
-      tokenAddress: airdrop.tokenAddress.toString("hex"),
+      contractAddress: airdrop.contractAddress ? airdrop.contractAddress : null,
+      templateName: airdrop.templateName,
+      owner: airdrop.owner,
+      tokenAddress: airdrop.tokenAddress,
     };
 
     return NextResponse.json(formattedAirdrop);
@@ -55,10 +55,12 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     const updatedAirdrop = await prisma.airdrop.update({
       where: { id: params.id },
       data: {
-        contractAddress: contractAddress ? Buffer.from(contractAddress, "hex") : undefined,
-        templateName: templateName ? Buffer.from(templateName, "hex") : undefined,
-        owner: owner ? Buffer.from(owner, "hex") : undefined,
-        tokenAddress: tokenAddress ? Buffer.from(tokenAddress, "hex") : undefined,
+        contractAddress: contractAddress
+          ? Uint8Array.from(Buffer.from(contractAddress, "hex"))
+          : null,
+        templateName: Uint8Array.from(Buffer.from(templateName, "hex")),
+        owner: Uint8Array.from(Buffer.from(owner, "hex")),
+        tokenAddress: Uint8Array.from(Buffer.from(tokenAddress, "hex")),
         tokenName,
         tokenSymbol,
         tokenDecimals,

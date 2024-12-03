@@ -1,9 +1,15 @@
+import nextJest from "next/jest.js";
 /**
  * For a detailed explanation regarding each configuration property, visit:
  * https://jestjs.io/docs/configuration
  */
-
 /** @type {import('jest').Config} */
+
+const createJestConfig = nextJest({
+  // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
+  dir: "./",
+});
+
 const config = {
   // All imported modules in your tests should be mocked automatically
   // automock: false,
@@ -113,7 +119,8 @@ const config = {
 
   // A preset that is used as a base for Jest's configuration
   // preset: undefined,
-  preset: "ts-jest",
+  // preset: "ts-jest",
+  preset: "ts-jest/presets/default-esm",
 
   // Run tests from one or more projects
   // projects: undefined,
@@ -194,11 +201,24 @@ const config = {
   //   "/node_modules/",
   //   "\\.pnp\\.[^\\/]+$"
   // ],
-  transformIgnorePatterns: ["/node_modules/(?!wagmi|viem|next-test-api-route-handler)/"],
+  // transformIgnorePatterns: ["/node_modules/(?!wagmi|viem|next-test-api-route-handler)/"],
   transform: {
-    "node_modules/(?!wagmi|viem|next-test-api-route-handler)/.+.(j|t)sx?$": "ts-jest",
-    "^.+\\.(ts|tsx)?$": "ts-jest",
-    "^.+\\.(js|jsx)$": "babel-jest",
+    // "node_modules/(?!wagmi|viem|next-test-api-route-handler)/.+.(j|t)sx?$": "ts-jest",
+    // "^.+\\.(ts|tsx)?$": "ts-jest",
+    // "^.+\\.(js|jsx)$": "babel-jest",
+    // "^.+\\.(js|jsx|ts|tsx)$": "babel-jest",
+    // presets: [
+    //   [
+    //     "@babel/preset-env",
+    //     {
+    //       targets: {
+    //         node: "current",
+    //       },
+    //     },
+    //     // "@babel/preset-typescript",
+    //   ],
+    // ],
+    // plugins: ["@babel/plugin-transform-modules-commonjs"],
   },
 
   // An array of regexp pattern strings that are matched against all modules before the module loader will automatically return a mock for them
@@ -214,4 +234,5 @@ const config = {
   // watchman: true,
 };
 
-export default config;
+export default createJestConfig(config);
+// export default config;

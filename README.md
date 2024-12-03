@@ -23,3 +23,21 @@ openssl rand -base64 32
 ```bash
 pnpm dev
 ```
+
+## Test
+
+```bash
+pnpm test
+```
+
+## Docker
+
+```bash
+docker compose build
+docker compose up
+```
+
+```bash
+docker compose exec -it app bash
+docker compose exec -it db bash
+```

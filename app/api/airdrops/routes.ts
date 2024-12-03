@@ -29,10 +29,12 @@ export async function POST(request: Request) {
 
     const airdrop = await prisma.airdrop.create({
       data: {
-        contractAddress: contractAddress ? Buffer.from(contractAddress, "hex") : null,
-        templateName: Buffer.from(templateName, "hex"),
-        owner: Buffer.from(owner, "hex"),
-        tokenAddress: Buffer.from(tokenAddress, "hex"),
+        contractAddress: contractAddress
+          ? Uint8Array.from(Buffer.from(contractAddress, "hex"))
+          : null,
+        templateName: Uint8Array.from(Buffer.from(templateName, "hex")),
+        owner: Uint8Array.from(Buffer.from(owner, "hex")),
+        tokenAddress: Uint8Array.from(Buffer.from(tokenAddress, "hex")),
         tokenName,
         tokenSymbol,
         tokenDecimals,
@@ -51,12 +53,12 @@ export async function POST(request: Request) {
 export async function GET() {
   try {
     const airdrops = await prisma.airdrop.findMany();
-    const formattedAirdrops = airdrops.map((airdrop) => ({
+    const formattedAirdrops = airdrops.map((airdrop: Airdrop) => ({
       ...airdrop,
-      contractAddress: airdrop.contractAddress ? airdrop.contractAddress.toString("hex") : null,
-      templateName: airdrop.templateName.toString("hex"),
-      owner: airdrop.owner.toString("hex"),
-      tokenAddress: airdrop.tokenAddress.toString("hex"),
+      contractAddress: airdrop.contractAddress ? airdrop.contractAddress : null,
+      templateName: airdrop.templateName,
+      owner: airdrop.owner,
+      tokenAddress: airdrop.tokenAddress,
     }));
 
     return NextResponse.json(formattedAirdrops);
