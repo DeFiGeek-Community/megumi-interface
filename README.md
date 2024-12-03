@@ -26,6 +26,14 @@ pnpm dev
 
 ## Test
 
+### Create test env file
+
+```bash
+cp .env.sample .env.test
+```
+
+### Run test
+
 ```bash
 pnpm test
 ```
