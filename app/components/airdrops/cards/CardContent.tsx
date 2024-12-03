@@ -36,8 +36,8 @@ export default function CardContent(props: DashBoardCardProps): JSX.Element {
                 marginBottom="1"
               >
                 <Status
-                  isAirdropResistered={props.isResisteredAirdrop}
-                  isContractResistered={props.isResisteredContract}
+                  isAirdropRegistered={props.isRegisteredAirdrop}
+                  isContractRegistered={props.isRegisteredContract}
                 />
               </Row>
             </Box>
@@ -59,8 +59,8 @@ export default function CardContent(props: DashBoardCardProps): JSX.Element {
                 display={{ base: "none", md: "flex" }}
               >
                 <Status
-                  isAirdropResistered={props.isResisteredAirdrop}
-                  isContractResistered={props.isResisteredContract}
+                  isAirdropRegistered={props.isRegisteredAirdrop}
+                  isContractRegistered={props.isRegisteredContract}
                 />
               </Row>
               <AirdropInfo

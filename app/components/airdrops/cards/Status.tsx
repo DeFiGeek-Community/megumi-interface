@@ -4,16 +4,16 @@ import { StatusProps } from "@/app/interfaces/dashboard";
 import { useTranslation } from "react-i18next";
 
 export default function Status({
-  isAirdropResistered,
-  isContractResistered,
+  isAirdropRegistered,
+  isContractRegistered,
 }: StatusProps): JSX.Element {
   const { t } = useTranslation();
   return (
     <>
       <Flex
         alignItems="center"
-        bg={isAirdropResistered ? "green.100" : undefined}
-        color={isAirdropResistered ? "green.800" : "gray.400"}
+        bg={isAirdropRegistered ? "green.100" : undefined}
+        color={isAirdropRegistered ? "green.800" : "gray.400"}
         fontSize="xs"
         fontWeight="medium"
         px="2.5"
@@ -23,16 +23,16 @@ export default function Status({
         <CheckCircleIcon
           boxSize="3"
           marginRight="1"
-          color={isAirdropResistered ? undefined : "gray.400"}
+          color={isAirdropRegistered ? undefined : "gray.400"}
         />
-        {isAirdropResistered
+        {isAirdropRegistered
           ? t("dashboard.registeredAirdropList")
           : t("dashboard.unregisteredAirdropList")}
       </Flex>
       <Flex
         alignItems="center"
-        bg={isContractResistered ? "blue.100" : undefined}
-        color={isContractResistered ? "blue.800" : "gray.400"}
+        bg={isContractRegistered ? "blue.100" : undefined}
+        color={isContractRegistered ? "blue.800" : "gray.400"}
         fontSize="xs"
         fontWeight="medium"
         px="2.5"
@@ -42,9 +42,9 @@ export default function Status({
         <CheckCircleIcon
           boxSize="3"
           marginRight="1"
-          color={isContractResistered ? undefined : "gray.400"}
+          color={isContractRegistered ? undefined : "gray.400"}
         />
-        {isContractResistered
+        {isContractRegistered
           ? t("dashboard.registeredContract")
           : t("dashboard.unregisteredContract")}
       </Flex>

@@ -13,34 +13,34 @@ import {
 export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
   let airdropContractDeployedAt = "-",
     airdropCreatedAt = "-",
-    isStandardTempleteType = false,
+    isStandardTemplateType = false,
     currentTotalAirdropAmount = "0",
     currentClaimedAccounts = "0 / 0",
     currentVestingEndsAt = "-",
-    isResisteredAirdrop = false,
-    isResisteredContract = false;
+    isRegisteredAirdrop = false,
+    isRegisteredContract = false;
 
   airdropContractDeployedAt = formatDate(airdrop.contractDeployedAt);
   airdropCreatedAt = formatDate(airdrop.createdAt);
-  isStandardTempleteType = isStandard(airdrop.templateName);
+  isStandardTemplateType = isStandard(airdrop.templateName);
   currentTotalAirdropAmount = formatTotalAirdropAmount(airdrop.totalAirdropAmount);
   currentClaimedAccounts = formatClaimedAccounts(airdrop.eligibleUsersNum, airdrop.claimedUsersNum);
   if ("vestingEndsAt" in airdrop) {
     currentVestingEndsAt = formatVestingEndsAt(airdrop.vestingEndsAt);
   }
-  isResisteredAirdrop = !!airdrop.merkleTreeUploadedAt;
-  isResisteredContract = !!airdrop.contractAddress;
+  isRegisteredAirdrop = !!airdrop.merkleTreeUploadedAt;
+  isRegisteredContract = !!airdrop.contractAddress;
 
   const CardContentProps = {
     creationDate: airdropCreatedAt,
     publicationDate: airdropContractDeployedAt,
     airdropTitle: airdrop.title,
-    isStandard: isStandardTempleteType,
+    isStandard: isStandardTemplateType,
     totalAmount: currentTotalAirdropAmount,
     claimedAccounts: currentClaimedAccounts,
     vestingEndDate: currentVestingEndsAt,
-    isResisteredAirdrop: isResisteredAirdrop,
-    isResisteredContract: isResisteredContract,
+    isRegisteredAirdrop: isRegisteredAirdrop,
+    isRegisteredContract: isRegisteredContract,
   };
   return (
     <Card width="100%">
