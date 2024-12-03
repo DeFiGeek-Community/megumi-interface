@@ -23,6 +23,7 @@ export interface DateContentProps {
 export interface DetailedInfoProps {
   totalAmount: string;
   claimedAccounts: string;
+  isLinearVesting: boolean;
   vestingEndDate: string;
 }
 

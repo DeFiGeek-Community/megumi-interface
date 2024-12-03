@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 export default function DetailedInfo({
   totalAmount,
   claimedAccounts,
+  isLinearVesting,
   vestingEndDate,
 }: DetailedInfoProps) {
   const { t } = useTranslation();
@@ -33,14 +34,21 @@ export default function DetailedInfo({
           {claimedAccounts}
         </Text>
       </Row>
-      <Row mainAxisAlignment="space-between" crossAxisAlignment="center" width="100%" paddingX="2">
-        <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
-          {t("dashboard.vestingDeadline")}
-        </Text>
-        <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
-          {vestingEndDate}
-        </Text>
-      </Row>
+      {isLinearVesting && (
+        <Row
+          mainAxisAlignment="space-between"
+          crossAxisAlignment="center"
+          width="100%"
+          paddingX="2"
+        >
+          <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
+            {t("dashboard.vestingDeadline")}
+          </Text>
+          <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
+            {vestingEndDate}
+          </Text>
+        </Row>
+      )}
     </>
   );
 }

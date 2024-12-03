@@ -14,6 +14,7 @@ import {
   formatClaimedAccounts,
   formatVestingEndsAt,
 } from "@/app/lib/airdrop/airdropUtils";
+import { TemplateType } from "@/app/interfaces/dashboard";
 
 export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
   let airdropContractDeployedAt = "-",
@@ -22,7 +23,8 @@ export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
     currentClaimedAccounts = "0 / 0",
     currentVestingEndsAt = "-",
     isRegisteredAirdrop = false,
-    isRegisteredContract = false;
+    isRegisteredContract = false,
+    isLinearVesting = false;
 
   airdropContractDeployedAt = formatDate(airdrop.contractDeployedAt);
   airdropCreatedAt = formatDate(airdrop.createdAt);
@@ -33,6 +35,7 @@ export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
   }
   isRegisteredAirdrop = !!airdrop.merkleTreeUploadedAt;
   isRegisteredContract = !!airdrop.contractAddress;
+  isLinearVesting = airdrop.templateName === TemplateType.LINEAR_VESTING;
 
   return (
     <Card width="100%">
@@ -99,6 +102,7 @@ export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
               <DetailedInfo
                 totalAmount={currentTotalAirdropAmount}
                 claimedAccounts={currentClaimedAccounts}
+                isLinearVesting={isLinearVesting}
                 vestingEndDate={currentVestingEndsAt}
               />
             </Box>
