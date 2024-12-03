@@ -65,7 +65,7 @@ export default function CardContent(props: DashBoardCardProps): JSX.Element {
               </Row>
               <AirdropInfo
                 airdropTitle={props.airdropTitle}
-                isStandard={props.isStandard}
+                templateType={props.templateType}
               />
             </Box>
           </Row>

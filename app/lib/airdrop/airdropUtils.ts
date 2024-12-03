@@ -7,10 +7,6 @@ export const formatDate = (timestamp: number | undefined) => {
   return timestamp ? new Date(timestamp * 1000).toLocaleDateString("sv-SE") : "-";
 };
 
-export const isStandard = (tempTemplateType: TemplateType) => {
-  return formatTemplateType(tempTemplateType) === "Standard";
-};
-
 export const formatTemplateType = (tempTemplateType: TemplateType) => {
   return fromHex(tempTemplateType, { size: 32, to: "string" });
 };

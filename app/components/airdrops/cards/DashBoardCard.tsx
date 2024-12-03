@@ -4,7 +4,6 @@ import CardContent from "@/app/components/airdrops/cards/CardContent";
 import { Airdrop } from "@/app/interfaces/dashboard";
 import {
   formatDate,
-  isStandard,
   formatTotalAirdropAmount,
   formatClaimedAccounts,
   formatVestingEndsAt,
@@ -13,7 +12,6 @@ import {
 export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
   let airdropContractDeployedAt = "-",
     airdropCreatedAt = "-",
-    isStandardTemplateType = false,
     currentTotalAirdropAmount = "0",
     currentClaimedAccounts = "0 / 0",
     currentVestingEndsAt = "-",
@@ -22,7 +20,6 @@ export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
 
   airdropContractDeployedAt = formatDate(airdrop.contractDeployedAt);
   airdropCreatedAt = formatDate(airdrop.createdAt);
-  isStandardTemplateType = isStandard(airdrop.templateName);
   currentTotalAirdropAmount = formatTotalAirdropAmount(airdrop.totalAirdropAmount);
   currentClaimedAccounts = formatClaimedAccounts(airdrop.eligibleUsersNum, airdrop.claimedUsersNum);
   if ("vestingEndsAt" in airdrop) {
@@ -35,7 +32,7 @@ export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
     creationDate: airdropCreatedAt,
     publicationDate: airdropContractDeployedAt,
     airdropTitle: airdrop.title,
-    isStandard: isStandardTemplateType,
+    templateType: airdrop.templateName,
     totalAmount: currentTotalAirdropAmount,
     claimedAccounts: currentClaimedAccounts,
     vestingEndDate: currentVestingEndsAt,
