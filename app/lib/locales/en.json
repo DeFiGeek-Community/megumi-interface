@@ -1,28 +1,42 @@
 {
-    "appName": "Megumi",
-    "tagline": "Airdrop tool",
-    "common": {
-        "connectWallet": "Connect Wallet",
-        "signInWithEthereum": "Sign in with Ethereum",
-        "signedInAs": "Signed in as {{name}}",
-        "disconnect": "Disconnect",
-        "joinAirdrop": "Join Airdrop",
-        "manageAirdrop": "Manage Airdrop",
-        "viewAllAirdrops": "View All Airdrops",
-        "transactionSent": "Transaction sent!",
-        "transactionConfirmed": "Transaction confirmed!"
-    },
-    "airdrops": {
-        "title": "Airdrops"
-    },
-    "dashboard": {
-        "title": "Dashboard"
-    },
-    "airdrop": {
-        "eligible": "You are eligible for the airdrop",
-        "notEligible": "You are not eligible for the airdrop",
-        "claim": "Claim",
-        "claimed": "Claimed",
-        "feeNotice": "A claim fee of 0.0001 ETH and a platform fee of 0.0001 ETH, totaling 0.0002 ETH, will be required in addition to the transaction fee."
-    }
+  "appName": "Megumi",
+  "tagline": "Airdrop tool",
+  "common": {
+    "connectWallet": "Connect Wallet",
+    "signInWithEthereum": "Sign in with Ethereum",
+    "signedInAs": "Signed in as {{name}}",
+    "disconnect": "Disconnect",
+    "joinAirdrop": "Join Airdrop",
+    "manageAirdrop": "Manage Airdrop",
+    "viewAllAirdrops": "View All Airdrops",
+    "transactionSent": "Transaction sent!",
+    "transactionConfirmed": "Transaction confirmed!"
+  },
+  "airdrops": {
+    "title": "Airdrops"
+  },
+  "dashboard": {
+    "claimedAccount": "クレーム済みアカウント",
+    "createAirdrop": "エアドロップを作成",
+    "creationDate": "作成日:",
+    "LinearVesting": "線形べスティング",
+    "publicationDate": "公開日:",
+    "registeredAirdropList": "エアドロップリスト登録済",
+    "registeredContract": "コントラクト登録済",
+    "Standard": "スタンダード",
+    "targetAirdrops": "対象のエアドロップ",
+    "title": "Dashboard",
+    "totalAmount": "エアドロップ総額",
+    "unregisteredAirdropList": "エアドロップリスト未登録",
+    "unregisteredContract": "コントラクト未登録",
+    "vestingDeadline": "ベスティング期限終了",
+    "yourAirdrops": "あなたのエアドロップ"
+  },
+  "airdrop": {
+    "eligible": "You are eligible for the airdrop",
+    "notEligible": "You are not eligible for the airdrop",
+    "claim": "Claim",
+    "claimed": "Claimed",
+    "feeNotice": "A claim fee of 0.0001 ETH and a platform fee of 0.0001 ETH, totaling 0.0002 ETH, will be required in addition to the transaction fee."
+  }
 }
