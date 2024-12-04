@@ -20,7 +20,7 @@ export default function AirdropInfo({ airdropTitle, templateType }: AirdropInfoP
         alignItems="center"
       >
         <Text fontSize={{ base: "sm", sm: "md" }} marginRight="1">
-          {t(formatTemplateType(templateType))}
+          {t(`dashboard.${formatTemplateType(templateType)}`)}
         </Text>
         <Box
           bg="white"
