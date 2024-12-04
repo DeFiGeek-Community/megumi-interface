@@ -1,12 +1,9 @@
 import { Text } from "@chakra-ui/react";
 import { Row } from "@/app/lib/chakra/chakraUtils";
-import { RenderDateContentProps } from "@/app/interfaces/dashboard";
+import { DateContentProps } from "@/app/interfaces/dashboard";
 import { useTranslation } from "react-i18next";
 
-export default function RenderDateContent({
-  creationDate,
-  publicationDate,
-}: RenderDateContentProps) {
+export default function DateContent({ creationDate, publicationDate }: DateContentProps) {
   const { t } = useTranslation();
   return (
     <Row

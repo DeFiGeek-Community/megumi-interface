@@ -1,13 +1,14 @@
 import { Text } from "@chakra-ui/react";
 import { Row } from "@/app/lib/chakra/chakraUtils";
-import { RenderDetailedInfoProps } from "@/app/interfaces/dashboard";
+import { DetailedInfoProps } from "@/app/interfaces/dashboard";
 import { useTranslation } from "react-i18next";
 
-export default function RenderDetailedInfo({
+export default function DetailedInfo({
   totalAmount,
   claimedAccounts,
+  isLinearVesting,
   vestingEndDate,
-}: RenderDetailedInfoProps) {
+}: DetailedInfoProps) {
   const { t } = useTranslation();
   return (
     <>
@@ -33,14 +34,21 @@ export default function RenderDetailedInfo({
           {claimedAccounts}
         </Text>
       </Row>
-      <Row mainAxisAlignment="space-between" crossAxisAlignment="center" width="100%" paddingX="2">
-        <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
-          {t("dashboard.vestingDeadline")}
-        </Text>
-        <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
-          {vestingEndDate}
-        </Text>
-      </Row>
+      {isLinearVesting && (
+        <Row
+          mainAxisAlignment="space-between"
+          crossAxisAlignment="center"
+          width="100%"
+          paddingX="2"
+        >
+          <Text flex="1" textAlign="left" fontSize="sm" fontWeight="medium">
+            {t("dashboard.vestingDeadline")}
+          </Text>
+          <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
+            {vestingEndDate}
+          </Text>
+        </Row>
+      )}
     </>
   );
 }
