@@ -1,10 +1,26 @@
 import { NextResponse } from "next/server";
 import { PrismaClient, type Airdrop } from "@prisma/client";
-
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/authOptions";
 
 const prisma = new PrismaClient();
+
+type AirdropFormType = {
+  contractAddress: `0x${string}`;
+  templateName: `0x${string}`;
+  owner: `0x${string}`;
+  tokenAddress: `0x${string}`;
+  tokenLogo: string;
+};
+
+const validateAirdropData = (airdrop: AirdropFormType) => {
+  // TODO
+  // templateNameの存在チェック
+  // contractAddressある場合は存在、ownerチェック
+  // tokenAddressある場合は存在チェック
+  // tokenLogoのURL存在チェック
+  return true;
+};
 
 // Create new airdrop
 export async function POST(request: Request) {
@@ -16,25 +32,34 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json();
-    const {
+    const { contractAddress, templateName, owner, tokenAddress, tokenLogo } = body;
+
+    const isValid = validateAirdropData({
       contractAddress,
       templateName,
       owner,
       tokenAddress,
-      tokenName,
-      tokenSymbol,
-      tokenDecimals,
       tokenLogo,
-    } = body;
+    });
+
+    if (!isValid) {
+      return NextResponse.json({ error: "Unprocessable Entity" }, { status: 422 });
+    }
+
+    // TODO
+    // tokenName, tokenSymbol, tokenDecimalsはtokenAddressから取得
+    const tokenName = "Test Token";
+    const tokenSymbol = "TTK";
+    const tokenDecimals = 18;
 
     const airdrop = await prisma.airdrop.create({
       data: {
         contractAddress: contractAddress
-          ? Uint8Array.from(Buffer.from(contractAddress, "hex"))
+          ? Uint8Array.from(Buffer.from(contractAddress.slice(2), "hex"))
           : null,
-        templateName: Uint8Array.from(Buffer.from(templateName, "hex")),
-        owner: Uint8Array.from(Buffer.from(owner, "hex")),
-        tokenAddress: Uint8Array.from(Buffer.from(tokenAddress, "hex")),
+        templateName: Uint8Array.from(Buffer.from(templateName.slice(2), "hex")),
+        owner: Uint8Array.from(Buffer.from(owner.slice(2), "hex")),
+        tokenAddress: Uint8Array.from(Buffer.from(tokenAddress.slice(2), "hex")),
         tokenName,
         tokenSymbol,
         tokenDecimals,
@@ -55,7 +80,7 @@ export async function GET() {
     const airdrops = await prisma.airdrop.findMany();
     const formattedAirdrops = airdrops.map((airdrop: Airdrop) => ({
       ...airdrop,
-      contractAddress: airdrop.contractAddress ? airdrop.contractAddress : null,
+      contractAddress: airdrop.contractAddress,
       templateName: airdrop.templateName,
       owner: airdrop.owner,
       tokenAddress: airdrop.tokenAddress,
