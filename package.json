@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
-    "test": "npx dotenv -e .env.test -- jest",
+    "test:backend": "npx dotenv -e .env.test -- npx prisma migrate reset -f && jest",
     "migrate:reset:test": "npx dotenv -e .env.test -- npx prisma migrate reset -f"
   },
   "dependencies": {
