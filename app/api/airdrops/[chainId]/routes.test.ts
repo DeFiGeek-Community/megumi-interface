@@ -25,14 +25,14 @@ afterEach(() => {
 
 describe("POST /api/airdrops Create a new airdrop", () => {
   const sampleData = {
-    contractAddress: "0x1234",
+    contractAddress: null,
     templateName: TemplateType.STANDARD,
     owner: "0xabcd",
     tokenAddress: "0x4567",
     tokenLogo: "https://example.com/logo.png",
   };
   const expectedData = {
-    contractAddress: "0x1234",
+    contractAddress: null,
     templateName: TemplateType.STANDARD,
     owner: "0xabcd",
     tokenAddress: "0x4567",
@@ -82,7 +82,7 @@ describe("POST /api/airdrops Create a new airdrop", () => {
         } = await res.json();
 
         const resData = {
-          contractAddress: uint8ObjectToHexString(contractAddress),
+          contractAddress: contractAddress,
           templateName: uint8ObjectToHexString(templateName),
           owner: uint8ObjectToHexString(owner),
           tokenAddress: uint8ObjectToHexString(tokenAddress),

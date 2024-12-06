@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../auth/authOptions";
+import { authOptions } from "../../../auth/authOptions";
 
 const prisma = new PrismaClient();
 
 // Get an airdrop by ID
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: { chainId: string; id: string } }) {
   try {
     const airdrop = await prisma.airdrop.findUnique({
       where: { id: params.id },
