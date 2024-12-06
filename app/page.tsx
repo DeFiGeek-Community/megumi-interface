@@ -9,7 +9,7 @@ export default async function Home() {
         <Link
           as={NextLink}
           _hover={{ opacity: 0.75 }}
-          href={`/airdrops/${process.env.NEXT_PUBLIC_CHAIN_ID}/02183055-e991-f6e0-9efb-3bf10e405037`}
+          href={`/airdrops/${process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID}/02183055-e991-f6e0-9efb-3bf10e405037`}
         >
           ・TXJPホルダーPNDエアドロップ
         </Link>

@@ -8,16 +8,8 @@ export const getEtherscanLink = (
   type: "tx" | "token" | "address" | "block",
 ): string => {
   if (typeof chain === "undefined" || typeof chain.blockExplorers === "undefined") return "";
-  return `${chain.blockExplorers.default.url}/${type}/${hash}`;
-};
 
-export const getChain = (chainId: number): Chain => {
-  for (const chain of Object.values(chains)) {
-    if (chain.id === chainId) {
-      return chain;
-    }
-  }
-  return localhost;
+  return `${chain.blockExplorers.default.url}/${type}/${hash}`;
 };
 
 export const getEllipsizedAddress = ({

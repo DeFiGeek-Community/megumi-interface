@@ -3,7 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
 import { ethers } from "ethers";
-import { getChain } from "@/app/lib/utils";
+import { getSupportedChain } from "@/app/lib/chain";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -27,7 +27,9 @@ export const authOptions: AuthOptions = {
           const siwe = new SiweMessage(JSON.parse(credentials?.message || "{}"));
           const nextAuthUrl = new URL(process.env.NEXTAUTH_URL!);
 
-          const chain = getChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID));
+          const chain = getSupportedChain(Number(process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID));
+          if (!chain) throw new Error("Requested chain is not supported");
+
           const chainName = chain.name.toLowerCase();
           const provider = new ethers.JsonRpcProvider(
             ["foundry", "hardhat", "localhost"].includes(chainName)
@@ -51,6 +53,7 @@ export const authOptions: AuthOptions = {
           }
           return null;
         } catch (e) {
+          // TODO show error
           return null;
         }
       },
