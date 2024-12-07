@@ -7,7 +7,7 @@ export default function Airdrop() {
   const { address, isConnecting, isReconnecting } = useRequireAccount();
 
   return (
-    <Container maxW={"container.xl"}>
+    <Container maxW={"container.xl"} mb={4}>
       <VStack spacing="4">
         <Box width="50%" ml={4}>
           <Heading fontSize={{ base: "xl", md: "3xl" }}>Airdrop</Heading>
