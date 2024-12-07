@@ -9,7 +9,7 @@ export default function Airdrop() {
   return (
     <Container maxW={"container.xl"}>
       <Heading fontSize={{ base: "xl", md: "3xl" }}>Airdrop</Heading>
-      <AirdropDetails/>
+      <AirdropDetails />
     </Container>
   );
 }
