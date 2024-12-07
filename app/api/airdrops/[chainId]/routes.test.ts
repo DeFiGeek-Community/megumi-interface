@@ -7,7 +7,7 @@ import * as appHandler from "./routes";
 
 let mockedSession: Session | null = null;
 
-jest.mock("../auth/authOptions", () => ({
+jest.mock("../../auth/authOptions", () => ({
   authOptions: {
     adapter: {},
     providers: [],
@@ -24,26 +24,29 @@ afterEach(() => {
 });
 
 describe("POST /api/airdrops Create a new airdrop", () => {
+  const chainId = process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID!;
+  const tokenAddress = "0xdE2832DE0b4C0b4b6742e60186E290622B2B766C".toLowerCase(); // Sepolia YMWK
   const sampleData = {
     contractAddress: null,
     templateName: TemplateType.STANDARD,
     owner: "0xabcd",
-    tokenAddress: "0x4567",
+    tokenAddress,
     tokenLogo: "https://example.com/logo.png",
   };
   const expectedData = {
     contractAddress: null,
     templateName: TemplateType.STANDARD,
     owner: "0xabcd",
-    tokenAddress: "0x4567",
-    tokenName: "Test Token",
-    tokenSymbol: "TTK",
+    tokenAddress,
+    tokenName: "Yamawake DAO Token",
+    tokenSymbol: "YMWK",
     tokenDecimals: 18,
     tokenLogo: "https://example.com/logo.png",
   };
   test("no session", async () => {
     await testApiHandler({
       appHandler,
+      params: { chainId },
       test: async ({ fetch }) => {
         const res = await fetch({
           method: "POST",
@@ -64,6 +67,7 @@ describe("POST /api/airdrops Create a new airdrop", () => {
 
     await testApiHandler({
       appHandler,
+      params: { chainId },
       test: async ({ fetch }) => {
         const res = await fetch({
           method: "POST",

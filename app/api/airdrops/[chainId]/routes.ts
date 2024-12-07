@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server";
-import { getContract, GetContractReturnType, type PublicClient } from "viem";
+import { erc20Abi, getContract, GetContractReturnType, type PublicClient } from "viem";
 import { PrismaClient, type Airdrop } from "@prisma/client";
 import { getServerSession, Session } from "next-auth";
 import { getViemProvider } from "@/app/lib/api";
 import { authOptions } from "../../auth/authOptions";
 import { isSupportedChain } from "@/app/lib/chain";
 import MerkleAirdropBase from "@/app/lib/constants/abis/MerkleAirdropBase.json";
+import { isSupportedTemplate } from "@/app/lib/utils";
 
 // Type definition -->
 type AirdropFormType = {
@@ -29,16 +30,23 @@ const prisma = new PrismaClient();
 const validateAirdropData = async (
   session: Session,
   airdrop: AirdropFormType,
-  airdropContract: AirdropContractType | undefined,
+  provider: PublicClient,
 ): Promise<{ isValid: boolean; errors: AirdropValidationType }> => {
   const errors: AirdropValidationType = {};
-  // TODO
-  // templateNameの存在チェック
+  // Validates templateName
+  if (!isSupportedTemplate(airdrop.templateName)) {
+    errors["templateName"] = "Invalid templateName";
+  }
 
-  // contractAddressある場合は存在、ownerチェック
-  // 基本的にCreate時はcontractAddressは無い想定
-  if (airdropContract) {
+  // Validates owner if contractAddress is set
+  // Basically contractAddress is supposed not to be set on creation
+  if (airdrop.contractAddress) {
     try {
+      const airdropContract = getContract({
+        address: airdrop.contractAddress,
+        abi: MerkleAirdropBase,
+        client: provider,
+      });
       const contractOwner = await airdropContract.read.owner();
       if (
         contractOwner !== session.user.address
@@ -54,8 +62,13 @@ const validateAirdropData = async (
       console.log(`[ERROR] ${errors["owner"]}`);
     }
   }
-  // TODO tokenAddressある場合は存在チェック
+  // Validates token
+  if (!airdrop.tokenAddress) {
+    errors["tokenAddress"] = "Token address is required";
+  }
+
   // TODO tokenLogoのURL存在チェック
+
   return { isValid: Object.keys(errors).length === 0, errors };
 };
 
@@ -78,14 +91,6 @@ export async function POST(request: Request, { params }: { params: { chainId: st
 
     const provider = getViemProvider(parseInt(params.chainId)) as PublicClient;
 
-    const airdropContract = contractAddress
-      ? getContract({
-          address: contractAddress,
-          abi: MerkleAirdropBase,
-          client: provider,
-        })
-      : undefined;
-
     const { isValid, errors } = await validateAirdropData(
       session,
       {
@@ -95,7 +100,7 @@ export async function POST(request: Request, { params }: { params: { chainId: st
         tokenAddress,
         tokenLogo,
       },
-      airdropContract,
+      provider,
     );
 
     if (!isValid) {
@@ -104,9 +109,23 @@ export async function POST(request: Request, { params }: { params: { chainId: st
 
     // TODO
     // tokenName, tokenSymbol, tokenDecimalsはtokenAddressから取得
-    const tokenName = "Test Token";
-    const tokenSymbol = "TTK";
-    const tokenDecimals = 18;
+    let tokenName;
+    let tokenSymbol;
+    let tokenDecimals;
+
+    try {
+      const token = getContract({
+        address: tokenAddress,
+        abi: erc20Abi,
+        client: provider,
+      });
+      tokenName = await token.read.name();
+      tokenSymbol = await token.read.symbol();
+      tokenDecimals = await token.read.decimals();
+    } catch (error: unknown) {
+      console.error(error);
+      return NextResponse.json({ error }, { status: 422 });
+    }
 
     const airdrop = await prisma.airdrop.create({
       data: {
