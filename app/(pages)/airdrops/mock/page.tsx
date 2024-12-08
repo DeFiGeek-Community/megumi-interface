@@ -244,49 +244,49 @@ export default function AirdropPage() {
           </Box>
 
           {/* Menu Section */}
-          {isOwner &&
-          <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4}>
-            <VStack spacing={2} align="stretch">
-              <HStack justify="space-between">
-                <Text fontSize="md" fontWeight="900">
-                  オーナーメニュー
-                </Text>
-              </HStack>
-              <HStack justify="space-between">
-                <Text fontWeight="medium">基本情報</Text>
-                <Button size="sm" width="20" colorScheme="blue">
-                  編集する
-                </Button>
-              </HStack>
-              <Divider />
-              <HStack justify="space-between">
-                <Stack>
-                  <Text fontWeight="medium">エアドロップリスト</Text>
-                  <Text fontWeight="medium" textAlign="left">
-                    <Icon as={WarningTwoIcon} mr={1} mb={1} color="yellow.500" />
-                    未登録
+          {isOwner && (
+            <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4}>
+              <VStack spacing={2} align="stretch">
+                <HStack justify="space-between">
+                  <Text fontSize="md" fontWeight="900">
+                    オーナーメニュー
                   </Text>
-                </Stack>
-                <Button size="sm" width="20" colorScheme="blue">
-                  登録する
-                </Button>
-              </HStack>
-              <Divider />
-              <HStack justify="space-between">
-                <Stack>
-                  <Text fontWeight="medium">コントラクト</Text>
-                  <Text fontWeight="medium" textAlign="left">
-                    <Icon as={WarningTwoIcon} mr={1} mb={1} color="yellow.500" />
-                    未登録
-                  </Text>
-                </Stack>
-                <Button size="sm" width="20" colorScheme="blue">
-                  登録する
-                </Button>
-              </HStack>
-            </VStack>
-          </Box>
-}
+                </HStack>
+                <HStack justify="space-between">
+                  <Text fontWeight="medium">基本情報</Text>
+                  <Button size="sm" width="20" colorScheme="blue">
+                    編集する
+                  </Button>
+                </HStack>
+                <Divider />
+                <HStack justify="space-between">
+                  <Stack>
+                    <Text fontWeight="medium">エアドロップリスト</Text>
+                    <Text fontWeight="medium" textAlign="left">
+                      <Icon as={WarningTwoIcon} mr={1} mb={1} color="yellow.500" />
+                      未登録
+                    </Text>
+                  </Stack>
+                  <Button size="sm" width="20" colorScheme="blue">
+                    登録する
+                  </Button>
+                </HStack>
+                <Divider />
+                <HStack justify="space-between">
+                  <Stack>
+                    <Text fontWeight="medium">コントラクト</Text>
+                    <Text fontWeight="medium" textAlign="left">
+                      <Icon as={WarningTwoIcon} mr={1} mb={1} color="yellow.500" />
+                      未登録
+                    </Text>
+                  </Stack>
+                  <Button size="sm" width="20" colorScheme="blue">
+                    登録する
+                  </Button>
+                </HStack>
+              </VStack>
+            </Box>
+          )}
         </Box>
       </VStack>
     </Container>
