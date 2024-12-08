@@ -61,3 +61,12 @@ export type Standard = {
 export type LinearVesting = Standard & {
   vestingEndsAt: number;
 };
+
+type StandardClaim = {
+  amount: bigint;
+  isClaimed: boolean;
+};
+type LinearVestingClaim = StandardClaim & {
+  claimedAmount: bigint;
+  claimable: bigint;
+};
