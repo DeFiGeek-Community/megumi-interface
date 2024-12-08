@@ -87,7 +87,7 @@ export default function AirdropPage() {
   }
   isRegisteredAirdrop = !!airdrops[0].merkleTreeUploadedAt;
   isRegisteredContract = !!airdrops[0].contractAddress;
-  isLinearVesting = airdrops[1].templateName === TemplateType.LINEAR_VESTING;
+  isLinearVesting = airdrops[0].templateName === TemplateType.LINEAR_VESTING;
 
   return (
     <Container maxW={"container.xl"} mb={4}>
@@ -140,7 +140,7 @@ export default function AirdropPage() {
                     <Text fontSize="md" fontWeight="bold" mr={1}>
                       {currentClaimedAccounts}
                     </Text>
-                    <Text fontSize="sm">クレーム済みアカウント</Text>
+                    <Text fontSize="sm">{t("dashboard.claimedAccount")}</Text>
                   </Flex>
                 </Flex>
               </Box>
@@ -156,7 +156,7 @@ export default function AirdropPage() {
                 alignItems="center"
               >
                 <Text fontSize={{ base: "sm" }} marginRight="1">
-                  Token address
+                  {t("airdrop.tokenAddress")}
                 </Text>
               </Box>
               <Text
@@ -179,7 +179,7 @@ export default function AirdropPage() {
                 alignItems="center"
               >
                 <Text fontSize={{ base: "sm" }} marginRight="1">
-                  Aidrop contract
+                  {t("airdrop.airdropContract")}
                 </Text>
               </Box>
               <Text
@@ -200,9 +200,9 @@ export default function AirdropPage() {
             <VStack spacing={0.5} align="stretch">
               <HStack justify="space-between">
                 <Text fontSize="md" fontWeight="900">
-                  あなたの割り当て額
+                  {t("airdrop.yourAllocatedAmount")}
                 </Text>
-                {(!isLinearVesting && !standardClaim.isClaimed) &&(
+                {!isLinearVesting && !standardClaim.isClaimed && (
                   <HStack justify="flex-start">
                     <Text fontSize="3xl" fontWeight="medium">
                       {`${standardClaim.amount}`}
@@ -216,7 +216,7 @@ export default function AirdropPage() {
               {isLinearVesting && (
                 <>
                   <HStack justify="space-between">
-                    <Text fontSize="sm">合計</Text>
+                    <Text fontSize="sm">{t("airdrop.totalAmount")}</Text>
                     <HStack justify="flex-start">
                       <Text fontSize="3xl" fontWeight="medium">
                         {`${linearVestingClaim.claimedAmount + linearVestingClaim.claimable}`}
@@ -227,13 +227,13 @@ export default function AirdropPage() {
                     </HStack>
                   </HStack>
                   <HStack justify="space-between">
-                    <Text fontSize="sm">ベスティング期間終了</Text>
+                    <Text fontSize="sm">{t("dashboard.vestingDeadline")}</Text>
                     <Text fontSize="3xl" fontWeight="medium">
                       {currentVestingEndsAt}
                     </Text>
                   </HStack>
                   <HStack justify="space-between">
-                    <Text fontSize="sm">請求済み</Text>
+                    <Text fontSize="sm">{t("airdrop.claimed")}</Text>
                     <HStack justify="flex-start">
                       <Text fontSize="3xl" fontWeight="medium">
                         {`${linearVestingClaim.claimedAmount}`}
@@ -244,7 +244,7 @@ export default function AirdropPage() {
                     </HStack>
                   </HStack>
                   <HStack justify="space-between">
-                    <Text fontSize="sm">請求可能額</Text>
+                    <Text fontSize="sm">{t("airdrop.claimable")}</Text>
                     <HStack justify="flex-start">
                       <Text fontSize="3xl" fontWeight="medium">
                         {`${linearVestingClaim.claimable}`}
@@ -257,7 +257,7 @@ export default function AirdropPage() {
                 </>
               )}
               <Button size="sm" colorScheme="blue" width="full" mt={4}>
-                請求
+                {t("airdrop.claim")}
               </Button>
             </VStack>
           </Box>

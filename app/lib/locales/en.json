@@ -33,10 +33,15 @@
     "yourAirdrops": "あなたのエアドロップ"
   },
   "airdrop": {
+    "airdropContract": "エアドロップコントラクト",
     "eligible": "You are eligible for the airdrop",
     "notEligible": "You are not eligible for the airdrop",
-    "claim": "Claim",
-    "claimed": "Claimed",
-    "feeNotice": "A claim fee of 0.0001 ETH and a platform fee of 0.0001 ETH, totaling 0.0002 ETH, will be required in addition to the transaction fee."
+    "claim": "請求する",
+    "claimable": "請求可能額",
+    "claimed": "請求済み",
+    "feeNotice": "A claim fee of 0.0001 ETH and a platform fee of 0.0001 ETH, totaling 0.0002 ETH, will be required in addition to the transaction fee.",
+    "tokenAddress": "トークンアドレス",
+    "totalAmount": "合計",
+    "yourAllocatedAmount": "あなたの割り当て額"
   }
 }
