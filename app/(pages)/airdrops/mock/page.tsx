@@ -9,8 +9,8 @@ export default function Airdrop() {
   return (
     <Container maxW={"container.xl"} mb={4}>
       <VStack spacing="4">
-        <Box width="50%" ml={4}>
-          <Heading fontSize={{ base: "xl", md: "3xl" }}>Airdrop</Heading>
+        <Box width={{ base: "100%", lg: "50%" }} ml={4}>
+          <Heading fontSize="3xl">Airdrop</Heading>
         </Box>
         <AirdropDetails />
       </VStack>

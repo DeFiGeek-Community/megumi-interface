@@ -6,7 +6,6 @@ import {
   Text,
   Button,
   Avatar,
-  Badge,
   Divider,
   Flex,
   Icon,
@@ -14,9 +13,9 @@ import {
 import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
 export default function AirdropDetails() {
   return (
-    <Box width="50%">
+    <Box width={{ base: "100%", lg: "50%" }}>
       {/* Header Section */}
-      <Box borderRadius="md" boxShadow="md" p={4} mb={4}>
+      <Box borderRadius="md" boxShadow="md" p={{ base: "0", lg: "4" }} mb={4}>
         <HStack spacing={3} mb={4}>
           <Avatar size="xl" name="YMT" bg="gray.500" />
           <Box>
@@ -50,17 +49,21 @@ export default function AirdropDetails() {
             <Text fontSize="3xl" fontWeight="bold">
               YMT Early Investors Airdrop
             </Text>
-            <Flex alignItems="baseline">
+            <Flex alignItems="baseline" direction={{ base: "column", md: "row" }}>
+            <Flex alignItems="baseline" direction="row">
               <Text fontSize="md" fontWeight="bold" mr={1}>
                 500,000
               </Text>
               <Text fontSize="sm" mr={4}>
                 YMT
               </Text>
+              </Flex>
+              <Flex alignItems="baseline" direction="row">
               <Text fontSize="md" fontWeight="bold" mr={1}>
                 314
               </Text>
               <Text fontSize="sm">/ 20,214 クレーム済みアカウント</Text>
+              </Flex>
             </Flex>
           </Box>
         </HStack>
@@ -78,7 +81,7 @@ export default function AirdropDetails() {
               Token address
             </Text>
           </Box>
-          <Text fontSize="sm" fontWeight="bold" py={{ base: "0.5", sm: "1" }} mt="1.5" mr={4}>
+          <Text fontSize="sm" fontWeight={{ sm: "bold" }} py={{ base: "0.5", sm: "1" }} mt="1.5" mr={{ base: "0", lg: "4" }}>
             0x0000...1234
             <Icon as={ExternalLinkIcon} ml={1} mb={1} />
           </Text>
@@ -95,7 +98,7 @@ export default function AirdropDetails() {
               Aidrop contract
             </Text>
           </Box>
-          <Text fontSize="sm" fontWeight="bold" py={{ base: "0.5", sm: "1" }} mt="1.5">
+          <Text fontSize="sm" fontWeight={{ sm: "bold" }} py={{ base: "0.5", sm: "1" }} mt="1.5">
             0x0000...1234
             <Icon as={ExternalLinkIcon} ml={1} mb={1} />
           </Text>
