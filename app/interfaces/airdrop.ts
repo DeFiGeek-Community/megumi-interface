@@ -1,12 +1,13 @@
 export interface ClaimProps {
-    isLinearVesting: boolean;
-  }
+  isLinearVesting: boolean;
+  currentVestingEndsAt?: string;
+}
 
-  type StandardClaim = {
-    amount: bigint;
-    isClaimed: boolean;
-  };
-  type LinearVestingClaim = StandardClaim & {
-    claimedAmount: bigint;
-    claimable: bigint;
-  };
+type StandardClaim = {
+  amount: bigint;
+  isClaimed: boolean;
+};
+type LinearVestingClaim = StandardClaim & {
+  claimedAmount: bigint;
+  claimable: bigint;
+};

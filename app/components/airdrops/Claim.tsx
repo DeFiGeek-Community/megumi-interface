@@ -1,18 +1,19 @@
 "use client";
 import {} from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
-import { Center, Container, Heading, Spinner, VStack, Box } from "@chakra-ui/react";
-import { useRequireAccount } from "@/app/hooks/common/useRequireAccount";
-import AirdropDetails from "@/app/components/airdrops/cards/AirdropDetails";
-import { useIsMounted } from "@/app/hooks/common/useIsMounted";
-import { TemplateType, Airdrop } from "@/app/interfaces/dashboard";
-import { Stack, HStack, Text, Button, Avatar, Divider, Flex, Icon } from "@chakra-ui/react";
-import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
+import { VStack, Box, HStack, Text, Button } from "@chakra-ui/react";
 import { ClaimProps } from "@/app/interfaces/airdrop";
-export default function Claim({
-    isLinearVesting,
-  }: ClaimProps): JSX.Element {
+
+export default function Claim({ isLinearVesting, currentVestingEndsAt }: ClaimProps): JSX.Element {
   const { t } = useTranslation();
+  const standardClaim = {
+    amount: BigInt(2351),
+    isClaimed: false,
+  };
+  const linearVestingClaim = {
+    claimedAmount: BigInt(1021),
+    claimable: BigInt(325),
+  };
   return (
     <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4} mb={4}>
       <VStack spacing={0.5} align="stretch">
