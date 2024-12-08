@@ -6,12 +6,13 @@ import { useIsMounted } from "@/app/hooks/common/useIsMounted";
 import { useTranslation } from "react-i18next";
 import { TemplateType, Airdrop } from "@/app/interfaces/dashboard";
 import { Stack, HStack, Text, Button, Avatar, Divider, Flex, Icon } from "@chakra-ui/react";
-import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";import {
+import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
+import {
   formatDate,
   formatTotalAirdropAmount,
   formatClaimedAccounts,
   formatVestingEndsAt,
-  formatTemplateType
+  formatTemplateType,
 } from "@/app/lib/airdrop/airdropUtils";
 
 export default function AirdropPage() {
@@ -49,26 +50,34 @@ export default function AirdropPage() {
       contractDeployedAt: 1731897560,
     },
   ];
+  const linearVestingClaim = {
+    claimedAmount: BigInt(1021),
+    claimable: BigInt(325),
+  };
   if (!isMounted || !address)
     return (
       <Center>
         <Spinner />
       </Center>
     );
-  
+  const isOwner = false;
+
   let airdropContractDeployedAt = "-",
-  airdropCreatedAt = "-",
-  currentTotalAirdropAmount = "0",
-  currentClaimedAccounts = "0 / 0",
-  currentVestingEndsAt = "-",
-  isRegisteredAirdrop = false,
-  isRegisteredContract = false,
-  isLinearVesting = false;
+    airdropCreatedAt = "-",
+    currentTotalAirdropAmount = "0",
+    currentClaimedAccounts = "0 / 0",
+    currentVestingEndsAt = "-",
+    isRegisteredAirdrop = false,
+    isRegisteredContract = false,
+    isLinearVesting = false;
 
   airdropContractDeployedAt = formatDate(airdrops[0].contractDeployedAt);
   airdropCreatedAt = formatDate(airdrops[0].createdAt);
   currentTotalAirdropAmount = formatTotalAirdropAmount(airdrops[0].totalAirdropAmount);
-  currentClaimedAccounts = formatClaimedAccounts(airdrops[0].eligibleUsersNum, airdrops[0].claimedUsersNum);
+  currentClaimedAccounts = formatClaimedAccounts(
+    airdrops[0].eligibleUsersNum,
+    airdrops[0].claimedUsersNum,
+  );
   if ("vestingEndsAt" in airdrops[0]) {
     currentVestingEndsAt = formatVestingEndsAt(airdrops[0].vestingEndsAt);
   }
@@ -120,7 +129,7 @@ export default function AirdropPage() {
                 <Flex alignItems="baseline" direction={{ base: "column", md: "row" }}>
                   <Flex alignItems="baseline" direction="row">
                     <Text fontSize="md" fontWeight="bold" mr={4}>
-                    {currentTotalAirdropAmount}
+                      {currentTotalAirdropAmount}
                     </Text>
                   </Flex>
                   <Flex alignItems="baseline" direction="row">
@@ -193,7 +202,7 @@ export default function AirdropPage() {
                 <Text fontSize="sm">合計</Text>
                 <HStack justify="flex-start">
                   <Text fontSize="3xl" fontWeight="medium">
-                    2,351
+                    {`${linearVestingClaim.claimedAmount + linearVestingClaim.claimable}`}
                   </Text>
                   <Text fontSize="md" fontWeight="medium">
                     YMT
@@ -203,14 +212,14 @@ export default function AirdropPage() {
               <HStack justify="space-between">
                 <Text fontSize="sm">ベスティング期間終了</Text>
                 <Text fontSize="3xl" fontWeight="medium">
-                  2025-12-21
+                  {currentVestingEndsAt}
                 </Text>
               </HStack>
               <HStack justify="space-between">
                 <Text fontSize="sm">請求済み</Text>
                 <HStack justify="flex-start">
                   <Text fontSize="3xl" fontWeight="medium">
-                    1,021
+                    {`${linearVestingClaim.claimedAmount}`}
                   </Text>
                   <Text fontSize="md" fontWeight="medium">
                     YMT
@@ -221,7 +230,7 @@ export default function AirdropPage() {
                 <Text fontSize="sm">請求可能額</Text>
                 <HStack justify="flex-start">
                   <Text fontSize="3xl" fontWeight="medium">
-                    325
+                    {`${linearVestingClaim.claimable}`}
                   </Text>
                   <Text fontSize="md" fontWeight="medium">
                     YMT
@@ -235,6 +244,7 @@ export default function AirdropPage() {
           </Box>
 
           {/* Menu Section */}
+          {isOwner &&
           <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4}>
             <VStack spacing={2} align="stretch">
               <HStack justify="space-between">
@@ -276,6 +286,7 @@ export default function AirdropPage() {
               </HStack>
             </VStack>
           </Box>
+}
         </Box>
       </VStack>
     </Container>
