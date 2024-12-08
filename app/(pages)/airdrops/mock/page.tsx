@@ -50,6 +50,10 @@ export default function AirdropPage() {
       contractDeployedAt: 1731897560,
     },
   ];
+  const standardClaim = {
+    amount: BigInt(2351),
+    isClaimed: false,
+  };
   const linearVestingClaim = {
     claimedAmount: BigInt(1021),
     claimable: BigInt(325),
@@ -83,7 +87,7 @@ export default function AirdropPage() {
   }
   isRegisteredAirdrop = !!airdrops[0].merkleTreeUploadedAt;
   isRegisteredContract = !!airdrops[0].contractAddress;
-  isLinearVesting = airdrops[0].templateName === TemplateType.LINEAR_VESTING;
+  isLinearVesting = airdrops[1].templateName === TemplateType.LINEAR_VESTING;
 
   return (
     <Container maxW={"container.xl"} mb={4}>
@@ -191,52 +195,67 @@ export default function AirdropPage() {
           </Box>
 
           {/* Status Section */}
+
           <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4} mb={4}>
             <VStack spacing={0.5} align="stretch">
               <HStack justify="space-between">
                 <Text fontSize="md" fontWeight="900">
                   あなたの割り当て額
                 </Text>
+                {(!isLinearVesting && !standardClaim.isClaimed) &&(
+                  <HStack justify="flex-start">
+                    <Text fontSize="3xl" fontWeight="medium">
+                      {`${standardClaim.amount}`}
+                    </Text>
+                    <Text fontSize="md" fontWeight="medium">
+                      YMT
+                    </Text>
+                  </HStack>
+                )}
               </HStack>
-              <HStack justify="space-between">
-                <Text fontSize="sm">合計</Text>
-                <HStack justify="flex-start">
-                  <Text fontSize="3xl" fontWeight="medium">
-                    {`${linearVestingClaim.claimedAmount + linearVestingClaim.claimable}`}
-                  </Text>
-                  <Text fontSize="md" fontWeight="medium">
-                    YMT
-                  </Text>
-                </HStack>
-              </HStack>
-              <HStack justify="space-between">
-                <Text fontSize="sm">ベスティング期間終了</Text>
-                <Text fontSize="3xl" fontWeight="medium">
-                  {currentVestingEndsAt}
-                </Text>
-              </HStack>
-              <HStack justify="space-between">
-                <Text fontSize="sm">請求済み</Text>
-                <HStack justify="flex-start">
-                  <Text fontSize="3xl" fontWeight="medium">
-                    {`${linearVestingClaim.claimedAmount}`}
-                  </Text>
-                  <Text fontSize="md" fontWeight="medium">
-                    YMT
-                  </Text>
-                </HStack>
-              </HStack>
-              <HStack justify="space-between">
-                <Text fontSize="sm">請求可能額</Text>
-                <HStack justify="flex-start">
-                  <Text fontSize="3xl" fontWeight="medium">
-                    {`${linearVestingClaim.claimable}`}
-                  </Text>
-                  <Text fontSize="md" fontWeight="medium">
-                    YMT
-                  </Text>
-                </HStack>
-              </HStack>
+              {isLinearVesting && (
+                <>
+                  <HStack justify="space-between">
+                    <Text fontSize="sm">合計</Text>
+                    <HStack justify="flex-start">
+                      <Text fontSize="3xl" fontWeight="medium">
+                        {`${linearVestingClaim.claimedAmount + linearVestingClaim.claimable}`}
+                      </Text>
+                      <Text fontSize="md" fontWeight="medium">
+                        YMT
+                      </Text>
+                    </HStack>
+                  </HStack>
+                  <HStack justify="space-between">
+                    <Text fontSize="sm">ベスティング期間終了</Text>
+                    <Text fontSize="3xl" fontWeight="medium">
+                      {currentVestingEndsAt}
+                    </Text>
+                  </HStack>
+                  <HStack justify="space-between">
+                    <Text fontSize="sm">請求済み</Text>
+                    <HStack justify="flex-start">
+                      <Text fontSize="3xl" fontWeight="medium">
+                        {`${linearVestingClaim.claimedAmount}`}
+                      </Text>
+                      <Text fontSize="md" fontWeight="medium">
+                        YMT
+                      </Text>
+                    </HStack>
+                  </HStack>
+                  <HStack justify="space-between">
+                    <Text fontSize="sm">請求可能額</Text>
+                    <HStack justify="flex-start">
+                      <Text fontSize="3xl" fontWeight="medium">
+                        {`${linearVestingClaim.claimable}`}
+                      </Text>
+                      <Text fontSize="md" fontWeight="medium">
+                        YMT
+                      </Text>
+                    </HStack>
+                  </HStack>
+                </>
+              )}
               <Button size="sm" colorScheme="blue" width="full" mt={4}>
                 請求
               </Button>
