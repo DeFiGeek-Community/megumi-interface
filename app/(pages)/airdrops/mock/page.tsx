@@ -64,7 +64,7 @@ export default function AirdropPage() {
         <Spinner />
       </Center>
     );
-  const isOwner = false;
+  const isOwner = true;
 
   let airdropContractDeployedAt = "-",
     airdropCreatedAt = "-",
@@ -268,39 +268,39 @@ export default function AirdropPage() {
               <VStack spacing={2} align="stretch">
                 <HStack justify="space-between">
                   <Text fontSize="md" fontWeight="900">
-                    オーナーメニュー
+                    {t("airdrop.ownerMenu")}
                   </Text>
                 </HStack>
                 <HStack justify="space-between">
-                  <Text fontWeight="medium">基本情報</Text>
+                  <Text fontWeight="medium">{t("airdrop.basicInformation")}</Text>
                   <Button size="sm" width="20" colorScheme="blue">
-                    編集する
+                    {t("airdrop.edit")}
                   </Button>
                 </HStack>
                 <Divider />
                 <HStack justify="space-between">
                   <Stack>
-                    <Text fontWeight="medium">エアドロップリスト</Text>
+                    <Text fontWeight="medium">{t("airdrop.airdropList")}</Text>
                     <Text fontWeight="medium" textAlign="left">
                       <Icon as={WarningTwoIcon} mr={1} mb={1} color="yellow.500" />
-                      未登録
+                      {t("airdrop.unregistered")}
                     </Text>
                   </Stack>
                   <Button size="sm" width="20" colorScheme="blue">
-                    登録する
+                    {t("airdrop.register")}
                   </Button>
                 </HStack>
                 <Divider />
                 <HStack justify="space-between">
                   <Stack>
-                    <Text fontWeight="medium">コントラクト</Text>
+                    <Text fontWeight="medium">{t("airdrop.contract")}</Text>
                     <Text fontWeight="medium" textAlign="left">
                       <Icon as={WarningTwoIcon} mr={1} mb={1} color="yellow.500" />
-                      未登録
+                      {t("airdrop.unregistered")}
                     </Text>
                   </Stack>
                   <Button size="sm" width="20" colorScheme="blue">
-                    登録する
+                    {t("airdrop.register")}
                   </Button>
                 </HStack>
               </VStack>

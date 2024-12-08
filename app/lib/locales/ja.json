@@ -34,13 +34,20 @@
   },
   "airdrop": {
     "airdropContract": "エアドロップコントラクト",
+    "airdropList": "エアドロップリスト",
+    "basicInformation": "基本情報",
+    "edit": "編集する",
     "eligible": "エアドロップの対象です",
     "claim": "請求する",
     "claimable": "請求可能額",
     "claimed": "請求済み",
+    "contract": "コントラクト",
     "feeNotice": "請求時にクレーム手数料0.0001ETH、プラットフォーム手数料0.0001ETH、合計0.0002ETHがトランザクション手数料の他に必要です",
+    "ownerMenu":"オーナーメニュー",
+    "register":"登録する",
     "tokenAddress": "トークンアドレス",
     "totalAmount": "合計",
+    "unregistered": "未登録",
     "yourAllocatedAmount": "あなたの割り当て額"
   }
 }

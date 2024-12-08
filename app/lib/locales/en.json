@@ -34,14 +34,21 @@
   },
   "airdrop": {
     "airdropContract": "エアドロップコントラクト",
+    "airdropList": "エアドロップリスト",
+    "basicInformation": "基本情報",
+    "edit": "編集する",
     "eligible": "You are eligible for the airdrop",
     "notEligible": "You are not eligible for the airdrop",
     "claim": "請求する",
     "claimable": "請求可能額",
     "claimed": "請求済み",
+    "contract": "コントラクト",
     "feeNotice": "A claim fee of 0.0001 ETH and a platform fee of 0.0001 ETH, totaling 0.0002 ETH, will be required in addition to the transaction fee.",
+    "ownerMenu":"オーナーメニュー",
+    "register":"登録する",
     "tokenAddress": "トークンアドレス",
     "totalAmount": "合計",
+    "unregistered": "未登録",
     "yourAllocatedAmount": "あなたの割り当て額"
   }
 }
