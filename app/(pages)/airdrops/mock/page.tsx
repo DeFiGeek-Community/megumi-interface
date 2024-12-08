@@ -88,10 +88,10 @@ export default function AirdropPage() {
   return (
     <Container maxW={"container.xl"} mb={4}>
       <VStack spacing="4">
-        <Box width={{ base: "100%", lg: "50%" }} ml={4}>
+        <Box width={{ base: "100%", md: "50%" }} ml={4}>
           <Heading fontSize="3xl">Airdrop</Heading>
         </Box>
-        <Box width={{ base: "100%", lg: "50%" }}>
+        <Box width={{ base: "100%", md: "50%" }}>
           {/* Header Section */}
           <Box borderRadius="md" boxShadow="md" p={{ base: "0", lg: "4" }} mb={4}>
             <HStack spacing={3} mb={4}>
@@ -126,7 +126,7 @@ export default function AirdropPage() {
                 <Text fontSize="3xl" fontWeight="bold">
                   {airdrops[0].title}
                 </Text>
-                <Flex alignItems="baseline" direction={{ base: "column", md: "row" }}>
+                <Flex alignItems="baseline" direction={{ base: "column", xl: "row" }}>
                   <Flex alignItems="baseline" direction="row">
                     <Text fontSize="md" fontWeight="bold" mr={4}>
                       {currentTotalAirdropAmount}
@@ -141,13 +141,14 @@ export default function AirdropPage() {
                 </Flex>
               </Box>
             </HStack>
-            <HStack spacing={2}>
+            <Flex direction={{ base: "column", lg: "row" }}>
               <Box
                 bg="gray.500"
                 borderRadius="md"
                 px={{ base: "1", sm: "3" }}
                 py={{ base: "0.5", sm: "1" }}
                 mt="1.5"
+                mr={{ lg: "2" }}
                 display="inline-flex"
                 alignItems="center"
               >
@@ -171,6 +172,7 @@ export default function AirdropPage() {
                 px={{ base: "1", sm: "3" }}
                 py={{ base: "0.5", sm: "1" }}
                 mt="1.5"
+                mr={{ lg: "2" }}
                 display="inline-flex"
                 alignItems="center"
               >
@@ -187,7 +189,7 @@ export default function AirdropPage() {
                 {airdrops[0].contractAddress}
                 <Icon as={ExternalLinkIcon} ml={1} mb={1} />
               </Text>
-            </HStack>
+            </Flex>
           </Box>
 
           {/* Status Section */}
