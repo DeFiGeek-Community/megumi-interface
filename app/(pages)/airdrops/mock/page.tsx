@@ -1,7 +1,6 @@
 "use client";
 import { Center, Container, Heading, Spinner, VStack, Box } from "@chakra-ui/react";
 import { useRequireAccount } from "@/app/hooks/common/useRequireAccount";
-import AirdropDetails from "@/app/components/airdrops/cards/AirdropDetails";
 import { useIsMounted } from "@/app/hooks/common/useIsMounted";
 import { useTranslation } from "react-i18next";
 import { TemplateType, Airdrop } from "@/app/interfaces/dashboard";
