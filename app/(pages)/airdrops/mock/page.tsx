@@ -1,19 +1,30 @@
 "use client";
-import { Center, Container, Heading, Spinner, VStack, Box } from "@chakra-ui/react";
+import {
+  Center,
+  Container,
+  Heading,
+  Spinner,
+  VStack,
+  Box,
+  HStack,
+  Text,
+  Avatar,
+  Flex,
+  Icon,
+} from "@chakra-ui/react";
 import { useRequireAccount } from "@/app/hooks/common/useRequireAccount";
 import { useIsMounted } from "@/app/hooks/common/useIsMounted";
 import { useTranslation } from "react-i18next";
 import { TemplateType, Airdrop } from "@/app/interfaces/dashboard";
-import { Stack, HStack, Text, Button, Avatar, Divider, Flex, Icon } from "@chakra-ui/react";
-import { ExternalLinkIcon, WarningTwoIcon } from "@chakra-ui/icons";
+import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
-  formatDate,
   formatTotalAirdropAmount,
   formatClaimedAccounts,
   formatVestingEndsAt,
   formatTemplateType,
 } from "@/app/lib/airdrop/airdropUtils";
 import Claim from "@/app/components/airdrops/Claim";
+import OwnerMenu from "@/app/components/airdrops/OwnerMenu";
 
 export default function AirdropPage() {
   const { address, isConnecting, isReconnecting } = useRequireAccount();
@@ -183,49 +194,7 @@ export default function AirdropPage() {
           <Claim isLinearVesting={isLinearVesting} currentVestingEndsAt={currentVestingEndsAt} />
 
           {/* Menu Section */}
-          {isOwner && (
-            <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4}>
-              <VStack spacing={2} align="stretch">
-                <HStack justify="space-between">
-                  <Text fontSize="md" fontWeight="900">
-                    {t("airdrop.ownerMenu")}
-                  </Text>
-                </HStack>
-                <HStack justify="space-between">
-                  <Text fontWeight="medium">{t("airdrop.basicInformation")}</Text>
-                  <Button size="sm" width="20" colorScheme="blue">
-                    {t("airdrop.edit")}
-                  </Button>
-                </HStack>
-                <Divider />
-                <HStack justify="space-between">
-                  <Stack>
-                    <Text fontWeight="medium">{t("airdrop.airdropList")}</Text>
-                    <Text fontWeight="medium" textAlign="left">
-                      <Icon as={WarningTwoIcon} mr={1} mb={1} color="yellow.500" />
-                      {t("airdrop.unregistered")}
-                    </Text>
-                  </Stack>
-                  <Button size="sm" width="20" colorScheme="blue">
-                    {t("airdrop.register")}
-                  </Button>
-                </HStack>
-                <Divider />
-                <HStack justify="space-between">
-                  <Stack>
-                    <Text fontWeight="medium">{t("airdrop.contract")}</Text>
-                    <Text fontWeight="medium" textAlign="left">
-                      <Icon as={WarningTwoIcon} mr={1} mb={1} color="yellow.500" />
-                      {t("airdrop.unregistered")}
-                    </Text>
-                  </Stack>
-                  <Button size="sm" width="20" colorScheme="blue">
-                    {t("airdrop.register")}
-                  </Button>
-                </HStack>
-              </VStack>
-            </Box>
-          )}
+          {isOwner && <OwnerMenu />}
         </Box>
       </VStack>
     </Container>

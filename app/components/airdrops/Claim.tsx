@@ -1,5 +1,4 @@
 "use client";
-import {} from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { VStack, Box, HStack, Text, Button } from "@chakra-ui/react";
 import { ClaimProps } from "@/app/interfaces/airdrop";
