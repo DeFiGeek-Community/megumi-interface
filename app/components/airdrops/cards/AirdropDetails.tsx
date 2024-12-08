@@ -50,19 +50,19 @@ export default function AirdropDetails() {
               YMT Early Investors Airdrop
             </Text>
             <Flex alignItems="baseline" direction={{ base: "column", md: "row" }}>
-            <Flex alignItems="baseline" direction="row">
-              <Text fontSize="md" fontWeight="bold" mr={1}>
-                500,000
-              </Text>
-              <Text fontSize="sm" mr={4}>
-                YMT
-              </Text>
+              <Flex alignItems="baseline" direction="row">
+                <Text fontSize="md" fontWeight="bold" mr={1}>
+                  500,000
+                </Text>
+                <Text fontSize="sm" mr={4}>
+                  YMT
+                </Text>
               </Flex>
               <Flex alignItems="baseline" direction="row">
-              <Text fontSize="md" fontWeight="bold" mr={1}>
-                314
-              </Text>
-              <Text fontSize="sm">/ 20,214 クレーム済みアカウント</Text>
+                <Text fontSize="md" fontWeight="bold" mr={1}>
+                  314
+                </Text>
+                <Text fontSize="sm">/ 20,214 クレーム済みアカウント</Text>
               </Flex>
             </Flex>
           </Box>
@@ -81,7 +81,13 @@ export default function AirdropDetails() {
               Token address
             </Text>
           </Box>
-          <Text fontSize="sm" fontWeight={{ sm: "bold" }} py={{ base: "0.5", sm: "1" }} mt="1.5" mr={{ base: "0", lg: "4" }}>
+          <Text
+            fontSize="sm"
+            fontWeight={{ sm: "bold" }}
+            py={{ base: "0.5", sm: "1" }}
+            mt="1.5"
+            mr={{ base: "0", lg: "4" }}
+          >
             0x0000...1234
             <Icon as={ExternalLinkIcon} ml={1} mb={1} />
           </Text>
