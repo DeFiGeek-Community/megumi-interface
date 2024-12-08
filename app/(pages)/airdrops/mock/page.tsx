@@ -66,17 +66,11 @@ export default function AirdropPage() {
     );
   const isOwner = true;
 
-  let airdropContractDeployedAt = "-",
-    airdropCreatedAt = "-",
-    currentTotalAirdropAmount = "0",
+  let currentTotalAirdropAmount = "0",
     currentClaimedAccounts = "0 / 0",
     currentVestingEndsAt = "-",
-    isRegisteredAirdrop = false,
-    isRegisteredContract = false,
     isLinearVesting = false;
 
-  airdropContractDeployedAt = formatDate(airdrops[0].contractDeployedAt);
-  airdropCreatedAt = formatDate(airdrops[0].createdAt);
   currentTotalAirdropAmount = formatTotalAirdropAmount(airdrops[0].totalAirdropAmount);
   currentClaimedAccounts = formatClaimedAccounts(
     airdrops[0].eligibleUsersNum,
@@ -85,8 +79,6 @@ export default function AirdropPage() {
   if ("vestingEndsAt" in airdrops[0]) {
     currentVestingEndsAt = formatVestingEndsAt(airdrops[0].vestingEndsAt);
   }
-  isRegisteredAirdrop = !!airdrops[0].merkleTreeUploadedAt;
-  isRegisteredContract = !!airdrops[0].contractAddress;
   isLinearVesting = airdrops[0].templateName === TemplateType.LINEAR_VESTING;
 
   return (
@@ -256,9 +248,11 @@ export default function AirdropPage() {
                   </HStack>
                 </>
               )}
-              <Button size="sm" colorScheme="blue" width="full" mt={4}>
-                {t("airdrop.claim")}
-              </Button>
+              {(isLinearVesting || (!isLinearVesting && !standardClaim.isClaimed)) && (
+                <Button size="sm" colorScheme="blue" width="full" mt={4}>
+                  {t("airdrop.claim")}
+                </Button>
+              )}
             </VStack>
           </Box>
 
