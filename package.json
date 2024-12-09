@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
-    "test:backend": "npx dotenv -e .env.test -- npx prisma migrate reset -f && jest",
+    "test:backend": "npx dotenv -e .env.test -- npx prisma migrate reset -f && npx prisma db seed -- --environment test && jest",
     "migrate:reset:test": "npx dotenv -e .env.test -- npx prisma migrate reset -f"
   },
   "dependencies": {
@@ -60,6 +60,7 @@
     "prettier": "^3.3.3",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
+    "tsx": "^4.19.2",
     "typescript": "^5.5.4"
   },
   "browserslist": {
@@ -75,5 +76,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   }
 }
