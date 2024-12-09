@@ -4,7 +4,15 @@ import type { Session } from "next-auth";
 import { uint8ObjectToHexString } from "@/app/lib/utils";
 import { TemplateType } from "@/app/lib/constants/templates";
 import * as appHandler from "./routes";
+import { zeroAddress } from "viem";
 
+const YMWK = "0xdE2832DE0b4C0b4b6742e60186E290622B2B766C".toLowerCase(); // Sepolia YMWK
+const YMWK_INFO = {
+  tokenName: "Yamawake DAO Token",
+  tokenSymbol: "YMWK",
+  tokenDecimals: 18,
+};
+const chainId = "11155111"; // Sepolia
 let mockedSession: Session | null = null;
 
 jest.mock("../../auth/authOptions", () => ({
@@ -24,25 +32,14 @@ afterEach(() => {
 });
 
 describe("POST /api/airdrops Create a new airdrop", () => {
-  const chainId = process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID!;
-  const tokenAddress = "0xdE2832DE0b4C0b4b6742e60186E290622B2B766C".toLowerCase(); // Sepolia YMWK
-  const sampleData = {
+  const basicMockData = {
     contractAddress: null,
     templateName: TemplateType.STANDARD,
     owner: "0xabcd",
-    tokenAddress,
+    tokenAddress: YMWK,
     tokenLogo: "https://example.com/logo.png",
   };
-  const expectedData = {
-    contractAddress: null,
-    templateName: TemplateType.STANDARD,
-    owner: "0xabcd",
-    tokenAddress,
-    tokenName: "Yamawake DAO Token",
-    tokenSymbol: "YMWK",
-    tokenDecimals: 18,
-    tokenLogo: "https://example.com/logo.png",
-  };
+
   test("no session", async () => {
     await testApiHandler({
       appHandler,
@@ -50,53 +47,173 @@ describe("POST /api/airdrops Create a new airdrop", () => {
       test: async ({ fetch }) => {
         const res = await fetch({
           method: "POST",
-          body: JSON.stringify(sampleData),
+          body: JSON.stringify(basicMockData),
         });
         expect(res.status).toStrictEqual(401);
       },
     });
   });
 
-  test("with session", async () => {
-    mockedSession = {
-      expires: "expires",
-      user: {
-        address: "0x1234",
-      },
-    };
+  describe("with session", () => {
+    test("Success create airdrop", async () => {
+      const expectedData = {
+        ...basicMockData,
+        ...YMWK_INFO,
+      };
 
-    await testApiHandler({
-      appHandler,
-      params: { chainId },
-      test: async ({ fetch }) => {
-        const res = await fetch({
-          method: "POST",
-          body: JSON.stringify(sampleData),
-        });
-        expect(res.status).toStrictEqual(201);
-        const {
-          contractAddress,
-          templateName,
-          owner,
-          tokenAddress,
-          tokenName,
-          tokenSymbol,
-          tokenDecimals,
-          tokenLogo,
-        } = await res.json();
+      mockedSession = {
+        expires: "expires",
+        user: {
+          address: "0x1234",
+        },
+      };
 
-        const resData = {
-          contractAddress: contractAddress,
-          templateName: uint8ObjectToHexString(templateName),
-          owner: uint8ObjectToHexString(owner),
-          tokenAddress: uint8ObjectToHexString(tokenAddress),
-          tokenName,
-          tokenSymbol,
-          tokenDecimals,
-          tokenLogo,
-        };
-        expect(resData).toEqual(expectedData);
-      },
+      await testApiHandler({
+        appHandler,
+        params: { chainId },
+        test: async ({ fetch }) => {
+          const res = await fetch({
+            method: "POST",
+            body: JSON.stringify(basicMockData),
+          });
+          expect(res.status).toStrictEqual(201);
+          const {
+            contractAddress,
+            templateName,
+            owner,
+            tokenAddress,
+            tokenName,
+            tokenSymbol,
+            tokenDecimals,
+            tokenLogo,
+          } = await res.json();
+
+          const resData = {
+            contractAddress: contractAddress,
+            templateName: uint8ObjectToHexString(templateName),
+            owner: uint8ObjectToHexString(owner),
+            tokenAddress: uint8ObjectToHexString(tokenAddress),
+            tokenName,
+            tokenSymbol,
+            tokenDecimals,
+            tokenLogo,
+          };
+          expect(resData).toEqual(expectedData);
+        },
+      });
+    });
+
+    test("Invalid contract", async () => {
+      const sampleData = {
+        ...basicMockData,
+        contractAddress: zeroAddress,
+      };
+
+      mockedSession = {
+        expires: "expires",
+        user: {
+          address: "0x1234",
+        },
+      };
+
+      await testApiHandler({
+        appHandler,
+        params: { chainId },
+        test: async ({ fetch }) => {
+          const res = await fetch({
+            method: "POST",
+            body: JSON.stringify(sampleData),
+          });
+          expect(res.status).toStrictEqual(422);
+          const { error } = await res.json();
+          console.log(error.contractAddress);
+          expect(error.contractAddress).toContain("ContractFunctionExecutionError");
+        },
+      });
+    });
+
+    test("No tokenAddress", async () => {
+      const sampleData = {
+        ...basicMockData,
+        tokenAddress: undefined,
+      };
+
+      mockedSession = {
+        expires: "expires",
+        user: {
+          address: "0x1234",
+        },
+      };
+
+      await testApiHandler({
+        appHandler,
+        params: { chainId },
+        test: async ({ fetch }) => {
+          const res = await fetch({
+            method: "POST",
+            body: JSON.stringify(sampleData),
+          });
+          expect(res.status).toStrictEqual(422);
+          const { error } = await res.json();
+          expect(error.tokenAddress).toEqual("Token address is required");
+        },
+      });
+    });
+
+    test("Invalid tokenAddress", async () => {
+      const sampleData = {
+        ...basicMockData,
+        tokenAddress: zeroAddress,
+      };
+
+      mockedSession = {
+        expires: "expires",
+        user: {
+          address: "0x1234",
+        },
+      };
+
+      await testApiHandler({
+        appHandler,
+        params: { chainId },
+        test: async ({ fetch }) => {
+          const res = await fetch({
+            method: "POST",
+            body: JSON.stringify(sampleData),
+          });
+          expect(res.status).toStrictEqual(422);
+          const { error } = await res.json();
+          expect(error).toContain("ContractFunctionExecutionError");
+        },
+      });
+    });
+
+    test("Invalid tokenLogo", async () => {
+      const sampleData = {
+        ...basicMockData,
+        tokenLogo: "asdf",
+      };
+
+      mockedSession = {
+        expires: "expires",
+        user: {
+          address: "0x1234",
+        },
+      };
+
+      await testApiHandler({
+        appHandler,
+        params: { chainId },
+        test: async ({ fetch }) => {
+          const res = await fetch({
+            method: "POST",
+            body: JSON.stringify(sampleData),
+          });
+          expect(res.status).toStrictEqual(422);
+          const { error } = await res.json();
+          expect(error.tokenLogo).toEqual("Invalid URL");
+        },
+      });
     });
   });
 

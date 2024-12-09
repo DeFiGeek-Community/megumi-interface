@@ -35,7 +35,7 @@ cp .env.sample .env.test
 ### Run test
 
 ```bash
-pnpm test
+pnpm test:backend
 ```
 
 ## Docker

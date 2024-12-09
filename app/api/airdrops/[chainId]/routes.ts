@@ -19,7 +19,7 @@ type AirdropFormType = {
 type AirdropContractType = GetContractReturnType<typeof MerkleAirdropBase, PublicClient, any>;
 type AirdropValidationType = {
   templateName?: string;
-  owner?: string;
+  contractAddress?: string;
   tokenAddress?: string;
   tokenLogo?: string;
 };
@@ -55,11 +55,12 @@ const validateAirdropData = async (
         // (!session.user.siwe.resources && contractOwner === session.siwe.address) ||
         // (session.siwe.resources && contractOwner === session.siwe.resources[0])
       ) {
-        errors["owner"] = "You are not the owner of this contract";
+        errors["contractAddress"] = "You are not the owner of this contract";
       }
     } catch (error: unknown) {
-      errors["owner"] = error instanceof Error ? `${error.name} ${error.message}` : `${error}`;
-      console.log(`[ERROR] ${errors["owner"]}`);
+      errors["contractAddress"] =
+        error instanceof Error ? `${error.name} ${error.message}` : `${error}`;
+      console.log(`[ERROR] ${errors["contractAddress"]}`);
     }
   }
   // Validates token
@@ -67,7 +68,14 @@ const validateAirdropData = async (
     errors["tokenAddress"] = "Token address is required";
   }
 
-  // TODO tokenLogoのURL存在チェック
+  // Validate Token logo URL
+  if (airdrop.tokenLogo) {
+    try {
+      new URL(airdrop.tokenLogo);
+    } catch (e: unknown) {
+      errors["tokenLogo"] = e instanceof Error ? e.message : "Invalid URL";
+    }
+  }
 
   return { isValid: Object.keys(errors).length === 0, errors };
 };
@@ -107,8 +115,7 @@ export async function POST(request: Request, { params }: { params: { chainId: st
       return NextResponse.json({ error: errors }, { status: 422 });
     }
 
-    // TODO
-    // tokenName, tokenSymbol, tokenDecimalsはtokenAddressから取得
+    // Fetch token information from the contract address
     let tokenName;
     let tokenSymbol;
     let tokenDecimals;
@@ -124,7 +131,7 @@ export async function POST(request: Request, { params }: { params: { chainId: st
       tokenDecimals = await token.read.decimals();
     } catch (error: unknown) {
       console.error(error);
-      return NextResponse.json({ error }, { status: 422 });
+      return NextResponse.json({ error: String(error) }, { status: 422 });
     }
 
     const airdrop = await prisma.airdrop.create({
