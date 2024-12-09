@@ -29,16 +29,15 @@ async function main() {
       const airdrop = await prisma.airdrop.create({
         data: {
           contractAddress: null,
-          templateName: encoder.encode(TemplateType.STANDARD),
-          owner: encoder.encode("0xabcd"),
-          tokenAddress: encoder.encode(YMWK),
+          templateName: Uint8Array.from(Buffer.from(TemplateType.STANDARD.slice(2), "hex")),
+          owner: Uint8Array.from(Buffer.from("0xabcd".slice(2), "hex")),
+          tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
           tokenName: "Yamawake DAO Token",
           tokenSymbol: "YMWK",
           tokenDecimals: 18,
           tokenLogo: "https://example.com/logo.png",
         },
       });
-      console.log({ airdrop });
       break;
     default:
       break;

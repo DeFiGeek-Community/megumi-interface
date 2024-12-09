@@ -6,7 +6,7 @@ import { getViemProvider } from "@/app/lib/api";
 import { authOptions } from "../../auth/authOptions";
 import { isSupportedChain } from "@/app/lib/chain";
 import MerkleAirdropBase from "@/app/lib/constants/abis/MerkleAirdropBase.json";
-import { isSupportedTemplate } from "@/app/lib/utils";
+import { isSupportedTemplate, uint8ObjectToHexString } from "@/app/lib/utils";
 
 // Type definition -->
 type AirdropFormType = {
@@ -159,13 +159,16 @@ export async function POST(request: Request, { params }: { params: { chainId: st
 // Get all airdrops
 export async function GET() {
   try {
+    // TODO paging
     const airdrops = await prisma.airdrop.findMany();
     const formattedAirdrops = airdrops.map((airdrop: Airdrop) => ({
       ...airdrop,
-      contractAddress: airdrop.contractAddress,
-      templateName: airdrop.templateName,
-      owner: airdrop.owner,
-      tokenAddress: airdrop.tokenAddress,
+      contractAddress: airdrop.contractAddress
+        ? uint8ObjectToHexString(airdrop.contractAddress)
+        : null,
+      templateName: uint8ObjectToHexString(airdrop.templateName),
+      owner: uint8ObjectToHexString(airdrop.owner),
+      tokenAddress: uint8ObjectToHexString(airdrop.tokenAddress),
     }));
 
     return NextResponse.json(formattedAirdrops);

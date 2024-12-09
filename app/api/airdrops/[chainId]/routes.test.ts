@@ -126,7 +126,6 @@ describe("POST /api/airdrops Create a new airdrop", () => {
           });
           expect(res.status).toStrictEqual(422);
           const { error } = await res.json();
-          console.log(error.contractAddress);
           expect(error.contractAddress).toContain("ContractFunctionExecutionError");
         },
       });
@@ -217,5 +216,34 @@ describe("POST /api/airdrops Create a new airdrop", () => {
     });
   });
 
-  // test("GET /api/airdrops - Retrieve all airdrops", async () => {});
+  test("GET /api/airdrops - Retrieve all airdrops", async () => {
+    const expectedData = {
+      contractAddress: null,
+      templateName: TemplateType.STANDARD,
+      owner: "0xabcd",
+      tokenAddress: YMWK,
+      tokenName: "Yamawake DAO Token",
+      tokenSymbol: "YMWK",
+      tokenDecimals: 18,
+      tokenLogo: "https://example.com/logo.png",
+    };
+
+    await testApiHandler({
+      appHandler,
+      params: { chainId },
+      test: async ({ fetch }) => {
+        const res = await fetch({
+          method: "GET",
+        });
+        expect(res.status).toStrictEqual(200);
+        const airdrops = await res.json();
+
+        Object.keys(expectedData).map((key: string) => {
+          expect(airdrops[airdrops.length - 1][key]).toStrictEqual(
+            expectedData[key as keyof typeof expectedData],
+          );
+        });
+      },
+    });
+  });
 });
