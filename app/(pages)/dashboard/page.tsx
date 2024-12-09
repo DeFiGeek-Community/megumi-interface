@@ -7,8 +7,7 @@ import { Box, Button, Flex, Tab, TabList, Tabs, VStack } from "@chakra-ui/react"
 import { AddIcon } from "@chakra-ui/icons";
 import { useTranslation } from "react-i18next";
 import DashBoardCard from "@/app/components/airdrops/cards/DashBoardCard";
-import { TemplateType } from "@/app/interfaces/dashboard";
-import { Airdrop } from "@/app/interfaces/dashboard";
+import { TemplateType, Airdrop } from "@/app/interfaces/dashboard";
 
 export default function Dashboard() {
   const { address, isConnecting, isReconnecting } = useRequireAccount();
