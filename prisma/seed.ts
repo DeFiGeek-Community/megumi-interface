@@ -13,7 +13,6 @@ const options: ParseArgsOptionsConfig = {
 };
 
 const prisma = new PrismaClient();
-const encoder = new TextEncoder();
 const YMWK = "0xdE2832DE0b4C0b4b6742e60186E290622B2B766C".toLowerCase(); // Sepolia YMWK
 async function main() {
   const {
@@ -26,18 +25,20 @@ async function main() {
       break;
     case "test":
       /** data for test environment */
-      const airdrop = await prisma.airdrop.create({
-        data: {
-          contractAddress: null,
-          templateName: Uint8Array.from(Buffer.from(TemplateType.STANDARD.slice(2), "hex")),
-          owner: Uint8Array.from(Buffer.from("0xabcd".slice(2), "hex")),
-          tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
-          tokenName: "Yamawake DAO Token",
-          tokenSymbol: "YMWK",
-          tokenDecimals: 18,
-          tokenLogo: "https://example.com/logo.png",
-        },
-      });
+      for (let i = 0; i < 30; i++) {
+        await prisma.airdrop.create({
+          data: {
+            contractAddress: null,
+            templateName: Uint8Array.from(Buffer.from(TemplateType.STANDARD.slice(2), "hex")),
+            owner: Uint8Array.from(Buffer.from("0xabcd".slice(2), "hex")),
+            tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
+            tokenName: `Yamawake DAO Token${i}`,
+            tokenSymbol: "YMWK",
+            tokenDecimals: 18,
+            tokenLogo: "https://example.com/logo.png",
+          },
+        });
+      }
       break;
     default:
       break;

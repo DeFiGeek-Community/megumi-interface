@@ -1,10 +1,10 @@
 import { describe } from "node:test";
 import { testApiHandler } from "next-test-api-route-handler";
 import type { Session } from "next-auth";
+import { zeroAddress } from "viem";
 import { uint8ObjectToHexString } from "@/app/lib/utils";
 import { TemplateType } from "@/app/lib/constants/templates";
 import * as appHandler from "./routes";
-import { zeroAddress } from "viem";
 
 const YMWK = "0xdE2832DE0b4C0b4b6742e60186E290622B2B766C".toLowerCase(); // Sepolia YMWK
 const YMWK_INFO = {
@@ -25,6 +25,10 @@ jest.mock("../../auth/authOptions", () => ({
 
 jest.mock("next-auth", () => ({
   getServerSession: jest.fn(() => Promise.resolve(mockedSession)),
+}));
+
+jest.mock("../../../../prisma/client", () => ({
+  prisma: jestPrisma.client,
 }));
 
 afterEach(() => {
@@ -216,34 +220,80 @@ describe("POST /api/airdrops Create a new airdrop", () => {
     });
   });
 
-  test("GET /api/airdrops - Retrieve all airdrops", async () => {
-    const expectedData = {
-      contractAddress: null,
-      templateName: TemplateType.STANDARD,
-      owner: "0xabcd",
-      tokenAddress: YMWK,
-      tokenName: "Yamawake DAO Token",
-      tokenSymbol: "YMWK",
-      tokenDecimals: 18,
-      tokenLogo: "https://example.com/logo.png",
-    };
+  describe("GET /api/airdrops - Retrieve all airdrops", async () => {
+    test("No page and limit specified", async () => {
+      const expectedData = {
+        contractAddress: null,
+        templateName: TemplateType.STANDARD,
+        owner: "0xabcd",
+        tokenAddress: YMWK,
+        tokenName: "Yamawake DAO Token20",
+        tokenSymbol: "YMWK",
+        tokenDecimals: 18,
+        tokenLogo: "https://example.com/logo.png",
+      };
 
-    await testApiHandler({
-      appHandler,
-      params: { chainId },
-      test: async ({ fetch }) => {
-        const res = await fetch({
-          method: "GET",
-        });
-        expect(res.status).toStrictEqual(200);
-        const airdrops = await res.json();
+      await testApiHandler({
+        appHandler,
+        url: `/airdrops/${chainId}/`,
+        params: { chainId },
+        test: async ({ fetch }) => {
+          const res = await fetch({
+            method: "GET",
+          });
+          expect(res.status).toStrictEqual(200);
+          const data = await res.json();
 
-        Object.keys(expectedData).map((key: string) => {
-          expect(airdrops[airdrops.length - 1][key]).toStrictEqual(
-            expectedData[key as keyof typeof expectedData],
-          );
-        });
-      },
+          expect(data.totalCount).toStrictEqual(30);
+          expect(data.page).toStrictEqual(1);
+          expect(data.limit).toStrictEqual(10);
+          expect(data.totalPages).toStrictEqual(3);
+
+          Object.keys(expectedData).map((key: string) => {
+            expect(data.airdrops[data.airdrops.length - 1][key]).toStrictEqual(
+              expectedData[key as keyof typeof expectedData],
+            );
+          });
+        },
+      });
+    });
+    test("page and limit specified", async () => {
+      const expectedData = {
+        contractAddress: null,
+        templateName: TemplateType.STANDARD,
+        owner: "0xabcd",
+        tokenAddress: YMWK,
+        tokenName: "Yamawake DAO Token24",
+        tokenSymbol: "YMWK",
+        tokenDecimals: 18,
+        tokenLogo: "https://example.com/logo.png",
+      };
+
+      const page = "2";
+      const limit = "3";
+      await testApiHandler({
+        appHandler,
+        url: `/airdrops/${chainId}/?page=${page}&limit=${limit}`,
+        params: { chainId },
+        test: async ({ fetch }) => {
+          const res = await fetch({
+            method: "GET",
+          });
+          expect(res.status).toStrictEqual(200);
+          const data = await res.json();
+
+          expect(data.totalCount).toStrictEqual(30);
+          expect(data.page).toStrictEqual(2);
+          expect(data.limit).toStrictEqual(3);
+          expect(data.totalPages).toStrictEqual(10);
+
+          Object.keys(expectedData).map((key: string) => {
+            expect(data.airdrops[data.airdrops.length - 1][key]).toStrictEqual(
+              expectedData[key as keyof typeof expectedData],
+            );
+          });
+        },
+      });
     });
   });
 });

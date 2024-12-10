@@ -1,6 +1,7 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { erc20Abi, getContract, GetContractReturnType, type PublicClient } from "viem";
-import { PrismaClient, type Airdrop } from "@prisma/client";
+import type { Airdrop } from "@prisma/client";
+import { prisma } from "@/prisma/client";
 import { getServerSession, Session } from "next-auth";
 import { getViemProvider } from "@/app/lib/api";
 import { authOptions } from "../../auth/authOptions";
@@ -25,7 +26,7 @@ type AirdropValidationType = {
 };
 // <--
 
-const prisma = new PrismaClient();
+// export const prisma = new PrismaClient();
 
 const validateAirdropData = async (
   session: Session,
@@ -81,7 +82,7 @@ const validateAirdropData = async (
 };
 
 // Create new airdrop
-export async function POST(request: Request, { params }: { params: { chainId: string } }) {
+export async function POST(request: NextRequest, { params }: { params: { chainId: string } }) {
   const requestedChainId = parseInt(params.chainId);
   if (!isSupportedChain(requestedChainId)) {
     return NextResponse.json({ error: "URL Not Found" }, { status: 404 });
@@ -157,10 +158,23 @@ export async function POST(request: Request, { params }: { params: { chainId: st
 }
 
 // Get all airdrops
-export async function GET() {
+export async function GET(req: NextRequest, { params }: { params: { chainId: string } }) {
   try {
-    // TODO paging
-    const airdrops = await prisma.airdrop.findMany();
+    const defaultPage = 1;
+    const defaultLimit = 10;
+    const searchParams = req.nextUrl.searchParams;
+    const page = parseInt(searchParams.get("page") || String(defaultPage)) || defaultPage;
+    const limit = parseInt(searchParams.get("limit") || String(defaultLimit)) || defaultLimit;
+    const skip = (page - 1) * limit;
+
+    const totalCount = await prisma.airdrop.count();
+    const airdrops = await prisma.airdrop.findMany({
+      skip,
+      take: limit,
+      orderBy: {
+        createdAt: "desc",
+      },
+    });
     const formattedAirdrops = airdrops.map((airdrop: Airdrop) => ({
       ...airdrop,
       contractAddress: airdrop.contractAddress
@@ -171,7 +185,13 @@ export async function GET() {
       tokenAddress: uint8ObjectToHexString(airdrop.tokenAddress),
     }));
 
-    return NextResponse.json(formattedAirdrops);
+    return NextResponse.json({
+      airdrops: formattedAirdrops,
+      totalCount,
+      page,
+      limit,
+      totalPages: Math.ceil(totalCount / limit),
+    });
   } catch (error) {
     console.error("Error fetching airdrops:", error);
     return NextResponse.json({ error: "Failed to fetch airdrops" }, { status: 500 });
