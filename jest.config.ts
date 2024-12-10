@@ -165,7 +165,9 @@ const config = {
 
   // The test environment that will be used for testing
   // testEnvironment: "jsdom",
-  testEnvironment: "node",
+  // testEnvironment: "node",
+  // testEnvironment: "@quramy/jest-prisma/environment",
+  testEnvironment: "./jest.environment.ts",
 
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},
