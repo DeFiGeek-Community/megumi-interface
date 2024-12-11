@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../auth/authOptions";
+import { uint8ObjectToHexString } from "@/app/lib/utils";
 
 const prisma = new PrismaClient();
 
@@ -18,10 +19,12 @@ export async function GET(req: Request, { params }: { params: { chainId: string;
 
     const formattedAirdrop = {
       ...airdrop,
-      contractAddress: airdrop.contractAddress ? airdrop.contractAddress : null,
-      templateName: airdrop.templateName,
-      owner: airdrop.owner,
-      tokenAddress: airdrop.tokenAddress,
+      contractAddress: airdrop.contractAddress
+        ? uint8ObjectToHexString(airdrop.contractAddress)
+        : null,
+      templateName: uint8ObjectToHexString(airdrop.templateName),
+      owner: uint8ObjectToHexString(airdrop.owner),
+      tokenAddress: uint8ObjectToHexString(airdrop.tokenAddress),
     };
 
     return NextResponse.json(formattedAirdrop);

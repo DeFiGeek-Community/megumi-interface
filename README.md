@@ -6,6 +6,10 @@
 pnpm i
 ```
 
+```bash
+npx prisma generate
+```
+
 ### Prepare .env
 
 ```bash
