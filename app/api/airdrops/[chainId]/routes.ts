@@ -7,7 +7,11 @@ import { getViemProvider } from "@/app/lib/api";
 import { authOptions } from "../../auth/authOptions";
 import { isSupportedChain } from "@/app/lib/chain";
 import MerkleAirdropBase from "@/app/lib/constants/abis/MerkleAirdropBase.json";
-import { isSupportedTemplate, uint8ObjectToHexString } from "@/app/lib/utils";
+import {
+  convertAirdropWithUint8ArrayToHexString,
+  hexStringToUint8Array,
+  isSupportedTemplate,
+} from "@/app/lib/utils";
 
 // Type definition -->
 type AirdropFormType = {
@@ -137,12 +141,10 @@ export async function POST(request: NextRequest, { params }: { params: { chainId
 
     const airdrop = await prisma.airdrop.create({
       data: {
-        contractAddress: contractAddress
-          ? Uint8Array.from(Buffer.from(contractAddress.slice(2), "hex"))
-          : null,
-        templateName: Uint8Array.from(Buffer.from(templateName.slice(2), "hex")),
-        owner: Uint8Array.from(Buffer.from(owner.slice(2), "hex")),
-        tokenAddress: Uint8Array.from(Buffer.from(tokenAddress.slice(2), "hex")),
+        contractAddress: contractAddress ? hexStringToUint8Array(contractAddress) : null,
+        templateName: hexStringToUint8Array(templateName),
+        owner: hexStringToUint8Array(owner),
+        tokenAddress: hexStringToUint8Array(tokenAddress),
         tokenName,
         tokenSymbol,
         tokenDecimals,
@@ -175,15 +177,9 @@ export async function GET(req: NextRequest, { params }: { params: { chainId: str
         createdAt: "desc",
       },
     });
-    const formattedAirdrops = airdrops.map((airdrop: Airdrop) => ({
-      ...airdrop,
-      contractAddress: airdrop.contractAddress
-        ? uint8ObjectToHexString(airdrop.contractAddress)
-        : null,
-      templateName: uint8ObjectToHexString(airdrop.templateName),
-      owner: uint8ObjectToHexString(airdrop.owner),
-      tokenAddress: uint8ObjectToHexString(airdrop.tokenAddress),
-    }));
+    const formattedAirdrops = airdrops.map((airdrop: Airdrop) =>
+      convertAirdropWithUint8ArrayToHexString(airdrop),
+    );
 
     return NextResponse.json({
       airdrops: formattedAirdrops,

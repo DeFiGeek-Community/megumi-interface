@@ -2,7 +2,7 @@ import { describe } from "node:test";
 import { testApiHandler } from "next-test-api-route-handler";
 import type { Session } from "next-auth";
 import { zeroAddress } from "viem";
-import { uint8ObjectToHexString } from "@/app/lib/utils";
+import { convertAirdropWithUint8ArrayToHexString, uint8ObjectToHexString } from "@/app/lib/utils";
 import { TemplateType } from "@/app/lib/constants/templates";
 import * as appHandler from "./routes";
 
@@ -38,15 +38,8 @@ afterEach(() => {
 describe("GET /api/airdrop/:id - Retrieve an airdrop detail", () => {
   test("Get detail", async () => {
     const airdrop = await jestPrisma.client.airdrop.findFirst();
-    const expectedData = {
-      ...airdrop,
-      contractAddress: airdrop?.contractAddress
-        ? uint8ObjectToHexString(airdrop.contractAddress)
-        : null,
-      templateName: uint8ObjectToHexString(airdrop.templateName),
-      owner: uint8ObjectToHexString(airdrop.owner),
-      tokenAddress: uint8ObjectToHexString(airdrop.tokenAddress),
-    };
+    const expectedData = convertAirdropWithUint8ArrayToHexString(airdrop);
+
     await testApiHandler({
       appHandler,
       params: { chainId, id: expectedData.id! },

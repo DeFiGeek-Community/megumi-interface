@@ -1,10 +1,8 @@
 import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "@/prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../auth/authOptions";
-import { uint8ObjectToHexString } from "@/app/lib/utils";
-
-const prisma = new PrismaClient();
+import { convertAirdropWithUint8ArrayToHexString, hexStringToUint8Array } from "@/app/lib/utils";
 
 // Get an airdrop by ID
 export async function GET(req: Request, { params }: { params: { chainId: string; id: string } }) {
@@ -17,15 +15,7 @@ export async function GET(req: Request, { params }: { params: { chainId: string;
       return NextResponse.json({ error: "Airdrop not found" }, { status: 404 });
     }
 
-    const formattedAirdrop = {
-      ...airdrop,
-      contractAddress: airdrop.contractAddress
-        ? uint8ObjectToHexString(airdrop.contractAddress)
-        : null,
-      templateName: uint8ObjectToHexString(airdrop.templateName),
-      owner: uint8ObjectToHexString(airdrop.owner),
-      tokenAddress: uint8ObjectToHexString(airdrop.tokenAddress),
-    };
+    const formattedAirdrop = convertAirdropWithUint8ArrayToHexString(airdrop);
 
     return NextResponse.json(formattedAirdrop);
   } catch (error) {
@@ -58,12 +48,10 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
     const updatedAirdrop = await prisma.airdrop.update({
       where: { id: params.id },
       data: {
-        contractAddress: contractAddress
-          ? Uint8Array.from(Buffer.from(contractAddress, "hex"))
-          : null,
-        templateName: Uint8Array.from(Buffer.from(templateName, "hex")),
-        owner: Uint8Array.from(Buffer.from(owner, "hex")),
-        tokenAddress: Uint8Array.from(Buffer.from(tokenAddress, "hex")),
+        contractAddress: contractAddress ? hexStringToUint8Array(contractAddress) : null,
+        templateName: hexStringToUint8Array(templateName),
+        owner: hexStringToUint8Array(owner),
+        tokenAddress: hexStringToUint8Array(tokenAddress),
         tokenName,
         tokenSymbol,
         tokenDecimals,
