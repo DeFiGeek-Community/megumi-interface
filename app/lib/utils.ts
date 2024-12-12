@@ -28,7 +28,9 @@ export const getEllipsizedAddress = ({
 // <--
 
 // For frontend and backend-->
-export const uint8ObjectToHexString = (object: { [key: string]: number }): `0x${string}` => {
+export const uint8ObjectToHexString = (
+  object: { [key: string]: number } | Uint8Array,
+): `0x${string}` => {
   const values = Object.values(object);
   return uint8ArrayToHexString(new Uint8Array(values));
 };

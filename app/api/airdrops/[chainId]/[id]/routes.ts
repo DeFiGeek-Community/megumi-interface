@@ -26,9 +26,28 @@ export async function GET(req: Request, { params }: { params: { chainId: string;
 
 // Update an airdrop by ID
 export async function PATCH(req: Request, { params }: { params: { id: string } }) {
-  // TODO check owner
   const session = await getServerSession(authOptions);
   if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  let airdrop;
+  try {
+    airdrop = await prisma.airdrop.findUnique({
+      where: { id: params.id },
+    });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? `${error.name} ${error.message}` : `${error}`;
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+
+  if (!airdrop) {
+    return NextResponse.json({ error: "Not Found" }, { status: 404 });
+  }
+
+  const formattedAirdrop = convertAirdropWithUint8ArrayToHexString(airdrop);
+
+  if (session.user.address !== formattedAirdrop.owner) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
@@ -67,10 +86,32 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
 }
 
 // Delete an airdrop by ID
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
-  // TODO check owner
+export async function DELETE(
+  req: Request,
+  { params }: { params: { chainId: string; id: string } },
+) {
   const session = await getServerSession(authOptions);
   if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  let airdrop;
+  try {
+    airdrop = await prisma.airdrop.findUnique({
+      where: { id: params.id },
+    });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? `${error.name} ${error.message}` : `${error}`;
+    return NextResponse.json({ error: message }, { status: 500 });
+  }
+
+  if (!airdrop) {
+    return NextResponse.json({ error: "Not Found" }, { status: 404 });
+  }
+
+  const formattedAirdrop = convertAirdropWithUint8ArrayToHexString(airdrop);
+
+  if (session.user.address !== formattedAirdrop.owner) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
