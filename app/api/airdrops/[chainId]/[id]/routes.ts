@@ -48,7 +48,7 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   const formattedAirdrop = convertAirdropWithUint8ArrayToHexString(airdrop);
 
   if (session.user.address !== formattedAirdrop.owner) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "You are not the owner of this contract" }, { status: 403 });
   }
 
   try {
@@ -112,7 +112,7 @@ export async function DELETE(
   const formattedAirdrop = convertAirdropWithUint8ArrayToHexString(airdrop);
 
   if (session.user.address !== formattedAirdrop.owner) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return NextResponse.json({ error: "You are not the owner of this contract" }, { status: 403 });
   }
 
   try {
