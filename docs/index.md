@@ -6,7 +6,9 @@
 erDiagram
     airdrops {
         UUID id PK "default uuid_generate_v4()"
-        bytea contract_address "UNIQUE"
+        VARCHAR title "NOT NULL"
+        INT chainId "NOT NULL"
+        bytea contract_address "UNIQUE with chainId"
         bytea template_name "NOT NULL"
         bytea owner "NOT NULL"
         bytea token_address "NOT NULL"
