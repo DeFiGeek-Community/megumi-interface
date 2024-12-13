@@ -9,7 +9,9 @@ datasource db {
 
 model Airdrop {
   id            String   @id @default(uuid())
-  contractAddress Bytes?  @unique
+  chainId       Int
+  title         String
+  contractAddress Bytes?
   templateName   Bytes
   owner          Bytes
   tokenAddress   Bytes
@@ -20,6 +22,8 @@ model Airdrop {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   AirdropClaimerMap AirdropClaimerMap[]
+
+  @@unique([contractAddress, chainId])
 }
 
 model Claimer {

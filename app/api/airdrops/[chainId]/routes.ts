@@ -15,6 +15,8 @@ import {
 
 // Type definition -->
 type AirdropFormType = {
+  chainId: number;
+  title: string;
   contractAddress: `0x${string}`;
   templateName: `0x${string}`;
   owner: `0x${string}`;
@@ -23,6 +25,8 @@ type AirdropFormType = {
 };
 type AirdropContractType = GetContractReturnType<typeof MerkleAirdropBase, PublicClient, any>;
 type AirdropValidationType = {
+  chainId?: string;
+  title?: string;
   templateName?: string;
   contractAddress?: string;
   tokenAddress?: string;
@@ -41,6 +45,18 @@ const validateAirdropData = async (
   // Validates templateName
   if (!isSupportedTemplate(airdrop.templateName)) {
     errors["templateName"] = "Invalid templateName";
+  }
+
+  if (!isSupportedChain(airdrop.chainId)) {
+    errors["chainId"] = "Unsupported chain";
+  }
+
+  if (!airdrop.title) {
+    errors["title"] = "Title is required";
+  }
+
+  if (airdrop.title.length > 200) {
+    errors["title"] = "Max length is 200";
   }
 
   // Validates owner if contractAddress is set
@@ -100,13 +116,15 @@ export async function POST(request: NextRequest, { params }: { params: { chainId
 
   try {
     const body = await request.json();
-    const { contractAddress, templateName, owner, tokenAddress, tokenLogo } = body;
+    const { chainId, title, contractAddress, templateName, owner, tokenAddress, tokenLogo } = body;
 
     const provider = getViemProvider(parseInt(params.chainId)) as PublicClient;
 
     const { isValid, errors } = await validateAirdropData(
       session,
       {
+        chainId,
+        title,
         contractAddress,
         templateName,
         owner,
@@ -141,6 +159,8 @@ export async function POST(request: NextRequest, { params }: { params: { chainId
 
     const airdrop = await prisma.airdrop.create({
       data: {
+        chainId,
+        title,
         contractAddress: contractAddress ? hexStringToUint8Array(contractAddress) : null,
         templateName: hexStringToUint8Array(templateName),
         owner: hexStringToUint8Array(owner),

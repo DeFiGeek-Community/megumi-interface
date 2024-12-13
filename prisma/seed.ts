@@ -28,6 +28,8 @@ async function main() {
       for (let i = 0; i < 30; i++) {
         await prisma.airdrop.create({
           data: {
+            chainId: 11155111,
+            title: `YMWK Airdrop ${i}`,
             contractAddress: null,
             templateName: Uint8Array.from(Buffer.from(TemplateType.STANDARD.slice(2), "hex")),
             owner: Uint8Array.from(Buffer.from("0xabcd".slice(2), "hex")),

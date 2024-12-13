@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE "Airdrop" ALTER COLUMN "chainId" DROP DEFAULT,
+ALTER COLUMN "title" DROP DEFAULT;

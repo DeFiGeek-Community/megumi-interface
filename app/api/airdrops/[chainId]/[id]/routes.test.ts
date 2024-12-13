@@ -125,7 +125,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
             method: "PATCH",
             body: JSON.stringify(newData),
           });
-          expect(res.status).toStrictEqual(401);
+          expect(res.status).toStrictEqual(403);
           const airdropAfter = await jestPrisma.client.airdrop.findUnique({
             where: { id: airdrop!.id },
           });
@@ -331,7 +331,7 @@ describe("DELETE /api/airdrop/:id - Delete an airdrop", () => {
           const res = await fetch({
             method: "DELETE",
           });
-          expect(res.status).toStrictEqual(401);
+          expect(res.status).toStrictEqual(403);
           const airdropAfter = await jestPrisma.client.airdrop.findUnique({
             where: { id: airdrop.id },
           });

@@ -37,6 +37,8 @@ afterEach(() => {
 
 describe("POST /api/airdrops Create a new airdrop", () => {
   const basicMockData = {
+    chainId: 11155111,
+    title: `YMWK Airdrop`,
     contractAddress: null,
     templateName: TemplateType.STANDARD,
     owner: "0xabcd",
@@ -82,6 +84,8 @@ describe("POST /api/airdrops Create a new airdrop", () => {
           });
           expect(res.status).toStrictEqual(201);
           const {
+            chainId,
+            title,
             contractAddress,
             templateName,
             owner,
@@ -93,6 +97,8 @@ describe("POST /api/airdrops Create a new airdrop", () => {
           } = await res.json();
 
           const resData = {
+            chainId,
+            title,
             contractAddress: contractAddress,
             templateName: uint8ObjectToHexString(templateName),
             owner: uint8ObjectToHexString(owner),
@@ -259,6 +265,8 @@ describe("POST /api/airdrops Create a new airdrop", () => {
     });
     test("page and limit specified", async () => {
       const expectedData = {
+        chainId: 11155111,
+        title: `YMWK Airdrop 24`,
         contractAddress: null,
         templateName: TemplateType.STANDARD,
         owner: "0xabcd",
