@@ -1,12 +1,14 @@
-import { erc20Abi, getContract, type PublicClient } from "viem";
+import { erc20Abi, getContract, isAddress, type PublicClient } from "viem";
 import type { GetEnsNameReturnType } from "viem/ens";
 import { type Chain, localhost, mainnet, sepolia, base, baseSepolia } from "viem/chains";
 import type { Airdrop } from "@prisma/client";
 import { TemplateType } from "./constants/templates";
 import { Session } from "next-auth";
-import { AirdropFormType, AirdropValidationType } from "../interfaces/airdrop";
+import { AirdropContractType, AirdropFormType, AirdropValidationType } from "../interfaces/airdrop";
 import { isSupportedChain } from "./chain";
 import MerkleAirdropBase from "@/app/lib/constants/abis/MerkleAirdropBase.json";
+import Factory from "@/app/lib/constants/abis/Factory.json";
+import { CONTRACT_ADDRESSES } from "./constants/contracts";
 
 const chains = { mainnet, sepolia, base, baseSepolia };
 
@@ -137,6 +139,34 @@ export const validateAirdropData = async (
   return { isValid: Object.keys(errors).length === 0, errors };
 };
 
+export const validateAirdropContract = async (
+  contractAddress: `0x${string}`,
+  provider: PublicClient,
+): Promise<{ isRegistered: boolean; airdropContract: AirdropContractType | undefined }> => {
+  if (!isAddress(contractAddress)) {
+    return {
+      isRegistered: false,
+      airdropContract: undefined,
+    };
+  }
+  const chainId = await provider.getChainId();
+  const factory = getContract({
+    address: CONTRACT_ADDRESSES[chainId].FACTORY,
+    abi: Factory,
+    client: provider,
+  });
+  const isRegisteredAirdrop = (await factory.read.airdrops([contractAddress])) as boolean;
+  const airdropContract = getContract({
+    address: contractAddress,
+    abi: MerkleAirdropBase,
+    client: provider,
+  });
+  return {
+    isRegistered: isRegisteredAirdrop,
+    airdropContract,
+  };
+};
+
 // Token information
 export const getTokenInfo = async (
   tokenAddress: `0x${string}`,
@@ -152,5 +182,30 @@ export const getTokenInfo = async (
   const tokenDecimals = await token.read.decimals();
 
   return { tokenName, tokenSymbol, tokenDecimals };
+};
+
+export const getTemplateNameFromAirdropAddress = async (
+  address: `0x${string}`,
+  provider: PublicClient,
+): Promise<TemplateType | undefined> => {
+  const proxyCode = await provider.getCode({
+    address,
+  });
+
+  // Check if this is a EIP-1167 contract
+  if (!proxyCode || !proxyCode.startsWith("0x363d3d373d3d3d363d73")) {
+    throw new Error("The given address is not an EIP-1167 Minimal Proxy.");
+  }
+  const implementationAddress = `0x${proxyCode.slice(22, 62)}`.toLowerCase();
+  const chainId = await provider.getChainId();
+
+  switch (implementationAddress) {
+    case CONTRACT_ADDRESSES[chainId].STANDARD:
+      return TemplateType.STANDARD;
+    case CONTRACT_ADDRESSES[chainId].LINEAR_VESTING:
+      return TemplateType.LINEAR_VESTING;
+    default:
+      return undefined;
+  }
 };
 // <--
