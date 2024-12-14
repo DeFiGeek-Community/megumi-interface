@@ -67,7 +67,7 @@ describe("GET /api/airdrop/:id - Retrieve an airdrop detail", () => {
 
 describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
   const newData = {
-    TemplateType: TemplateType.STANDARD, // Can be updated only before the contract address is registered
+    templateName: TemplateType.STANDARD, // Can be updated only before the contract address is registered
     tokenLogo: "https://example.com/logo_updated.png",
   };
 
@@ -119,7 +119,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
       };
       await testApiHandler({
         appHandler,
-        params: { chainId, id: airdrop!.id },
+        params: { chainId, id: airdrop.id },
         test: async ({ fetch }) => {
           const res = await fetch({
             method: "PATCH",
@@ -127,7 +127,51 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
           });
           expect(res.status).toStrictEqual(403);
           const airdropAfter = await jestPrisma.client.airdrop.findUnique({
-            where: { id: airdrop!.id },
+            where: { id: airdrop.id },
+          });
+          if (!airdropAfter) throw new Error("Airdrop not found");
+
+          Object.keys(airdropAfter).map((key: string) => {
+            const value = airdropAfter[key as keyof typeof airdropAfter];
+            if (value instanceof Date) {
+              expect((airdrop[key as keyof typeof airdropAfter] as Date).getTime()).toEqual(
+                value.getTime(),
+              );
+            } else {
+              expect(airdrop[key as keyof typeof airdropAfter]).toEqual(
+                airdropAfter[key as keyof typeof airdropAfter],
+              );
+            }
+          });
+        },
+      });
+    });
+
+    test("owner", async () => {
+      const airdrop = await jestPrisma.client.airdrop.findFirst();
+      if (!airdrop) throw new Error("Airdrop not found");
+
+      mockedSession = {
+        expires: "expires",
+        user: {
+          address: uint8ObjectToHexString(airdrop.owner),
+        },
+      };
+      const data = {
+        ...newData,
+        contractAddress: "0x92B9B6384d295f22fdBc8Eb661D7D574B96D2E93",
+      };
+      await testApiHandler({
+        appHandler,
+        params: { chainId, id: airdrop.id },
+        test: async ({ fetch }) => {
+          const res = await fetch({
+            method: "PATCH",
+            body: JSON.stringify(data),
+          });
+          expect(res.status).toStrictEqual(200);
+          const airdropAfter = await jestPrisma.client.airdrop.findUnique({
+            where: { id: airdrop.id },
           });
           if (!airdropAfter) throw new Error("Airdrop not found");
 
