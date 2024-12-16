@@ -53,3 +53,7 @@ docker compose up
 docker compose exec -it app bash
 docker compose exec -it db bash
 ```
+
+### S3 bucket on local environment using LocalStack
+
+`http://localhost:4566/localstack-bucket`
