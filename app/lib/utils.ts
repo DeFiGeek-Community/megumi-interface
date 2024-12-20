@@ -199,13 +199,12 @@ export const getTemplateNameFromAirdropAddress = async (
   const implementationAddress = `0x${proxyCode.slice(22, 62)}`.toLowerCase();
   const chainId = await provider.getChainId();
 
-  switch (implementationAddress) {
-    case CONTRACT_ADDRESSES[chainId].STANDARD:
-      return TemplateType.STANDARD;
-    case CONTRACT_ADDRESSES[chainId].LINEAR_VESTING:
-      return TemplateType.LINEAR_VESTING;
-    default:
-      return undefined;
-  }
+  const templateKey = Object.keys(CONTRACT_ADDRESSES[chainId]).find(
+    (key) =>
+      Object.keys(TemplateType).includes(key) &&
+      CONTRACT_ADDRESSES[chainId][key].toLowerCase() === implementationAddress,
+  ) as keyof typeof TemplateType | undefined;
+
+  return templateKey && TemplateType[templateKey];
 };
 // <--
