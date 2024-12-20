@@ -1,3 +1,5 @@
+import fs from "fs";
+import path from "path";
 import { describe } from "node:test";
 import { testApiHandler } from "next-test-api-route-handler";
 import type { Session } from "next-auth";
@@ -5,6 +7,8 @@ import { zeroAddress } from "viem";
 import { convertAirdropWithUint8ArrayToHexString, uint8ObjectToHexString } from "@/app/lib/utils";
 import { TemplateType } from "@/app/lib/constants/templates";
 import * as appHandler from "./routes";
+import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { awsClient } from "@/app/lib/aws";
 
 const YMWK = "0xdE2832DE0b4C0b4b6742e60186E290622B2B766C".toLowerCase(); // Sepolia YMWK
 const YMWK_INFO = {
@@ -33,6 +37,48 @@ jest.mock("../../../../../prisma/client", () => ({
 
 afterEach(() => {
   mockedSession = null;
+});
+
+describe("POST /api/airdrops/:id Upload merkle tree file", () => {
+  test("no session", async () => {
+    // TODO should be rejected with no session
+    const airdrop = await jestPrisma.client.airdrop.findFirst();
+    if (!airdrop) throw new Error("Airdrop not found");
+
+    const expectedData = convertAirdropWithUint8ArrayToHexString(airdrop);
+
+    await testApiHandler({
+      appHandler,
+      params: { chainId, id: expectedData.id },
+      test: async ({ fetch }) => {
+        const filePath = path.join(__dirname, "../../../../lib/sample/merkletree.json");
+        if (!fs.existsSync(filePath)) {
+          throw new Error(`File not found at path: ${filePath}`);
+        }
+
+        const formData = new FormData();
+        formData.append("file", new Blob([fs.readFileSync(filePath)]));
+
+        const res = await fetch({
+          method: "POST",
+          body: formData,
+        });
+
+        expect(res.status).toStrictEqual(200);
+
+        const command = new GetObjectCommand({
+          Bucket: process.env.AWS_S3_BUCKET_NAME,
+          Key: `${chainId}/${expectedData.id}-merkletree.json`,
+        });
+        const response = await awsClient.send(command);
+        const original = fs.readFileSync(filePath, "utf8");
+        const str = await response.Body?.transformToString();
+        expect(str).toStrictEqual(original);
+      },
+    });
+  });
+  test("with session", async () => {});
+  test("with session, invalid format", async () => {});
 });
 
 describe("GET /api/airdrop/:id - Retrieve an airdrop detail", () => {

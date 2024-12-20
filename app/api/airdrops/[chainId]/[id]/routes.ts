@@ -14,6 +14,44 @@ import {
 } from "@/app/lib/utils";
 import { getViemProvider } from "@/app/lib/api";
 
+import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
+import { awsClient } from "@/app/lib/aws";
+
+// TODO util
+export const respondError = (error: unknown) => {
+  const message = error instanceof Error ? `${error.name} ${error.message}` : `${error}`;
+  console.error(`[ERROR] ${message}`);
+  return NextResponse.json({ error: message }, { status: 500 });
+};
+
+// Upload merkle tree file
+export async function POST(req: Request, { params }: { params: { chainId: string; id: string } }) {
+  // console.log(await req.formData(), params);
+  const formData = await req.formData();
+  const file: any = formData.get("file");
+  const buffer = Buffer.from(await file?.arrayBuffer());
+
+  // TODO
+  // Validate merkle tree format
+  // if(!validateMerkleTree) {
+  // return 422
+  // }
+
+  const itemKey = `${params.chainId}/${params.id}-merkletree.json`;
+  const command = new PutObjectCommand({
+    Body: buffer,
+    Bucket: process.env.AWS_S3_BUCKET_NAME,
+    Key: itemKey,
+    ContentType: "application/json",
+  });
+  try {
+    const response = await awsClient.send(command);
+    return NextResponse.json({ result: "ok" });
+  } catch (error: unknown) {
+    return respondError(error);
+  }
+}
+
 // Get an airdrop by ID
 export async function GET(req: Request, { params }: { params: { chainId: string; id: string } }) {
   try {
@@ -28,9 +66,8 @@ export async function GET(req: Request, { params }: { params: { chainId: string;
     const formattedAirdrop = convertAirdropWithUint8ArrayToHexString(airdrop);
 
     return NextResponse.json(formattedAirdrop);
-  } catch (error) {
-    console.error("Error fetching airdrop:", error);
-    return NextResponse.json({ error: "Failed to fetch airdrop" }, { status: 500 });
+  } catch (error: unknown) {
+    return respondError(error);
   }
 }
 
@@ -47,8 +84,7 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
       where: { id: params.id },
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? `${error.name} ${error.message}` : `${error}`;
-    return NextResponse.json({ error: message }, { status: 500 });
+    return respondError(error);
   }
 
   if (!airdrop) {
@@ -153,9 +189,8 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
     // });
 
     return NextResponse.json(updatedAirdrop);
-  } catch (error) {
-    console.error("Error updating airdrop:", error);
-    return NextResponse.json({ error: "Failed to update airdrop" }, { status: 500 });
+  } catch (error: unknown) {
+    return respondError(error);
   }
 }
 
@@ -175,8 +210,7 @@ export async function DELETE(
       where: { id: params.id },
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? `${error.name} ${error.message}` : `${error}`;
-    return NextResponse.json({ error: message }, { status: 500 });
+    return respondError(error);
   }
 
   if (!airdrop) {
@@ -194,8 +228,7 @@ export async function DELETE(
       where: { id: params.id },
     });
     return NextResponse.json({ message: "Airdrop deleted successfully" }, { status: 200 });
-  } catch (error) {
-    console.error("Error deleting airdrop:", error);
-    return NextResponse.json({ error: "Failed to delete airdrop" }, { status: 500 });
+  } catch (error: unknown) {
+    return respondError(error);
   }
 }
