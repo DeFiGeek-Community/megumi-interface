@@ -42,6 +42,12 @@ cp .env.sample .env.test
 pnpm test:backend
 ```
 
+#### Run specific tests
+
+```bash
+pnpm test:backend -t="no session"
+```
+
 ## Docker
 
 ```bash
