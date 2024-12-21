@@ -70,9 +70,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
           Key: `${chainId}/${expectedData.id}-merkletree.json`,
         });
 
-        expect(awsClient.send(command)).rejects.toThrow(
-          "NoSuchKey: The specified key does not exist.",
-        );
+        expect(awsClient.send(command)).rejects.toThrow("The specified key does not exist.");
       },
     });
   });
@@ -113,9 +111,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
           Key: `${chainId}/${expectedData.id}-merkletree.json`,
         });
 
-        expect(awsClient.send(command)).rejects.toThrow(
-          "NoSuchKey: The specified key does not exist.",
-        );
+        expect(awsClient.send(command)).rejects.toThrow("The specified key does not exist.");
       },
     });
   });
@@ -191,7 +187,6 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
 
         // Edit Merkle tree
         json.merkleRoot = "Invalid data";
-        console.log(json);
 
         const formData = new FormData();
         formData.append(
@@ -211,9 +206,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
           Bucket: process.env.AWS_S3_BUCKET_NAME,
           Key: `${chainId}/${expectedData.id}-merkletree.json`,
         });
-        expect(awsClient.send(command)).rejects.toThrow(
-          "NoSuchKey: The specified key does not exist.",
-        );
+        expect(awsClient.send(command)).rejects.toThrow("The specified key does not exist.");
       },
     });
   });
