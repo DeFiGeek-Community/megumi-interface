@@ -208,3 +208,87 @@ export const getTemplateNameFromAirdropAddress = async (
   return templateKey && TemplateType[templateKey];
 };
 // <--
+
+export const validateMerkleTree = (data: { [key: string]: string }) => {
+  const hashRegex = /^0x[a-fA-F0-9]{64}$/;
+  const hexRegex = /^0x[a-fA-F0-9]+$/;
+  const isHashString = (str: string) => hashRegex.test(str);
+  const isHexString = (str: string) => hexRegex.test(str);
+
+  // Check if root object has the required keys
+  if (
+    typeof data !== "object" ||
+    !("airdropAmount" in data) ||
+    !("merkleRoot" in data) ||
+    !("claims" in data)
+  ) {
+    return { valid: false, error: "Missing required root keys." };
+  }
+
+  // Validate airdropAmount
+  if (typeof data.airdropAmount !== "string") {
+    return { valid: false, error: "airdropAmount must be a numeric string." };
+  }
+  try {
+    BigInt(data.airdropAmount);
+  } catch (e) {
+    return { valid: false, error: "airdropAmount must be a numeric string." };
+  }
+
+  // Validate merkleRoot
+  if (typeof data.merkleRoot !== "string" || !isHashString(data.merkleRoot)) {
+    return { valid: false, error: "merkleRoot must be a valid hex string." };
+  }
+
+  // Validate claims
+  if (typeof data.claims !== "object") {
+    return { valid: false, error: "claims must be an object." };
+  }
+
+  for (const [address, claim] of Object.entries(data.claims)) {
+    // Check if the address is a valid address
+    if (!isAddress(address)) {
+      return { valid: false, error: `Claim address '${address}' is not a valid address.` };
+    }
+
+    // Validate the claim object
+    if (
+      !claim ||
+      typeof claim !== "object" ||
+      !("index" in claim) ||
+      !("amount" in claim) ||
+      !("proof" in claim)
+    ) {
+      return { valid: false, error: `Claim for address '${address}' is missing required keys.` };
+    }
+
+    // Validate index
+    if (typeof claim.index !== "number" || claim.index < 0) {
+      return {
+        valid: false,
+        error: `Claim index for address '${address}' must be a non-negative number.`,
+      };
+    }
+
+    // Validate amount
+    if (typeof claim.amount !== "string" || !isHexString(claim.amount)) {
+      return {
+        valid: false,
+        error: `Claim amount for address '${address}' must be a valid hex string.`,
+      };
+    }
+
+    // Validate proof
+    if (
+      !Array.isArray(claim.proof) ||
+      !claim.proof.every((item) => typeof item === "string" && isHashString(item))
+    ) {
+      return {
+        valid: false,
+        error: `Claim proof for address '${address}' must be an array of valid hex strings.`,
+      };
+    }
+  }
+
+  return { valid: true };
+};

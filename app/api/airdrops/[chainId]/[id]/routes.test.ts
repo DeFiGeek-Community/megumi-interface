@@ -41,9 +41,95 @@ afterEach(() => {
 
 describe("POST /api/airdrops/:id Upload merkle tree file", () => {
   test("no session", async () => {
-    // TODO should be rejected with no session
     const airdrop = await jestPrisma.client.airdrop.findFirst();
     if (!airdrop) throw new Error("Airdrop not found");
+
+    const expectedData = convertAirdropWithUint8ArrayToHexString(airdrop);
+
+    await testApiHandler({
+      appHandler,
+      params: { chainId, id: expectedData.id },
+      test: async ({ fetch }) => {
+        const filePath = path.join(__dirname, "../../../../lib/sample/merkletree.json");
+        if (!fs.existsSync(filePath)) {
+          throw new Error(`File not found at path: ${filePath}`);
+        }
+
+        const formData = new FormData();
+        formData.append("file", new Blob([fs.readFileSync(filePath)]));
+
+        const res = await fetch({
+          method: "POST",
+          body: formData,
+        });
+
+        expect(res.status).toStrictEqual(401);
+
+        const command = new GetObjectCommand({
+          Bucket: process.env.AWS_S3_BUCKET_NAME,
+          Key: `${chainId}/${expectedData.id}-merkletree.json`,
+        });
+
+        expect(awsClient.send(command)).rejects.toThrow(
+          "NoSuchKey: The specified key does not exist.",
+        );
+      },
+    });
+  });
+  test("with session, not owner", async () => {
+    const airdrop = await jestPrisma.client.airdrop.findFirst();
+    if (!airdrop) throw new Error("Airdrop not found");
+
+    mockedSession = {
+      expires: "expires",
+      user: {
+        address: "0x1234",
+      },
+    };
+
+    const expectedData = convertAirdropWithUint8ArrayToHexString(airdrop);
+
+    await testApiHandler({
+      appHandler,
+      params: { chainId, id: expectedData.id },
+      test: async ({ fetch }) => {
+        const filePath = path.join(__dirname, "../../../../lib/sample/merkletree.json");
+        if (!fs.existsSync(filePath)) {
+          throw new Error(`File not found at path: ${filePath}`);
+        }
+
+        const formData = new FormData();
+        formData.append("file", new Blob([fs.readFileSync(filePath)]));
+
+        const res = await fetch({
+          method: "POST",
+          body: formData,
+        });
+
+        expect(res.status).toStrictEqual(403);
+
+        const command = new GetObjectCommand({
+          Bucket: process.env.AWS_S3_BUCKET_NAME,
+          Key: `${chainId}/${expectedData.id}-merkletree.json`,
+        });
+
+        expect(awsClient.send(command)).rejects.toThrow(
+          "NoSuchKey: The specified key does not exist.",
+        );
+      },
+    });
+  });
+
+  test("with session, owner", async () => {
+    const airdrop = await jestPrisma.client.airdrop.findFirst();
+    if (!airdrop) throw new Error("Airdrop not found");
+
+    mockedSession = {
+      expires: "expires",
+      user: {
+        address: uint8ObjectToHexString(airdrop.owner),
+      },
+    };
 
     const expectedData = convertAirdropWithUint8ArrayToHexString(airdrop);
 
@@ -77,8 +163,60 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
       },
     });
   });
-  test("with session", async () => {});
-  test("with session, invalid format", async () => {});
+
+  test("with session, owner, invalid format", async () => {
+    const airdrop = await jestPrisma.client.airdrop.findFirst();
+    if (!airdrop) throw new Error("Airdrop not found");
+
+    mockedSession = {
+      expires: "expires",
+      user: {
+        address: uint8ObjectToHexString(airdrop.owner),
+      },
+    };
+
+    const expectedData = convertAirdropWithUint8ArrayToHexString(airdrop);
+
+    await testApiHandler({
+      appHandler,
+      params: { chainId, id: expectedData.id },
+      test: async ({ fetch }) => {
+        const filePath = path.join(__dirname, "../../../../lib/sample/merkletree.json");
+        if (!fs.existsSync(filePath)) {
+          throw new Error(`File not found at path: ${filePath}`);
+        }
+
+        const buffer = fs.readFileSync(filePath);
+        const json = JSON.parse(buffer.toString("utf-8"));
+
+        // Edit Merkle tree
+        json.merkleRoot = "Invalid data";
+        console.log(json);
+
+        const formData = new FormData();
+        formData.append(
+          "file",
+          new Blob([JSON.stringify(json)], { type: "application/json" }),
+          "merkletree.json",
+        );
+
+        const res = await fetch({
+          method: "POST",
+          body: formData,
+        });
+
+        expect(res.status).toStrictEqual(422);
+
+        const command = new GetObjectCommand({
+          Bucket: process.env.AWS_S3_BUCKET_NAME,
+          Key: `${chainId}/${expectedData.id}-merkletree.json`,
+        });
+        expect(awsClient.send(command)).rejects.toThrow(
+          "NoSuchKey: The specified key does not exist.",
+        );
+      },
+    });
+  });
 });
 
 describe("GET /api/airdrop/:id - Retrieve an airdrop detail", () => {

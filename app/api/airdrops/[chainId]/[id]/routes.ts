@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { PublicClient } from "viem";
-import { Airdrop } from "@prisma/client";
+import type { Airdrop } from "@prisma/client";
 import { prisma } from "@/prisma/client";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../auth/authOptions";
@@ -11,31 +11,59 @@ import {
   hexStringToUint8Array,
   validateAirdropContract,
   validateAirdropData,
+  validateMerkleTree,
 } from "@/app/lib/utils";
 import { getViemProvider } from "@/app/lib/api";
 
 import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { awsClient } from "@/app/lib/aws";
 
-// TODO util
+// TODO util -->
 export const respondError = (error: unknown) => {
   const message = error instanceof Error ? `${error.name} ${error.message}` : `${error}`;
   console.error(`[ERROR] ${message}`);
   return NextResponse.json({ error: message }, { status: 500 });
 };
+// <--
 
 // Upload merkle tree file
 export async function POST(req: Request, { params }: { params: { chainId: string; id: string } }) {
-  // console.log(await req.formData(), params);
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  // Owner check (TODO move to util) -->
+  let airdrop: Airdrop | null;
+  try {
+    airdrop = await prisma.airdrop.findUnique({
+      where: { id: params.id },
+    });
+  } catch (error: unknown) {
+    return respondError(error);
+  }
+
+  if (!airdrop) {
+    return NextResponse.json({ error: "Not Found" }, { status: 404 });
+  }
+
+  const formattedAirdrop = convertAirdropWithUint8ArrayToHexString(airdrop);
+
+  if (session.user.address !== formattedAirdrop.owner) {
+    return NextResponse.json({ error: "You are not the owner of this contract" }, { status: 403 });
+  }
+  // <--
+
   const formData = await req.formData();
   const file: any = formData.get("file");
   const buffer = Buffer.from(await file?.arrayBuffer());
+  const json = JSON.parse(buffer.toString("utf-8"));
 
-  // TODO
   // Validate merkle tree format
-  // if(!validateMerkleTree) {
-  // return 422
-  // }
+  const { valid, error } = validateMerkleTree(json);
+  if (!valid) {
+    return NextResponse.json({ error }, { status: 422 });
+  }
 
   const itemKey = `${params.chainId}/${params.id}-merkletree.json`;
   const command = new PutObjectCommand({
@@ -78,6 +106,7 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
+  // Owner check (TODO move to util) -->
   let airdrop: Airdrop | null;
   try {
     airdrop = await prisma.airdrop.findUnique({
@@ -96,6 +125,7 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
   if (session.user.address !== formattedAirdrop.owner) {
     return NextResponse.json({ error: "You are not the owner of this contract" }, { status: 403 });
   }
+  // <--
 
   try {
     const body = await req.json();
