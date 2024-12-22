@@ -163,7 +163,7 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
       }
 
       // 3. Template typeのチェック
-      const _templateName = getTemplateNameFromAirdropAddress(contractAddress, provider);
+      const _templateName = await getTemplateNameFromAirdropAddress(contractAddress, provider);
       if (templateName !== _templateName) {
         return NextResponse.json({ error: "Template type does not match" }, { status: 422 });
       }

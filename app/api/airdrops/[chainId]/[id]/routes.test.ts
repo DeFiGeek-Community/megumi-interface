@@ -4,7 +4,11 @@ import { describe } from "node:test";
 import { testApiHandler } from "next-test-api-route-handler";
 import type { Session } from "next-auth";
 import { zeroAddress } from "viem";
-import { convertAirdropWithUint8ArrayToHexString, uint8ObjectToHexString } from "@/app/lib/utils";
+import {
+  convertAirdropWithUint8ArrayToHexString,
+  deleteAllObjects,
+  uint8ObjectToHexString,
+} from "@/app/lib/utils";
 import { TemplateType } from "@/app/lib/constants/templates";
 import * as appHandler from "./routes";
 import { GetObjectCommand } from "@aws-sdk/client-s3";
@@ -17,6 +21,8 @@ const YMWK_INFO = {
   tokenDecimals: 18,
 };
 const chainId = "11155111"; // Sepolia
+const sampleAuctionAddress = "0x92A92007e687C036592d5eF490cA7f755FC3abAC"; // Sepolia Sample Airdrop
+const sampleOwnerAddress = "0x09c208Bee9B7Bbb4f630B086a73A1a90E8E881A5";
 let mockedSession: Session | null = null;
 
 jest.mock("../../../auth/authOptions", () => ({
@@ -35,8 +41,9 @@ jest.mock("../../../../../prisma/client", () => ({
   prisma: jestPrisma.client,
 }));
 
-afterEach(() => {
+afterEach(async () => {
   mockedSession = null;
+  await deleteAllObjects(process.env.AWS_S3_BUCKET_NAME!);
 });
 
 describe("POST /api/airdrops/:id Upload merkle tree file", () => {
@@ -324,9 +331,21 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
       });
     });
 
-    test("owner", async () => {
-      const airdrop = await jestPrisma.client.airdrop.findFirst();
-      if (!airdrop) throw new Error("Airdrop not found");
+    test("owner update contractAddress", async () => {
+      const airdrop = await jestPrisma.client.airdrop.create({
+        data: {
+          chainId: 11155111,
+          title: `Sample airdrop`,
+          contractAddress: null,
+          templateName: Uint8Array.from(Buffer.from(TemplateType.STANDARD.slice(2), "hex")),
+          owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
+          tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
+          tokenName: "18 Decimals Sample Token",
+          tokenSymbol: "SMPL18",
+          tokenDecimals: 18,
+          tokenLogo: "https://example.com/logo.png",
+        },
+      });
 
       mockedSession = {
         expires: "expires",
@@ -336,7 +355,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
       };
       const data = {
         ...newData,
-        contractAddress: "0x92B9B6384d295f22fdBc8Eb661D7D574B96D2E93",
+        contractAddress: sampleAuctionAddress,
       };
       await testApiHandler({
         appHandler,
@@ -346,22 +365,87 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
             method: "PATCH",
             body: JSON.stringify(data),
           });
+
           expect(res.status).toStrictEqual(200);
-          const airdropAfter = await jestPrisma.client.airdrop.findUnique({
+          const airdropAfterRaw = await jestPrisma.client.airdrop.findUnique({
             where: { id: airdrop.id },
           });
-          if (!airdropAfter) throw new Error("Airdrop not found");
+          if (!airdropAfterRaw) throw new Error("Airdrop not found");
+          const airdropAfter = convertAirdropWithUint8ArrayToHexString(airdropAfterRaw);
+
+          // Only contractAddress should be updated
+          const expectedData = {
+            ...convertAirdropWithUint8ArrayToHexString(airdrop),
+            contractAddress: sampleAuctionAddress,
+          };
 
           Object.keys(airdropAfter).map((key: string) => {
             const value = airdropAfter[key as keyof typeof airdropAfter];
+            const expectedValue = expectedData[key as keyof typeof airdropAfter];
             if (value instanceof Date) {
-              expect((airdrop[key as keyof typeof airdropAfter] as Date).getTime()).toEqual(
-                value.getTime(),
-              );
+              expect(value.getTime()).toEqual((expectedValue as Date).getTime());
+            } else if (typeof value === "string" && value.startsWith("0x")) {
+              expect(value.toLowerCase()).toEqual((expectedValue as string).toLowerCase());
             } else {
-              expect(airdrop[key as keyof typeof airdropAfter]).toEqual(
-                airdropAfter[key as keyof typeof airdropAfter],
-              );
+              expect(value).toEqual(expectedValue);
+            }
+          });
+        },
+      });
+    });
+
+    test("owner update tokenLogo", async () => {
+      const airdrop = await jestPrisma.client.airdrop.create({
+        data: {
+          chainId: 11155111,
+          title: `Sample airdrop`,
+          contractAddress: Uint8Array.from(Buffer.from(sampleAuctionAddress.slice(2), "hex")),
+          templateName: Uint8Array.from(Buffer.from(TemplateType.STANDARD.slice(2), "hex")),
+          owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
+          tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
+          tokenName: "18 Decimals Sample Token",
+          tokenSymbol: "SMPL18",
+          tokenDecimals: 18,
+          tokenLogo: "https://example.com/logo.png",
+        },
+      });
+
+      mockedSession = {
+        expires: "expires",
+        user: {
+          address: uint8ObjectToHexString(airdrop.owner),
+        },
+      };
+      await testApiHandler({
+        appHandler,
+        params: { chainId, id: airdrop.id },
+        test: async ({ fetch }) => {
+          const res = await fetch({
+            method: "PATCH",
+            body: JSON.stringify(newData),
+          });
+
+          expect(res.status).toStrictEqual(200);
+          const airdropAfterRaw = await jestPrisma.client.airdrop.findUnique({
+            where: { id: airdrop.id },
+          });
+          if (!airdropAfterRaw) throw new Error("Airdrop not found");
+          const airdropAfter = convertAirdropWithUint8ArrayToHexString(airdropAfterRaw);
+
+          const expectedData = {
+            ...convertAirdropWithUint8ArrayToHexString(airdrop),
+            ...newData,
+          };
+
+          Object.keys(airdropAfter).map((key: string) => {
+            const value = airdropAfter[key as keyof typeof airdropAfter];
+            const expectedValue = expectedData[key as keyof typeof airdropAfter];
+            if (value instanceof Date) {
+              expect(value.getTime()).toEqual((expectedValue as Date).getTime());
+            } else if (typeof value === "string" && value.startsWith("0x")) {
+              expect(value.toLowerCase()).toEqual((expectedValue as string).toLowerCase());
+            } else {
+              expect(value).toEqual(expectedValue);
             }
           });
         },
