@@ -1,5 +1,7 @@
 import type { GetContractReturnType, PublicClient } from "viem";
 import MerkleAirdropBase from "@/app/lib/constants/abis/MerkleAirdropBase.json";
+import Standard from "@/app/lib/constants/abis/Standard.json";
+import LinearVesting from "@/app/lib/constants/abis/LinearVesting.json";
 
 export interface ClaimProps {
   isLinearVesting: boolean;
@@ -25,11 +27,9 @@ export type AirdropFormType = {
   tokenLogo: string;
 };
 
-export type AirdropContractType = GetContractReturnType<
-  typeof MerkleAirdropBase,
-  PublicClient,
-  any
->;
+export type AirdropABIType = typeof MerkleAirdropBase | typeof Standard | typeof LinearVesting;
+
+export type AirdropContractType = GetContractReturnType<AirdropABIType, PublicClient, any>;
 
 export type AirdropValidationType = {
   chainId?: string;

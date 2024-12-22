@@ -4,11 +4,20 @@ import { type Chain, localhost, mainnet, sepolia, base, baseSepolia } from "viem
 import type { Airdrop } from "@prisma/client";
 import { TemplateType } from "./constants/templates";
 import { Session } from "next-auth";
-import { AirdropContractType, AirdropFormType, AirdropValidationType } from "../interfaces/airdrop";
+import {
+  AirdropABIType,
+  AirdropContractType,
+  AirdropFormType,
+  AirdropValidationType,
+} from "../interfaces/airdrop";
 import { isSupportedChain } from "./chain";
-import MerkleAirdropBase from "@/app/lib/constants/abis/MerkleAirdropBase.json";
 import Factory from "@/app/lib/constants/abis/Factory.json";
 import { CONTRACT_ADDRESSES } from "./constants/contracts";
+import MerkleAirdropBase from "@/app/lib/constants/abis/MerkleAirdropBase.json";
+import Standard from "@/app/lib/constants/abis/Standard.json";
+import LinearVesting from "@/app/lib/constants/abis/LinearVesting.json";
+import { ListObjectsV2Command, DeleteObjectsCommand } from "@aws-sdk/client-s3";
+import { awsClient } from "./aws";
 
 const chains = { mainnet, sepolia, base, baseSepolia };
 
@@ -156,9 +165,11 @@ export const validateAirdropContract = async (
     client: provider,
   });
   const isRegisteredAirdrop = (await factory.read.airdrops([contractAddress])) as boolean;
+  const abi = await getABIFromAirdropAddress(contractAddress, provider);
+  if (!abi) throw new Error("Unknown ABI");
   const airdropContract = getContract({
     address: contractAddress,
-    abi: MerkleAirdropBase,
+    abi: abi,
     client: provider,
   });
   return {
@@ -206,6 +217,34 @@ export const getTemplateNameFromAirdropAddress = async (
   ) as keyof typeof TemplateType | undefined;
 
   return templateKey && TemplateType[templateKey];
+};
+
+export const getABIFromAirdropAddress = async (
+  address: `0x${string}`,
+  provider: PublicClient,
+): Promise<AirdropABIType | undefined> => {
+  const proxyCode = await provider.getCode({
+    address,
+  });
+
+  // Check if this is a EIP-1167 contract
+  if (!proxyCode || !proxyCode.startsWith("0x363d3d373d3d3d363d73")) {
+    throw new Error("The given address is not an EIP-1167 Minimal Proxy.");
+  }
+  const implementationAddress = `0x${proxyCode.slice(22, 62)}`.toLowerCase();
+  const chainId = await provider.getChainId();
+
+  const templateKey = Object.keys(CONTRACT_ADDRESSES[chainId]).find(
+    (key) =>
+      Object.keys(TemplateType).includes(key) &&
+      CONTRACT_ADDRESSES[chainId][key].toLowerCase() === implementationAddress,
+  ) as keyof typeof TemplateType | undefined;
+  return templateKey && AirdropABI[templateKey];
+};
+
+const AirdropABI: { [key: string]: AirdropABIType } = {
+  STANDARD: Standard,
+  LINEAR_VESTING: LinearVesting,
 };
 // <--
 
@@ -292,3 +331,28 @@ export const validateMerkleTree = (data: { [key: string]: string }) => {
 
   return { valid: true };
 };
+
+// For tests only
+export async function deleteAllObjects(bucketName: string) {
+  try {
+    // Get all objects
+    const listCommand = new ListObjectsV2Command({ Bucket: bucketName });
+    const listResponse = await awsClient.send(listCommand);
+
+    if (!listResponse.Contents || listResponse.Contents.length === 0) {
+      return;
+    }
+
+    const deleteParams = {
+      Bucket: bucketName,
+      Delete: {
+        Objects: listResponse.Contents.map((obj) => ({ Key: obj.Key })),
+      },
+    };
+
+    const deleteCommand = new DeleteObjectsCommand(deleteParams);
+    const deleteResponse = await awsClient.send(deleteCommand);
+  } catch (err) {
+    console.error(err);
+  }
+}
