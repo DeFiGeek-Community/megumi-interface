@@ -195,6 +195,20 @@ export const getTokenInfo = async (
   return { tokenName, tokenSymbol, tokenDecimals };
 };
 
+export const getMerkleRootFromAirdropAddress = async (
+  address: `0x${string}`,
+  provider: PublicClient,
+): Promise<`0x${string}`> => {
+  const airdrop = getContract({
+    address,
+    abi: MerkleAirdropBase,
+    client: provider,
+  });
+  const merkleRoot = (await airdrop.read.merkleRoot()) as Uint8Array;
+
+  return uint8ArrayToHexString(merkleRoot);
+};
+
 export const getTemplateNameFromAirdropAddress = async (
   address: `0x${string}`,
   provider: PublicClient,

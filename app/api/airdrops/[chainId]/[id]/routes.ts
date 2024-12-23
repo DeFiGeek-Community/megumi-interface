@@ -6,9 +6,11 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../../../auth/authOptions";
 import {
   convertAirdropWithUint8ArrayToHexString,
+  getMerkleRootFromAirdropAddress,
   getTemplateNameFromAirdropAddress,
   getTokenInfo,
   hexStringToUint8Array,
+  uint8ArrayToHexString,
   validateAirdropContract,
   validateAirdropData,
   validateMerkleTree,
@@ -63,6 +65,18 @@ export async function POST(req: Request, { params }: { params: { chainId: string
   const { valid, error } = validateMerkleTree(json);
   if (!valid) {
     return NextResponse.json({ error }, { status: 422 });
+  }
+
+  // Check if contract is already registered
+  if (airdrop.contractAddress) {
+    const provider = getViemProvider(parseInt(params.chainId)) as PublicClient;
+    const merkleRoot = await getMerkleRootFromAirdropAddress(
+      uint8ArrayToHexString(airdrop.contractAddress),
+      provider,
+    );
+    if (json.merkleRoot !== merkleRoot) {
+      return NextResponse.json({ error: "Merkle root does not match" }, { status: 422 });
+    }
   }
 
   const itemKey = `${params.chainId}/${params.id}-merkletree.json`;
@@ -133,7 +147,11 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
 
     const provider = getViemProvider(parseInt(params.chainId)) as PublicClient;
 
-    if (templateName && airdrop.contractAddress) {
+    if (
+      templateName &&
+      templateName !== uint8ArrayToHexString(airdrop.templateName) &&
+      airdrop.contractAddress
+    ) {
       // template can be changed only before the contract address is registered
       airdrop.contractAddress;
       return NextResponse.json(

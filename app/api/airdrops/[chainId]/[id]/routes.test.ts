@@ -21,7 +21,7 @@ const YMWK_INFO = {
   tokenDecimals: 18,
 };
 const chainId = "11155111"; // Sepolia
-const sampleAuctionAddress = "0x92A92007e687C036592d5eF490cA7f755FC3abAC"; // Sepolia Sample Airdrop
+const sampleAirdropAddress = "0x92A92007e687C036592d5eF490cA7f755FC3abAC"; // Sepolia Sample Airdrop
 const sampleOwnerAddress = "0x09c208Bee9B7Bbb4f630B086a73A1a90E8E881A5";
 let mockedSession: Session | null = null;
 
@@ -207,13 +207,127 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
           body: formData,
         });
 
+        const data = await res.json();
+
         expect(res.status).toStrictEqual(422);
+        expect(data.error).toStrictEqual("merkleRoot must be a valid hex string.");
 
         const command = new GetObjectCommand({
           Bucket: process.env.AWS_S3_BUCKET_NAME,
           Key: `${chainId}/${expectedData.id}-merkletree.json`,
         });
         expect(awsClient.send(command)).rejects.toThrow("The specified key does not exist.");
+      },
+    });
+  });
+
+  test("with session, owner, after contract address is registered, merkle root matches", async () => {
+    const airdrop = await jestPrisma.client.airdrop.create({
+      data: {
+        chainId: 11155111,
+        title: `Sample airdrop`,
+        contractAddress: null,
+        templateName: Uint8Array.from(Buffer.from(TemplateType.STANDARD.slice(2), "hex")),
+        owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
+        tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
+        tokenName: "18 Decimals Sample Token",
+        tokenSymbol: "SMPL18",
+        tokenDecimals: 18,
+        tokenLogo: "https://example.com/logo.png",
+      },
+    });
+
+    mockedSession = {
+      expires: "expires",
+      user: {
+        address: uint8ObjectToHexString(airdrop.owner),
+      },
+    };
+
+    const expectedData = convertAirdropWithUint8ArrayToHexString(airdrop);
+
+    await testApiHandler({
+      appHandler,
+      params: { chainId, id: expectedData.id },
+      test: async ({ fetch }) => {
+        const filePath = path.join(__dirname, "../../../../lib/sample/merkletree.json");
+        if (!fs.existsSync(filePath)) {
+          throw new Error(`File not found at path: ${filePath}`);
+        }
+
+        const formData = new FormData();
+        formData.append("file", new Blob([fs.readFileSync(filePath)]));
+
+        const res = await fetch({
+          method: "POST",
+          body: formData,
+        });
+
+        expect(res.status).toStrictEqual(200);
+
+        const command = new GetObjectCommand({
+          Bucket: process.env.AWS_S3_BUCKET_NAME,
+          Key: `${chainId}/${expectedData.id}-merkletree.json`,
+        });
+        const response = await awsClient.send(command);
+        const original = fs.readFileSync(filePath, "utf8");
+        const str = await response.Body?.transformToString();
+        expect(str).toStrictEqual(original);
+      },
+    });
+  });
+
+  test("with session, owner, after contract address is registered, merkle root does not matches", async () => {
+    const airdrop = await jestPrisma.client.airdrop.create({
+      data: {
+        chainId: 11155111,
+        title: `Sample airdrop`,
+        contractAddress: Uint8Array.from(Buffer.from(sampleAirdropAddress.slice(2), "hex")),
+        templateName: Uint8Array.from(Buffer.from(TemplateType.STANDARD.slice(2), "hex")),
+        owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
+        tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
+        tokenName: "18 Decimals Sample Token",
+        tokenSymbol: "SMPL18",
+        tokenDecimals: 18,
+        tokenLogo: "https://example.com/logo.png",
+      },
+    });
+
+    mockedSession = {
+      expires: "expires",
+      user: {
+        address: uint8ObjectToHexString(airdrop.owner),
+      },
+    };
+
+    const expectedData = convertAirdropWithUint8ArrayToHexString(airdrop);
+
+    await testApiHandler({
+      appHandler,
+      params: { chainId, id: expectedData.id },
+      test: async ({ fetch }) => {
+        const filePath = path.join(__dirname, "../../../../lib/sample/merkletree.json");
+        if (!fs.existsSync(filePath)) {
+          throw new Error(`File not found at path: ${filePath}`);
+        }
+
+        const buffer = fs.readFileSync(filePath);
+        const json = JSON.parse(buffer.toString("utf-8"));
+
+        // Edit Merkle tree
+        json.merkleRoot = "0xfeea224f956367a8d8b915442393a5fc7973baa54029e852fb6b7df516f6dd71";
+
+        const formData = new FormData();
+        formData.append("file", new Blob([JSON.stringify(json)], { type: "application/json" }));
+
+        const res = await fetch({
+          method: "POST",
+          body: formData,
+        });
+        const data = await res.json();
+
+        expect(res.status).toStrictEqual(422);
+        expect(data.error).toStrictEqual("Merkle root does not match");
       },
     });
   });
@@ -355,7 +469,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
       };
       const data = {
         ...newData,
-        contractAddress: sampleAuctionAddress,
+        contractAddress: sampleAirdropAddress,
       };
       await testApiHandler({
         appHandler,
@@ -376,7 +490,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
           // Only contractAddress should be updated
           const expectedData = {
             ...convertAirdropWithUint8ArrayToHexString(airdrop),
-            contractAddress: sampleAuctionAddress,
+            contractAddress: sampleAirdropAddress,
           };
 
           Object.keys(airdropAfter).map((key: string) => {
@@ -399,7 +513,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
         data: {
           chainId: 11155111,
           title: `Sample airdrop`,
-          contractAddress: Uint8Array.from(Buffer.from(sampleAuctionAddress.slice(2), "hex")),
+          contractAddress: Uint8Array.from(Buffer.from(sampleAirdropAddress.slice(2), "hex")),
           templateName: Uint8Array.from(Buffer.from(TemplateType.STANDARD.slice(2), "hex")),
           owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
           tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
@@ -457,7 +571,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
         data: {
           chainId: 11155111,
           title: `Sample airdrop`,
-          contractAddress: Uint8Array.from(Buffer.from(sampleAuctionAddress.slice(2), "hex")),
+          contractAddress: Uint8Array.from(Buffer.from(sampleAirdropAddress.slice(2), "hex")),
           templateName: Uint8Array.from(Buffer.from(TemplateType.STANDARD.slice(2), "hex")),
           owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
           tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
