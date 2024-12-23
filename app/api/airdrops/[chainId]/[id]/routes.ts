@@ -133,18 +133,23 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
 
     const provider = getViemProvider(parseInt(params.chainId)) as PublicClient;
 
-    if (templateName) {
-      // TODO
-      // コントラクトが登録されているかチェック。されている場合はエラー
+    if (templateName && airdrop.contractAddress) {
+      // template can be changed only before the contract address is registered
       airdrop.contractAddress;
+      return NextResponse.json(
+        { error: "Airdrop contract is already registered" },
+        { status: 422 },
+      );
     }
     if (contractAddress) {
-      // コントラクトアドレスの登録時は
-      // 1. コントラクトがすでに登録されているかチェック。されている場合はエラー
+      // 1. Check if contract is already registered
       if (airdrop.contractAddress) {
-        return NextResponse.json({ error: "Airdrop is already registered" }, { status: 422 });
+        return NextResponse.json(
+          { error: "Airdrop contract is already registered" },
+          { status: 422 },
+        );
       }
-      // 2. コントラクトがファクトリーに登録されているかチェック
+      // 2. Check if the contract is registered in Factory
       const { isRegistered, airdropContract } = await validateAirdropContract(
         contractAddress,
         provider,
@@ -153,7 +158,7 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
       if (!airdropContract || !isRegistered) {
         return NextResponse.json({ error: "Invalid airdrop contract address" }, { status: 422 });
       }
-      // 2. オーナーチェック
+      // 3. Check if the user is the owner
       const owner = (await airdropContract.read.owner()) as string;
       if (owner.toLowerCase() !== session.user.address) {
         return NextResponse.json(
@@ -162,16 +167,16 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
         );
       }
 
-      // 3. Template typeのチェック
+      // 4. Check if Template type is valid
       const _templateName = await getTemplateNameFromAirdropAddress(contractAddress, provider);
       if (templateName !== _templateName) {
         return NextResponse.json({ error: "Template type does not match" }, { status: 422 });
       }
 
-      // 4. token Address取得
+      // 5. Fetch token address from the airdrop contract address
       const tokenAddress = (await airdropContract.read.token()) as `0x${string}`;
-      // 5.トークン情報取得
-      // Fetch token information from the contract address
+
+      // 6. Fetch token information from the token contract address
       let tokenName;
       let tokenSymbol;
       let tokenDecimals;
@@ -197,6 +202,7 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
         ...airdrop,
         title,
         tokenLogo,
+        templateName: hexStringToUint8Array(templateName),
       };
     }
 
@@ -206,17 +212,6 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
       where: { id: params.id },
       data: airdrop,
     });
-
-    // const updatedAirdrop = await prisma.airdrop.update({
-    //   where: { id: params.id },
-    //   data: {
-    //     contractAddress: contractAddress ? hexStringToUint8Array(contractAddress) : null,
-    //     templateName: hexStringToUint8Array(templateName),
-    //     owner: hexStringToUint8Array(owner),
-    //     tokenAddress: hexStringToUint8Array(tokenAddress),
-    //     tokenLogo,
-    //   },
-    // });
 
     return NextResponse.json(updatedAirdrop);
   } catch (error: unknown) {
