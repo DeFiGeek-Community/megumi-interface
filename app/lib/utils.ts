@@ -204,9 +204,9 @@ export const getMerkleRootFromAirdropAddress = async (
     abi: MerkleAirdropBase,
     client: provider,
   });
-  const merkleRoot = (await airdrop.read.merkleRoot()) as Uint8Array;
+  const merkleRoot = (await airdrop.read.merkleRoot()) as `0x${string}`;
 
-  return uint8ArrayToHexString(merkleRoot);
+  return merkleRoot;
 };
 
 export const getTemplateNameFromAirdropAddress = async (

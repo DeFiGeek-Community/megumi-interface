@@ -11,7 +11,7 @@ import {
 } from "@/app/lib/utils";
 import { TemplateType } from "@/app/lib/constants/templates";
 import * as appHandler from "./routes";
-import { GetObjectCommand } from "@aws-sdk/client-s3";
+import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
 import { awsClient } from "@/app/lib/aws";
 
 const YMWK = "0xdE2832DE0b4C0b4b6742e60186E290622B2B766C".toLowerCase(); // Sepolia YMWK
@@ -649,6 +649,125 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
 
           expect(uint8ObjectToHexString(airdropAfterRaw.templateName)).toEqual(
             TemplateType.LINEAR_VESTING,
+          );
+        },
+      });
+    });
+
+    test("owner update contract address after merkle tree is registered", async () => {
+      const airdrop = await jestPrisma.client.airdrop.create({
+        data: {
+          chainId: 11155111,
+          title: `Sample airdrop`,
+          contractAddress: null,
+          templateName: Uint8Array.from(Buffer.from(TemplateType.STANDARD.slice(2), "hex")),
+          owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
+          tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
+          tokenName: "18 Decimals Sample Token",
+          tokenSymbol: "SMPL18",
+          tokenDecimals: 18,
+          tokenLogo: "https://example.com/logo.png",
+        },
+      });
+
+      mockedSession = {
+        expires: "expires",
+        user: {
+          address: uint8ObjectToHexString(airdrop.owner),
+        },
+      };
+
+      const filePath = path.join(__dirname, "../../../../lib/sample/merkletree.json");
+      if (!fs.existsSync(filePath)) {
+        throw new Error(`File not found at path: ${filePath}`);
+      }
+
+      const buffer = fs.readFileSync(filePath);
+      const json = JSON.parse(buffer.toString("utf-8"));
+      const itemKey = `${chainId}/${airdrop.id}-merkletree.json`;
+      const command = new PutObjectCommand({
+        Body: buffer,
+        Bucket: process.env.AWS_S3_BUCKET_NAME,
+        Key: itemKey,
+        ContentType: "application/json",
+      });
+      const response = await awsClient.send(command);
+
+      const newData = {
+        contractAddress: sampleAirdropAddress,
+      };
+      await testApiHandler({
+        appHandler,
+        params: { chainId, id: airdrop.id },
+        test: async ({ fetch }) => {
+          const res = await fetch({
+            method: "PATCH",
+            body: JSON.stringify(newData),
+          });
+
+          expect(res.status).toStrictEqual(200);
+        },
+      });
+    });
+
+    test("owner update contract address after merkle tree with a different merkleRoot is registered", async () => {
+      const airdrop = await jestPrisma.client.airdrop.create({
+        data: {
+          chainId: 11155111,
+          title: `Sample airdrop`,
+          contractAddress: null,
+          templateName: Uint8Array.from(Buffer.from(TemplateType.STANDARD.slice(2), "hex")),
+          owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
+          tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
+          tokenName: "18 Decimals Sample Token",
+          tokenSymbol: "SMPL18",
+          tokenDecimals: 18,
+          tokenLogo: "https://example.com/logo.png",
+        },
+      });
+
+      mockedSession = {
+        expires: "expires",
+        user: {
+          address: uint8ObjectToHexString(airdrop.owner),
+        },
+      };
+
+      const filePath = path.join(__dirname, "../../../../lib/sample/merkletree.json");
+      if (!fs.existsSync(filePath)) {
+        throw new Error(`File not found at path: ${filePath}`);
+      }
+
+      const buffer = fs.readFileSync(filePath);
+      const json = JSON.parse(buffer.toString("utf-8"));
+      // Edit Merkle root
+      json.merkleRoot = "0xfeea224f956367a8d8b915442393a5fc7973baa54029e852fb6b7df516f6dd71";
+      var buf = Buffer.from(JSON.stringify(json));
+      const itemKey = `${chainId}/${airdrop.id}-merkletree.json`;
+      const command = new PutObjectCommand({
+        Body: buf,
+        Bucket: process.env.AWS_S3_BUCKET_NAME,
+        Key: itemKey,
+        ContentType: "application/json",
+      });
+      const response = await awsClient.send(command);
+
+      const newData = {
+        contractAddress: sampleAirdropAddress,
+      };
+      await testApiHandler({
+        appHandler,
+        params: { chainId, id: airdrop.id },
+        test: async ({ fetch }) => {
+          const res = await fetch({
+            method: "PATCH",
+            body: JSON.stringify(newData),
+          });
+
+          const data = await res.json();
+          expect(res.status).toStrictEqual(422);
+          expect(data.error).toStrictEqual(
+            "Contract does not match merkle root with merkle tree file",
           );
         },
       });
