@@ -1,6 +1,6 @@
 FROM node:20.18.1
 
-RUN apt update && apt install -y openssl g++ make python3 pipx
+RUN apt update && apt install -y openssl g++ make python3 pipx zip less
 
 WORKDIR /app
 

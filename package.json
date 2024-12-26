@@ -13,6 +13,7 @@
     "migrate:reset:test": "npx dotenv -e .env.test -- npx prisma migrate reset -f"
   },
   "dependencies": {
+    "@aws-sdk/client-lambda": "^3.716.0",
     "@aws-sdk/client-s3": "^3.712.0",
     "@chakra-ui/icons": "^2.1.1",
     "@chakra-ui/react": "^2.8.2",

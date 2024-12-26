@@ -44,8 +44,8 @@ services:
     environment:
       # LocalStack configuration: https://docs.localstack.cloud/references/configuration/
       - DEBUG=${DEBUG:-0}
-      - LAMBDA_DOCKER_NETWORK=host
-      - SERVICES=s3
+      # - LAMBDA_DOCKER_NETWORK=host
+      - SERVICES=s3,lambda
     volumes:
       - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
