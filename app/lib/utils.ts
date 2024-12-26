@@ -17,7 +17,7 @@ import MerkleAirdropBase from "@/app/lib/constants/abis/MerkleAirdropBase.json";
 import Standard from "@/app/lib/constants/abis/Standard.json";
 import LinearVesting from "@/app/lib/constants/abis/LinearVesting.json";
 import { ListObjectsV2Command, DeleteObjectsCommand } from "@aws-sdk/client-s3";
-import { awsClient } from "./aws";
+import { s3Client } from "./aws";
 
 const chains = { mainnet, sepolia, base, baseSepolia };
 
@@ -351,7 +351,7 @@ export async function deleteAllObjects(bucketName: string) {
   try {
     // Get all objects
     const listCommand = new ListObjectsV2Command({ Bucket: bucketName });
-    const listResponse = await awsClient.send(listCommand);
+    const listResponse = await s3Client.send(listCommand);
 
     if (!listResponse.Contents || listResponse.Contents.length === 0) {
       return;
@@ -365,7 +365,7 @@ export async function deleteAllObjects(bucketName: string) {
     };
 
     const deleteCommand = new DeleteObjectsCommand(deleteParams);
-    const deleteResponse = await awsClient.send(deleteCommand);
+    const deleteResponse = await s3Client.send(deleteCommand);
   } catch (err) {
     console.error(err);
   }

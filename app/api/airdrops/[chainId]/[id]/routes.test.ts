@@ -12,7 +12,7 @@ import {
 import { TemplateType } from "@/app/lib/constants/templates";
 import * as appHandler from "./routes";
 import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
-import { awsClient } from "@/app/lib/aws";
+import { s3Client } from "@/app/lib/aws";
 
 const YMWK = "0xdE2832DE0b4C0b4b6742e60186E290622B2B766C".toLowerCase(); // Sepolia YMWK
 const YMWK_INFO = {
@@ -77,7 +77,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
           Key: `${chainId}/${expectedData.id}-merkletree.json`,
         });
 
-        expect(awsClient.send(command)).rejects.toThrow("The specified key does not exist.");
+        expect(s3Client.send(command)).rejects.toThrow("The specified key does not exist.");
       },
     });
   });
@@ -118,7 +118,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
           Key: `${chainId}/${expectedData.id}-merkletree.json`,
         });
 
-        expect(awsClient.send(command)).rejects.toThrow("The specified key does not exist.");
+        expect(s3Client.send(command)).rejects.toThrow("The specified key does not exist.");
       },
     });
   });
@@ -159,7 +159,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
           Bucket: process.env.AWS_S3_BUCKET_NAME,
           Key: `${chainId}/${expectedData.id}-merkletree.json`,
         });
-        const response = await awsClient.send(command);
+        const response = await s3Client.send(command);
         const original = fs.readFileSync(filePath, "utf8");
         const str = await response.Body?.transformToString();
         expect(str).toStrictEqual(original);
@@ -216,7 +216,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
           Bucket: process.env.AWS_S3_BUCKET_NAME,
           Key: `${chainId}/${expectedData.id}-merkletree.json`,
         });
-        expect(awsClient.send(command)).rejects.toThrow("The specified key does not exist.");
+        expect(s3Client.send(command)).rejects.toThrow("The specified key does not exist.");
       },
     });
   });
@@ -269,7 +269,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
           Bucket: process.env.AWS_S3_BUCKET_NAME,
           Key: `${chainId}/${expectedData.id}-merkletree.json`,
         });
-        const response = await awsClient.send(command);
+        const response = await s3Client.send(command);
         const original = fs.readFileSync(filePath, "utf8");
         const str = await response.Body?.transformToString();
         expect(str).toStrictEqual(original);
@@ -691,7 +691,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
         Key: itemKey,
         ContentType: "application/json",
       });
-      const response = await awsClient.send(command);
+      const response = await s3Client.send(command);
 
       const newData = {
         contractAddress: sampleAirdropAddress,
@@ -750,7 +750,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
         Key: itemKey,
         ContentType: "application/json",
       });
-      const response = await awsClient.send(command);
+      const response = await s3Client.send(command);
 
       const newData = {
         contractAddress: sampleAirdropAddress,

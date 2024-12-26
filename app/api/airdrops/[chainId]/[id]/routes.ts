@@ -18,7 +18,7 @@ import {
 import { getViemProvider } from "@/app/lib/api";
 
 import { GetObjectCommand, NoSuchKey, PutObjectCommand } from "@aws-sdk/client-s3";
-import { awsClient } from "@/app/lib/aws";
+import { s3Client } from "@/app/lib/aws";
 
 // TODO util -->
 export const respondError = (error: unknown) => {
@@ -87,7 +87,7 @@ export async function POST(req: Request, { params }: { params: { chainId: string
     ContentType: "application/json",
   });
   try {
-    const response = await awsClient.send(command);
+    const response = await s3Client.send(command);
     return NextResponse.json({ result: "ok" });
   } catch (error: unknown) {
     return respondError(error);
@@ -198,7 +198,7 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
         Key: `${params.chainId}/${params.id}-merkletree.json`,
       });
       try {
-        const response = await awsClient.send(command);
+        const response = await s3Client.send(command);
         const str = await response.Body?.transformToString();
         if (!str) throw new Error("No json file");
         const merkleTree = JSON.parse(str);
