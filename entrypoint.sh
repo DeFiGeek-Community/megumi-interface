@@ -9,10 +9,20 @@ echo "LocalStack is ready!"
 # Create the S3 bucket
 /root/.local/pipx/venvs/awscli-local/bin/awslocal --endpoint-url=http://localstack:4566 s3 mb s3://localstack-bucket
 
-# Create lambda functions on localstack
+# Create lambda functions on localstack --------------->
 # Refs: https://docs.localstack.cloud/user-guide/aws/lambda/
-cd /app/amplify/backend/function/watchMegumiContractDeploymentStatusAndInsertMerkletree/src && zip function.zip index.js
-/root/.local/pipx/venvs/awscli-local/bin/awslocal --endpoint-url=http://localstack:4566 lambda create-function \
+
+cd /app/amplify/backend/function/watchMegumiContractDeploymentStatusAndInsertMerkletree/src
+# Install dependencies
+npm i -y
+# Bundle TypeScript code using esbuild
+npx esbuild ../ts/index.ts --bundle --platform=node --target=node18 --outfile=index.js
+# Zip the output file
+zip function.zip index.js
+
+# cd /app/amplify/backend/function/watchMegumiContractDeploymentStatusAndInsertMerkletree && npx tsc -p ./tsconfig.json && cd ./src && zip function.zip index.js && cd -
+/root/.local/pipx/venvs/awscli-local/bin/awslocal lambda create-function \
+    --endpoint-url=http://localstack:4566 \
     --function-name watchMegumiContractDeploymentStatusAndInsertMerkletree \
     --runtime nodejs18.x \
     --handler index.handler \
@@ -20,6 +30,8 @@ cd /app/amplify/backend/function/watchMegumiContractDeploymentStatusAndInsertMer
     --role arn:aws:iam::000000000000:role/lambda-role
 
 # npx amplify mock function --name watchMegumiContractDeploymentStatusAndInsertMerkletree --event /app/amplify/backend/function/watchMegumiContractDeploymentStatusAndInsertMerkletree/src/event.json
+# <---------------
+
 
 # Run the app
 exec "$@"
