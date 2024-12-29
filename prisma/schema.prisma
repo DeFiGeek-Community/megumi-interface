@@ -33,7 +33,6 @@ model Claimer {
 }
 
 model AirdropClaimerMap {
-  id         String  @id @default(uuid())
   airdropId  String
   claimerId  String
   isClaimed  Boolean @default(false)
@@ -44,6 +43,5 @@ model AirdropClaimerMap {
   airdrop Airdrop @relation(fields: [airdropId], references: [id])
   claimer Claimer @relation(fields: [claimerId], references: [id])
 
-  @@index([airdropId])
-  @@index([claimerId])
+  @@id(name: "airdropClaimerId", [airdropId, claimerId])
 }
