@@ -1,7 +1,15 @@
-import { erc20Abi, getContract, isAddress, type PublicClient } from "viem";
+import {
+  concat,
+  erc20Abi,
+  getContract,
+  getContractAddress,
+  isAddress,
+  keccak256,
+  type PublicClient,
+} from "viem";
 import type { GetEnsNameReturnType } from "viem/ens";
 import { type Chain, localhost, mainnet, sepolia, base, baseSepolia } from "viem/chains";
-import type { Airdrop } from "@prisma/client";
+import type { Airdrop, Prisma, PrismaClient } from "@prisma/client";
 import { TemplateType } from "./constants/templates";
 import { Session } from "next-auth";
 import {
@@ -18,6 +26,7 @@ import Standard from "@/app/lib/constants/abis/Standard.json";
 import LinearVesting from "@/app/lib/constants/abis/LinearVesting.json";
 import { ListObjectsV2Command, DeleteObjectsCommand } from "@aws-sdk/client-s3";
 import { s3Client } from "./aws";
+import { DefaultArgs } from "@prisma/client/runtime/library";
 
 const chains = { mainnet, sepolia, base, baseSepolia };
 
@@ -262,7 +271,21 @@ const AirdropABI: { [key: string]: AirdropABIType } = {
 };
 // <--
 
-export const validateMerkleTree = (data: { [key: string]: string }) => {
+export type MerkleTreeClaim = {
+  index: number;
+  amount: `0x${string}`; // Hex string
+  proof: `0x${string}`[]; // Array of hex strings
+};
+
+export type MerkleTreeData = {
+  airdropAmount: string; // Numeric string
+  merkleRoot: `0x${string}`; // Hex string
+  claims: {
+    [address: `0x${string}`]: MerkleTreeClaim;
+  };
+};
+
+export const validateMerkleTree = (data: any) => {
   const hashRegex = /^0x[a-fA-F0-9]{64}$/;
   const hexRegex = /^0x[a-fA-F0-9]+$/;
   const isHashString = (str: string) => hashRegex.test(str);
@@ -345,6 +368,78 @@ export const validateMerkleTree = (data: { [key: string]: string }) => {
 
   return { valid: true };
 };
+
+export async function processMerkleTree(
+  prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>,
+  merkleTreeData: MerkleTreeData,
+  airdropUUID: string,
+) {
+  console.log(`[INFO] Processing merkle tree for airdrop ${airdropUUID}`);
+
+  for (const [address, claim] of Object.entries(merkleTreeData.claims)) {
+    console.log(`[INFO] Processing claim for address ${address}`);
+    // Check if Claimer exists on the table
+    let claimer = await prisma.claimer.findUnique({
+      where: { address: hexStringToUint8Array(address as `0x${string}`) },
+    });
+
+    // If not, insert
+    if (!claimer) {
+      claimer = await prisma.claimer.create({
+        data: { address: hexStringToUint8Array(address as `0x${string}`) },
+      });
+    }
+
+    // Create AirdropClaimerMap
+    await prisma.airdropClaimerMap.upsert({
+      where: {
+        airdropClaimerId: {
+          claimerId: claimer.id,
+          airdropId: airdropUUID,
+        },
+      },
+      update: {},
+      create: {
+        claimerId: claimer.id,
+        airdropId: airdropUUID,
+        isClaimed: false,
+        index: claim.index,
+        amount: BigInt(claim.amount),
+      },
+    });
+  }
+}
+
+// TODO Test
+export function getAirdropAddressFromUUID({
+  templateAddress,
+  uuid,
+  deployer,
+  chainId,
+}: {
+  templateAddress: `0x${string}`;
+  uuid: `0x${string}`;
+  deployer: `0x${string}`;
+  chainId: number;
+}) {
+  // Fixed bytecode for ERC1167
+  const MINIMAL_PROXY_PREFIX = "0x3d602d80600a3d3981f3363d3d373d3d3d363d73";
+  const MINIMAL_PROXY_SUFFIX = "0x5af43d82803e903d91602b57fd5bf3";
+
+  // Calculate salt through the same logic as a contract
+  const salt = keccak256(concat([templateAddress, uuid, deployer]));
+
+  // Build ERC1167 minimal proxy bytecode
+  const bytecode = concat([MINIMAL_PROXY_PREFIX, templateAddress, MINIMAL_PROXY_SUFFIX]);
+
+  // Calculate CREATE2 address
+  return getContractAddress({
+    bytecode,
+    from: CONTRACT_ADDRESSES[chainId].FACTORY,
+    salt,
+    opcode: "CREATE2",
+  });
+}
 
 // For tests only
 export async function deleteAllObjects(bucketName: string) {
