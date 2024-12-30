@@ -227,19 +227,3 @@ describe("POST /api/airdrops/:id/syncMerkletree", () => {
     });
   });
 });
-
-// describe("Invoke lambda function", () => {
-//   test("Invoke lambda function directly", async () => {
-//     const functionName = "watchMegumiContractDeploymentStatusAndInsertMerkletree";
-//     const command = new InvokeCommand({
-//       FunctionName: functionName,
-//       Payload: JSON.stringify({}),
-//       LogType: LogType.Tail,
-//     });
-//     const { Payload, LogResult } = await lambdaClient.send(command);
-//     const response = Payload ? Buffer.from(Payload).toString() : "";
-//     const logs = LogResult ? Buffer.from(LogResult, "base64").toString() : "";
-//     const result = await JSON.parse(response);
-//     expect(result.statusCode).toStrictEqual(200);
-//   });
-// });
