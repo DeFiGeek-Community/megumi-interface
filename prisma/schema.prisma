@@ -38,7 +38,7 @@ model AirdropClaimerMap {
   isClaimed  Boolean @default(false)
   proofs     Bytes[]
   index      Int
-  amount     BigInt
+  amount     Bytes
 
   airdrop Airdrop @relation(fields: [airdropId], references: [id])
   claimer Claimer @relation(fields: [claimerId], references: [id])
