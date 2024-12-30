@@ -390,7 +390,7 @@ export async function processMerkleTree(
   console.log(`[INFO] Processing merkle tree for airdrop ${airdropUUID}`);
 
   for (const [address, claim] of Object.entries(merkleTreeData.claims)) {
-    console.log(`[INFO] Processing claim for address ${address}`);
+    // console.log(`[INFO] Processing claim for address ${address}`);
     // Check if Claimer exists on the table
     let claimer = await prisma.claimer.findUnique({
       where: { address: hexStringToUint8Array(address as `0x${string}`) },

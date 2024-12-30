@@ -38,6 +38,8 @@ jest.mock("../../../../../../prisma/client", () => ({
 afterEach(async () => {
   mockedSession = null;
   await deleteAllObjects(process.env.AWS_S3_BUCKET_NAME!);
+  // Workaround for S3 consistency
+  await new Promise((resolve) => setTimeout(resolve, 500));
 });
 
 describe("POST /api/airdrops/:id/syncMerkletree", () => {
