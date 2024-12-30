@@ -21,6 +21,5 @@ const lambdaConfig: LambdaClientConfig = {
     secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
   },
 };
-console.log(process.env.AWS_REGION, process.env.AWS_ACCESS_KEY_ID);
 
 export const lambdaClient = new LambdaClient(lambdaConfig);

@@ -9,8 +9,8 @@
     "start": "next start",
     "lint": "next lint",
     "format": "prettier --write .",
-    "test:backend": "npx dotenv -e .env.test -- npx prisma migrate reset -f && npx prisma db seed -- --environment test && jest",
-    "migrate:reset:test": "npx dotenv -e .env.test -- npx prisma migrate reset -f"
+    "test:backend": "export $(grep -v '^#' .env.test | xargs) && npx prisma migrate reset -f && npx prisma db seed -- --environment test && jest",
+    "migrate:reset:test": "export $(grep -v '^#' .env.test | xargs) && npx prisma migrate reset -f"
   },
   "dependencies": {
     "@aws-sdk/client-lambda": "^3.716.0",

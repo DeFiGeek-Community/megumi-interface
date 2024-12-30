@@ -1,34 +1,20 @@
 import { NextResponse } from "next/server";
-import { GetCodeReturnType, getContractAddress, type PublicClient } from "viem";
+import { GetCodeReturnType, type PublicClient } from "viem";
 import type { Airdrop } from "@prisma/client";
-import { prisma } from "@/prisma/client";
+import { GetObjectCommand, GetObjectCommandOutput } from "@aws-sdk/client-s3";
 import { getServerSession } from "next-auth";
+import { prisma } from "@/prisma/client";
 import { authOptions } from "../../../../auth/authOptions";
 import {
   convertAirdropWithUint8ArrayToHexString,
   getAirdropAddressFromUUID,
-  getMerkleRootFromAirdropAddress,
-  getTemplateNameFromAirdropAddress,
-  getTokenInfo,
-  hexStringToUint8Array,
   MerkleTreeData,
   processMerkleTree,
-  uint8ArrayToHexString,
-  validateAirdropContract,
-  validateAirdropData,
   validateMerkleTree,
 } from "@/app/lib/utils";
 import { getViemProvider } from "@/app/lib/api";
-
-import {
-  GetObjectCommand,
-  GetObjectCommandOutput,
-  NoSuchKey,
-  PutObjectCommand,
-} from "@aws-sdk/client-s3";
-import { lambdaClient, s3Client } from "@/app/lib/aws";
+import { s3Client } from "@/app/lib/aws";
 import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
-import { InvokeCommand, LogType } from "@aws-sdk/client-lambda";
 
 // TODO util -->
 export const getErrorMessage = (error: unknown): string => {
@@ -142,27 +128,12 @@ export async function POST(req: Request, { params }: { params: { chainId: string
   try {
     // TODO Condider removing await and return 200 and let the process run in the background
     await processMerkleTree(prisma, merkletree, params.id);
+    return NextResponse.json({ result: "ok" });
   } catch (e: unknown) {
     const error = getErrorMessage(e);
+    console.error(`[ERROR] ${error}`);
     return NextResponse.json({ error }, { status: 422 });
   }
-
-  // Call `watchMegumiContractDeploymentStatusAndInsertMerkleTree` with contractAddress
-  //   const functionName = "watchMegumiContractDeploymentStatusAndInsertMerkletree";
-  //   const command = new InvokeCommand({
-  //     FunctionName: functionName,
-  //     Payload: JSON.stringify({ chainId: params.chainId, id: params.id }),
-  //     LogType: LogType.Tail,
-  //   });
-
-  //   try {
-  //     const { Payload, LogResult } = await lambdaClient.send(command);
-  //     const result = Payload ? Buffer.from(Payload).toString() : "";
-  //     const logs = LogResult ? Buffer.from(LogResult, "base64").toString() : "";
-  //     return NextResponse.json({ result, logs });
-  //   } catch (error: unknown) {
-  //     return respondError(error);
-  //   }
 }
 
 // TODO Get sync status

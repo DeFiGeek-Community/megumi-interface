@@ -9,7 +9,7 @@ import {
 } from "viem";
 import type { GetEnsNameReturnType } from "viem/ens";
 import { type Chain, localhost, mainnet, sepolia, base, baseSepolia } from "viem/chains";
-import type { Airdrop, Prisma, PrismaClient } from "@prisma/client";
+import type { Airdrop, AirdropClaimerMap, Prisma, PrismaClient } from "@prisma/client";
 import { TemplateType } from "./constants/templates";
 import { Session } from "next-auth";
 import {
@@ -80,7 +80,19 @@ export const isSupportedTemplate = (templateName: string) => {
 
 // For backend ->
 // Airdrop utility
-export const convertAirdropWithUint8ArrayToHexString = (airdrop: Airdrop) => {
+export const convertAirdropWithUint8ArrayToHexString = (
+  airdrop: Airdrop & { AirdropClaimerMap?: AirdropClaimerMap[] },
+) => {
+  let AirdropClaimerMap;
+
+  if ("AirdropClaimerMap" in airdrop) {
+    AirdropClaimerMap = airdrop.AirdropClaimerMap?.map((airdropClaimerMap) => ({
+      ...airdropClaimerMap,
+      proofs: airdropClaimerMap.proofs.map((p: any) => uint8ObjectToHexString(p)),
+      amount: BigInt(uint8ObjectToHexString(airdropClaimerMap.amount)),
+    }));
+  }
+
   return {
     ...airdrop,
     contractAddress: airdrop.contractAddress
@@ -89,6 +101,7 @@ export const convertAirdropWithUint8ArrayToHexString = (airdrop: Airdrop) => {
     templateName: uint8ObjectToHexString(airdrop.templateName),
     owner: uint8ObjectToHexString(airdrop.owner),
     tokenAddress: uint8ObjectToHexString(airdrop.tokenAddress),
+    AirdropClaimerMap,
   };
 };
 
@@ -404,7 +417,8 @@ export async function processMerkleTree(
         airdropId: airdropUUID,
         isClaimed: false,
         index: claim.index,
-        amount: BigInt(claim.amount),
+        proofs: claim.proof.map((p) => hexStringToUint8Array(p)),
+        amount: hexStringToUint8Array(claim.amount),
       },
     });
   }
