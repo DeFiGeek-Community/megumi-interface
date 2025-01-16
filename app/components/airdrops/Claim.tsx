@@ -1,7 +1,11 @@
 "use client";
 import { useTranslation } from "react-i18next";
 import { VStack, Box, HStack, Text, Button } from "@chakra-ui/react";
-import { ClaimProps } from "@/app/interfaces/airdrop";
+
+export interface ClaimProps {
+  isLinearVesting: boolean;
+  currentVestingEndsAt?: string;
+}
 
 export default function Claim({ isLinearVesting, currentVestingEndsAt }: ClaimProps): JSX.Element {
   const { t } = useTranslation();

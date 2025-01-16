@@ -1,7 +1,11 @@
 import { Flex } from "@chakra-ui/react";
 import { CheckCircleIcon } from "@chakra-ui/icons";
-import { StatusProps } from "@/app/interfaces/dashboard";
 import { useTranslation } from "react-i18next";
+
+export interface StatusProps {
+  isAirdropRegistered: boolean;
+  isContractRegistered: boolean;
+}
 
 export default function Status({
   isAirdropRegistered,

@@ -1,7 +1,11 @@
 import { Text } from "@chakra-ui/react";
 import { Row } from "@/app/lib/chakra/chakraUtils";
-import { DateContentProps } from "@/app/interfaces/dashboard";
 import { useTranslation } from "react-i18next";
+
+export interface DateContentProps {
+  creationDate: string;
+  publicationDate: string;
+}
 
 export default function DateContent({ creationDate, publicationDate }: DateContentProps) {
   const { t } = useTranslation();

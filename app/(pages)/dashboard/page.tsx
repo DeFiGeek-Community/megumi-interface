@@ -7,7 +7,9 @@ import { Box, Button, Flex, Tab, TabList, Tabs, VStack } from "@chakra-ui/react"
 import { AddIcon } from "@chakra-ui/icons";
 import { useTranslation } from "react-i18next";
 import DashBoardCard from "@/app/components/airdrops/cards/DashBoardCard";
-import { TemplateType, Airdrop } from "@/app/interfaces/dashboard";
+import { TemplateNames } from "@/app/lib/constants/templates";
+// TODO remove mock type
+import { Airdrop } from "@/app/types/airdrop";
 
 export default function Dashboard() {
   const { address, isConnecting, isReconnecting } = useRequireAccount();
@@ -17,7 +19,7 @@ export default function Dashboard() {
     {
       id: "asdf",
       title: "Vesting",
-      templateName: TemplateType.LINEAR_VESTING,
+      templateName: TemplateNames.LINEAR_VESTING,
       owner: "0x",
       tokenAddress: "0x",
       createdAt: 1731897560,
@@ -32,7 +34,7 @@ export default function Dashboard() {
     {
       id: "zxcv",
       title: "Standard",
-      templateName: TemplateType.STANDARD,
+      templateName: TemplateNames.STANDARD,
       owner: "0x",
       tokenAddress: "0x",
       createdAt: 1731897560,

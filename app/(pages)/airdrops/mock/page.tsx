@@ -15,7 +15,6 @@ import {
 import { useRequireAccount } from "@/app/hooks/common/useRequireAccount";
 import { useIsMounted } from "@/app/hooks/common/useIsMounted";
 import { useTranslation } from "react-i18next";
-import { TemplateType, Airdrop } from "@/app/interfaces/dashboard";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   formatTotalAirdropAmount,
@@ -25,6 +24,9 @@ import {
 } from "@/app/lib/airdrop/airdropUtils";
 import Claim from "@/app/components/airdrops/Claim";
 import OwnerMenu from "@/app/components/airdrops/OwnerMenu";
+import { TemplateNames } from "@/app/lib/constants/templates";
+// TODO remove mock type
+import { Airdrop } from "@/app/types/airdrop";
 
 export default function AirdropPage() {
   const { address, isConnecting, isReconnecting } = useRequireAccount();
@@ -34,7 +36,7 @@ export default function AirdropPage() {
     {
       id: "asdf",
       title: "Vesting",
-      templateName: TemplateType.LINEAR_VESTING,
+      templateName: TemplateNames.LINEAR_VESTING,
       owner: "0x",
       tokenAddress: "0x",
       createdAt: 1731897560,
@@ -49,7 +51,7 @@ export default function AirdropPage() {
     {
       id: "zxcv",
       title: "Standard",
-      templateName: TemplateType.STANDARD,
+      templateName: TemplateNames.STANDARD,
       owner: "0x",
       tokenAddress: "0x",
       createdAt: 1731897560,
@@ -83,7 +85,7 @@ export default function AirdropPage() {
   if ("vestingEndsAt" in airdrops[0]) {
     currentVestingEndsAt = formatVestingEndsAt(airdrops[0].vestingEndsAt);
   }
-  isLinearVesting = airdrops[0].templateName === TemplateType.LINEAR_VESTING;
+  isLinearVesting = airdrops[0].templateName === TemplateNames.LINEAR_VESTING;
 
   return (
     <Container maxW={"container.xl"} mb={4}>

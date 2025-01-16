@@ -1,7 +1,12 @@
 import { Box, Text } from "@chakra-ui/react";
-import { AirdropInfoProps } from "@/app/interfaces/dashboard";
 import { useTranslation } from "react-i18next";
 import { formatTemplateType } from "@/app/lib/airdrop/airdropUtils";
+import type { TemplateType } from "@/app/types/airdrop";
+
+export interface AirdropInfoProps {
+  airdropTitle: string;
+  templateType: TemplateType;
+}
 
 export default function AirdropInfo({ airdropTitle, templateType }: AirdropInfoProps) {
   const { t } = useTranslation();

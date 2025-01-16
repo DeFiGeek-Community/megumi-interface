@@ -8,7 +8,7 @@ import {
   deleteAllObjects,
   uint8ObjectToHexString,
 } from "@/app/lib/utils";
-import { TemplateType } from "@/app/lib/constants/templates";
+import { TemplateNames } from "@/app/lib/constants/templates";
 import { s3Client, PutObjectCommand } from "@/app/lib/aws";
 import * as appHandler from "./routes";
 
@@ -48,7 +48,7 @@ describe("POST /api/airdrops/:id/syncMerkletree", () => {
         chainId: 11155111,
         title: `Sample airdrop`,
         contractAddress: Uint8Array.from(Buffer.from(sampleAirdropAddress.slice(2), "hex")),
-        templateName: Uint8Array.from(Buffer.from(TemplateType.STANDARD.slice(2), "hex")),
+        templateName: Uint8Array.from(Buffer.from(TemplateNames.STANDARD.slice(2), "hex")),
         owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
         tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
         tokenName: "18 Decimals Sample Token",
@@ -98,7 +98,7 @@ describe("POST /api/airdrops/:id/syncMerkletree", () => {
         chainId: 11155111,
         title: `Sample airdrop`,
         contractAddress: Uint8Array.from(Buffer.from(sampleAirdropAddress.slice(2), "hex")),
-        templateName: Uint8Array.from(Buffer.from(TemplateType.STANDARD.slice(2), "hex")),
+        templateName: Uint8Array.from(Buffer.from(TemplateNames.STANDARD.slice(2), "hex")),
         owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
         tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
         tokenName: "18 Decimals Sample Token",
@@ -156,7 +156,7 @@ describe("POST /api/airdrops/:id/syncMerkletree", () => {
         chainId: 11155111,
         title: `Sample airdrop`,
         contractAddress: Uint8Array.from(Buffer.from(sampleAirdropAddress.slice(2), "hex")),
-        templateName: Uint8Array.from(Buffer.from(TemplateType.STANDARD.slice(2), "hex")),
+        templateName: Uint8Array.from(Buffer.from(TemplateNames.STANDARD.slice(2), "hex")),
         owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
         tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
         tokenName: "18 Decimals Sample Token",

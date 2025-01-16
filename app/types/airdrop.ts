@@ -1,19 +1,6 @@
 import type { GetContractReturnType, PublicClient } from "viem";
+import { TemplateNames } from "@/app/lib/constants/templates";
 import { MerkleAirdropBase, Standard, LinearVesting } from "@/app/lib/constants/abis";
-
-export interface ClaimProps {
-  isLinearVesting: boolean;
-  currentVestingEndsAt?: string;
-}
-
-export type StandardClaim = {
-  amount: bigint;
-  isClaimed: boolean;
-};
-export type LinearVestingClaim = StandardClaim & {
-  claimedAmount: bigint;
-  claimable: bigint;
-};
 
 export type AirdropFormType = {
   chainId: number;
@@ -37,3 +24,28 @@ export type AirdropValidationType = {
   tokenAddress?: string;
   tokenLogo?: string;
 };
+
+export type TemplateType = (typeof TemplateNames)[keyof typeof TemplateNames];
+
+// Mock type ---->
+export type Airdrop = Standard | LinearVesting;
+
+export type Standard = {
+  id: string;
+  title: string;
+  templateName: TemplateType;
+  owner: string;
+  tokenAddress: string;
+  createdAt: number;
+  merkleTreeUploadedAt: number | undefined;
+  contractAddress: string | undefined;
+  totalAirdropAmount: bigint | undefined;
+  eligibleUsersNum: number | undefined;
+  claimedUsersNum: number | undefined;
+  contractDeployedAt: number | undefined;
+};
+
+export type LinearVesting = Standard & {
+  vestingEndsAt: number;
+};
+// <---- Mock type

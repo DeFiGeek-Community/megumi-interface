@@ -12,13 +12,14 @@ import type { GetEnsNameReturnType } from "viem/ens";
 import { type Chain, localhost, mainnet, sepolia, base, baseSepolia } from "viem/chains";
 import type { Airdrop, AirdropClaimerMap, Prisma, PrismaClient } from "@/prisma";
 import { DefaultArgs } from "@prisma/client/runtime/library";
-import { TemplateType } from "@/app/lib/constants/templates";
-import {
+import { TemplateNames } from "@/app/lib/constants/templates";
+import type {
   AirdropABIType,
   AirdropContractType,
   AirdropFormType,
   AirdropValidationType,
-} from "@/app/interfaces/airdrop";
+  TemplateType,
+} from "@/app/types/airdrop";
 import { isSupportedChain } from "@/app/lib/chain";
 import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
 import { Factory, MerkleAirdropBase, Standard, LinearVesting } from "@/app/lib/constants/abis";
@@ -69,7 +70,7 @@ export const hexStringToUint8Array = (hexString: `0x${string}`): Uint8Array => {
 };
 
 export const isSupportedTemplate = (templateName: string) => {
-  return Object.values(TemplateType)
+  return Object.values(TemplateNames)
     .map((v) => v as string)
     .includes(templateName);
 };
@@ -249,11 +250,11 @@ export const getTemplateNameFromAirdropAddress = async (
 
   const templateKey = Object.keys(CONTRACT_ADDRESSES[chainId]).find(
     (key) =>
-      Object.keys(TemplateType).includes(key) &&
+      Object.keys(TemplateNames).includes(key) &&
       CONTRACT_ADDRESSES[chainId][key].toLowerCase() === implementationAddress,
-  ) as keyof typeof TemplateType | undefined;
+  ) as keyof typeof TemplateNames | undefined;
 
-  return templateKey && TemplateType[templateKey];
+  return templateKey && TemplateNames[templateKey];
 };
 
 export const getABIFromAirdropAddress = async (
@@ -273,9 +274,9 @@ export const getABIFromAirdropAddress = async (
 
   const templateKey = Object.keys(CONTRACT_ADDRESSES[chainId]).find(
     (key) =>
-      Object.keys(TemplateType).includes(key) &&
+      Object.keys(TemplateNames).includes(key) &&
       CONTRACT_ADDRESSES[chainId][key].toLowerCase() === implementationAddress,
-  ) as keyof typeof TemplateType | undefined;
+  ) as keyof typeof TemplateNames | undefined;
   return templateKey && AirdropABI[templateKey];
 };
 

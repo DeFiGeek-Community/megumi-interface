@@ -1,7 +1,13 @@
 import { Text } from "@chakra-ui/react";
 import { Row } from "@/app/lib/chakra/chakraUtils";
-import { DetailedInfoProps } from "@/app/interfaces/dashboard";
 import { useTranslation } from "react-i18next";
+
+export interface DetailedInfoProps {
+  totalAmount: string;
+  claimedAccounts: string;
+  isLinearVesting: boolean;
+  vestingEndDate: string;
+}
 
 export default function DetailedInfo({
   totalAmount,

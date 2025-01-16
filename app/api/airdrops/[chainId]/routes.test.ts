@@ -3,7 +3,7 @@ import { testApiHandler } from "next-test-api-route-handler";
 import type { Session } from "next-auth";
 import { zeroAddress } from "viem";
 import { uint8ObjectToHexString } from "@/app/lib/utils";
-import { TemplateType } from "@/app/lib/constants/templates";
+import { TemplateNames } from "@/app/lib/constants/templates";
 import * as appHandler from "./routes";
 
 const YMWK = "0xdE2832DE0b4C0b4b6742e60186E290622B2B766C".toLowerCase(); // Sepolia YMWK
@@ -40,7 +40,7 @@ describe("POST /api/airdrops Create a new airdrop", () => {
     chainId: 11155111,
     title: `YMWK Airdrop`,
     contractAddress: null,
-    templateName: TemplateType.STANDARD,
+    templateName: TemplateNames.STANDARD,
     owner: "0xabcd",
     tokenAddress: YMWK,
     tokenLogo: "https://example.com/logo.png",
@@ -230,7 +230,7 @@ describe("POST /api/airdrops Create a new airdrop", () => {
     test("No page and limit specified", async () => {
       const expectedData = {
         contractAddress: null,
-        templateName: TemplateType.STANDARD,
+        templateName: TemplateNames.STANDARD,
         owner: "0xabcd",
         tokenAddress: YMWK,
         tokenName: "Yamawake DAO Token20",
@@ -268,7 +268,7 @@ describe("POST /api/airdrops Create a new airdrop", () => {
         chainId: 11155111,
         title: `YMWK Airdrop 24`,
         contractAddress: null,
-        templateName: TemplateType.STANDARD,
+        templateName: TemplateNames.STANDARD,
         owner: "0xabcd",
         tokenAddress: YMWK,
         tokenName: "Yamawake DAO Token24",
