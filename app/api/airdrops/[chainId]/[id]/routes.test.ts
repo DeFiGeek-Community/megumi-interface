@@ -11,8 +11,7 @@ import {
 } from "@/app/lib/utils";
 import { TemplateType } from "@/app/lib/constants/templates";
 import * as appHandler from "./routes";
-import { GetObjectCommand, PutObjectCommand } from "@aws-sdk/client-s3";
-import { s3Client } from "@/app/lib/aws";
+import { s3Client, GetObjectCommand, PutObjectCommand } from "@/app/lib/aws";
 
 const YMWK = "0xdE2832DE0b4C0b4b6742e60186E290622B2B766C".toLowerCase(); // Sepolia YMWK
 const YMWK_INFO = {

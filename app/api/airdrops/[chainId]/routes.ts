@@ -1,11 +1,10 @@
 import { NextResponse, NextRequest } from "next/server";
-import { erc20Abi, getContract, type PublicClient } from "viem";
-import type { Airdrop } from "@prisma/client";
-import { prisma } from "@/prisma/client";
 import { getServerSession } from "next-auth";
-import { getViemProvider } from "@/app/lib/api";
-import { authOptions } from "../../auth/authOptions";
+import { erc20Abi, getContract, type PublicClient } from "viem";
+import { prisma, type Airdrop } from "@/prisma";
+import { getViemProvider } from "@/app/lib/utils/api";
 import { isSupportedChain } from "@/app/lib/chain";
+import { authOptions } from "@/app/api/auth/authOptions";
 import {
   convertAirdropWithUint8ArrayToHexString,
   getTokenInfo,

@@ -14,7 +14,7 @@ import {
 import { Flex, Stack, Container, Heading, Button, chakra } from "@chakra-ui/react";
 import { WarningIcon } from "@chakra-ui/icons";
 import MerkleTree from "@/app/lib/constants/merkle-tree.json";
-import StandardABI from "@/app/lib/constants/abis/Standard.json";
+import { Standard as StandardABI } from "@/app/lib/constants/abis";
 import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
 import ConnectButton from "@/app/components/common/ConnectButton";
 import { TxToastsContext } from "@/app/providers/ToastProvider";

@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
-import type { PublicClient } from "viem";
-import type { Airdrop } from "@prisma/client";
-import { prisma } from "@/prisma/client";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../../../auth/authOptions";
+import type { PublicClient } from "viem";
+import { prisma, MAirdrop } from "@/prisma";
+import { authOptions } from "@/app/api/auth/authOptions";
+import { s3Client, GetObjectCommand, NoSuchKey, PutObjectCommand } from "@/app/lib/aws";
+import {
+  AirdropNotFoundError,
+  InvalidMerkletreeError,
+  InvalidOwnerError,
+  UnauthorizedError,
+} from "@/app/types/errors";
 import {
   convertAirdropWithUint8ArrayToHexString,
   getMerkleRootFromAirdropAddress,
@@ -15,46 +21,25 @@ import {
   validateAirdropData,
   validateMerkleTree,
 } from "@/app/lib/utils";
-import { getViemProvider } from "@/app/lib/api";
-
-import { GetObjectCommand, NoSuchKey, PutObjectCommand } from "@aws-sdk/client-s3";
-import { s3Client } from "@/app/lib/aws";
-
-// TODO util -->
-export const respondError = (error: unknown) => {
-  const message = error instanceof Error ? `${error.name} ${error.message}` : `${error}`;
-  console.error(`[ERROR] ${message}`);
-  return NextResponse.json({ error: message }, { status: 500 });
-};
-// <--
+import { getViemProvider, requireOwner, respondError } from "@/app/lib/utils/api";
 
 // Upload merkle tree file
 export async function POST(req: Request, { params }: { params: { chainId: string; id: string } }) {
   const session = await getServerSession(authOptions);
   if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    return respondError(new UnauthorizedError());
   }
 
-  // Owner check (TODO move to util) -->
-  let airdrop: Airdrop | null;
-  try {
-    airdrop = await prisma.airdrop.findUnique({
-      where: { id: params.id },
-    });
-  } catch (error: unknown) {
-    return respondError(error);
-  }
+  const airdrop = await MAirdrop.getAirdropById(params.id);
 
   if (!airdrop) {
-    return NextResponse.json({ error: "Not Found" }, { status: 404 });
+    return respondError(new AirdropNotFoundError());
   }
+  const { error } = await requireOwner(airdrop, session.user.address);
 
-  const formattedAirdrop = convertAirdropWithUint8ArrayToHexString(airdrop);
-
-  if (session.user.address !== formattedAirdrop.owner) {
-    return NextResponse.json({ error: "You are not the owner of this contract" }, { status: 403 });
+  if (error) {
+    return respondError(error);
   }
-  // <--
 
   const formData = await req.formData();
   const file: any = formData.get("file");
@@ -62,9 +47,9 @@ export async function POST(req: Request, { params }: { params: { chainId: string
   const json = JSON.parse(buffer.toString("utf-8"));
 
   // Validate merkle tree format
-  const { valid, error } = validateMerkleTree(json);
+  const { valid, error: formatError } = validateMerkleTree(json);
   if (!valid) {
-    return NextResponse.json({ error }, { status: 422 });
+    return respondError(formatError);
   }
 
   // Check if contract is already registered
@@ -75,7 +60,7 @@ export async function POST(req: Request, { params }: { params: { chainId: string
       provider,
     );
     if (json.merkleRoot !== merkleRoot) {
-      return NextResponse.json({ error: "Merkle root does not match" }, { status: 422 });
+      return respondError(new InvalidMerkletreeError("Merkle root does not match"));
     }
   }
 
@@ -97,14 +82,10 @@ export async function POST(req: Request, { params }: { params: { chainId: string
 // Get an airdrop by ID
 export async function GET(req: Request, { params }: { params: { chainId: string; id: string } }) {
   try {
-    const airdrop = await prisma.airdrop.findUnique({
-      where: { id: params.id },
-    });
-
+    const airdrop = await MAirdrop.getAirdropById(params.id);
     if (!airdrop) {
-      return NextResponse.json({ error: "Airdrop not found" }, { status: 404 });
+      return respondError(new AirdropNotFoundError());
     }
-
     const formattedAirdrop = convertAirdropWithUint8ArrayToHexString(airdrop);
 
     return NextResponse.json(formattedAirdrop);
@@ -120,26 +101,15 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Owner check (TODO move to util) -->
-  let airdrop: Airdrop | null;
-  try {
-    airdrop = await prisma.airdrop.findUnique({
-      where: { id: params.id },
-    });
-  } catch (error: unknown) {
+  const airdrop = await MAirdrop.getAirdropById(params.id);
+  if (!airdrop) {
+    return respondError(new AirdropNotFoundError());
+  }
+  const { error } = await requireOwner(airdrop, session.user.address);
+
+  if (error) {
     return respondError(error);
   }
-
-  if (!airdrop) {
-    return NextResponse.json({ error: "Not Found" }, { status: 404 });
-  }
-
-  const formattedAirdrop = convertAirdropWithUint8ArrayToHexString(airdrop);
-
-  if (session.user.address !== formattedAirdrop.owner) {
-    return NextResponse.json({ error: "You are not the owner of this contract" }, { status: 403 });
-  }
-  // <--
 
   try {
     const body = await req.json();
@@ -159,6 +129,8 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
         { status: 422 },
       );
     }
+
+    let resAirdrop;
     if (contractAddress) {
       // 1. Check if contract is already registered
       if (airdrop.contractAddress) {
@@ -197,6 +169,7 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
         Bucket: process.env.AWS_S3_BUCKET_NAME,
         Key: `${params.chainId}/${params.id}-merkletree.json`,
       });
+
       try {
         const response = await s3Client.send(command);
         const str = await response.Body?.transformToString();
@@ -235,7 +208,7 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
         console.error(error);
         return NextResponse.json({ error: String(error) }, { status: 422 });
       }
-      airdrop = {
+      resAirdrop = {
         ...airdrop,
         contractAddress: hexStringToUint8Array(contractAddress),
         tokenName,
@@ -243,7 +216,7 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
         tokenDecimals,
       };
     } else {
-      airdrop = {
+      resAirdrop = {
         ...airdrop,
         title,
         tokenLogo,
@@ -255,7 +228,7 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
 
     const updatedAirdrop = await prisma.airdrop.update({
       where: { id: params.id },
-      data: airdrop,
+      data: resAirdrop,
     });
 
     return NextResponse.json(updatedAirdrop);
@@ -274,23 +247,14 @@ export async function DELETE(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let airdrop;
-  try {
-    airdrop = await prisma.airdrop.findUnique({
-      where: { id: params.id },
-    });
-  } catch (error: unknown) {
-    return respondError(error);
-  }
-
+  const airdrop = await MAirdrop.getAirdropById(params.id);
   if (!airdrop) {
-    return NextResponse.json({ error: "Not Found" }, { status: 404 });
+    return respondError(new AirdropNotFoundError());
   }
+  const { error } = await requireOwner(airdrop, session.user.address);
 
-  const formattedAirdrop = convertAirdropWithUint8ArrayToHexString(airdrop);
-
-  if (session.user.address !== formattedAirdrop.owner) {
-    return NextResponse.json({ error: "You are not the owner of this contract" }, { status: 403 });
+  if (error) {
+    return respondError(error);
   }
 
   try {

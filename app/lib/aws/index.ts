@@ -1,4 +1,5 @@
-import { S3ClientConfig, S3Client } from "@aws-sdk/client-s3";
+import { S3Client, type S3ClientConfig } from "@aws-sdk/client-s3";
+export * from "@aws-sdk/client-s3";
 
 export const s3Config: S3ClientConfig = {
   region: process.env.AWS_REGION,

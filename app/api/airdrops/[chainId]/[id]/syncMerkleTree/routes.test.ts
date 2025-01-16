@@ -3,14 +3,13 @@ import path from "path";
 import { describe } from "node:test";
 import { testApiHandler } from "next-test-api-route-handler";
 import type { Session } from "next-auth";
-import { PutObjectCommand } from "@aws-sdk/client-s3";
 import {
   convertAirdropWithUint8ArrayToHexString,
   deleteAllObjects,
   uint8ObjectToHexString,
 } from "@/app/lib/utils";
 import { TemplateType } from "@/app/lib/constants/templates";
-import { s3Client } from "@/app/lib/aws";
+import { s3Client, PutObjectCommand } from "@/app/lib/aws";
 import * as appHandler from "./routes";
 
 const chainId = "11155111"; // Sepolia
@@ -196,6 +195,9 @@ describe("POST /api/airdrops/:id/syncMerkletree", () => {
           method: "POST",
         });
 
+        if (res.status !== 200) {
+          console.log(await res.json());
+        }
         expect(res.status).toStrictEqual(200);
 
         const airdropWithClaimerMap = await jestPrisma.client.airdrop.findUnique({

@@ -1,3 +1,4 @@
+import { Session } from "next-auth";
 import {
   concat,
   erc20Abi,
@@ -9,24 +10,20 @@ import {
 } from "viem";
 import type { GetEnsNameReturnType } from "viem/ens";
 import { type Chain, localhost, mainnet, sepolia, base, baseSepolia } from "viem/chains";
-import type { Airdrop, AirdropClaimerMap, Prisma, PrismaClient } from "@prisma/client";
-import { TemplateType } from "./constants/templates";
-import { Session } from "next-auth";
+import type { Airdrop, AirdropClaimerMap, Prisma, PrismaClient } from "@/prisma";
+import { DefaultArgs } from "@prisma/client/runtime/library";
+import { TemplateType } from "@/app/lib/constants/templates";
 import {
   AirdropABIType,
   AirdropContractType,
   AirdropFormType,
   AirdropValidationType,
-} from "../interfaces/airdrop";
-import { isSupportedChain } from "./chain";
-import Factory from "@/app/lib/constants/abis/Factory.json";
-import { CONTRACT_ADDRESSES } from "./constants/contracts";
-import MerkleAirdropBase from "@/app/lib/constants/abis/MerkleAirdropBase.json";
-import Standard from "@/app/lib/constants/abis/Standard.json";
-import LinearVesting from "@/app/lib/constants/abis/LinearVesting.json";
-import { ListObjectsV2Command, DeleteObjectsCommand } from "@aws-sdk/client-s3";
-import { s3Client } from "./aws";
-import { DefaultArgs } from "@prisma/client/runtime/library";
+} from "@/app/interfaces/airdrop";
+import { isSupportedChain } from "@/app/lib/chain";
+import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
+import { Factory, MerkleAirdropBase, Standard, LinearVesting } from "@/app/lib/constants/abis";
+import { s3Client, ListObjectsV2Command, DeleteObjectsCommand } from "@/app/lib/aws";
+import { InvalidMerkletreeError } from "@/app/types/errors";
 
 const chains = { mainnet, sepolia, base, baseSepolia };
 
@@ -75,6 +72,10 @@ export const isSupportedTemplate = (templateName: string) => {
   return Object.values(TemplateType)
     .map((v) => v as string)
     .includes(templateName);
+};
+
+export const getErrorMessage = (error: unknown): string => {
+  return error instanceof Error ? (error.message ? error.message : error.name) : `${error}`;
 };
 // <--
 
@@ -298,11 +299,15 @@ export type MerkleTreeData = {
   };
 };
 
-export const validateMerkleTree = (data: any) => {
+export const validateMerkleTree = (
+  data: any,
+): { valid: boolean; error?: InvalidMerkletreeError } => {
   const hashRegex = /^0x[a-fA-F0-9]{64}$/;
   const hexRegex = /^0x[a-fA-F0-9]+$/;
   const isHashString = (str: string) => hashRegex.test(str);
   const isHexString = (str: string) => hexRegex.test(str);
+  let valid = false;
+  let errors = [];
 
   // Check if root object has the required keys
   if (
@@ -311,33 +316,34 @@ export const validateMerkleTree = (data: any) => {
     !("merkleRoot" in data) ||
     !("claims" in data)
   ) {
-    return { valid: false, error: "Missing required root keys." };
+    errors.push("Missing required root keys.");
   }
 
   // Validate airdropAmount
   if (typeof data.airdropAmount !== "string") {
-    return { valid: false, error: "airdropAmount must be a numeric string." };
+    errors.push("airdropAmount must be a numeric string.");
   }
   try {
     BigInt(data.airdropAmount);
   } catch (e) {
-    return { valid: false, error: "airdropAmount must be a numeric string." };
+    errors.push("airdropAmount must be a numeric string.");
   }
 
   // Validate merkleRoot
   if (typeof data.merkleRoot !== "string" || !isHashString(data.merkleRoot)) {
-    return { valid: false, error: "merkleRoot must be a valid hex string." };
+    errors.push("merkleRoot must be a valid hex string.");
   }
 
   // Validate claims
   if (typeof data.claims !== "object") {
-    return { valid: false, error: "claims must be an object." };
+    errors.push("claims must be an object.");
   }
 
   for (const [address, claim] of Object.entries(data.claims)) {
     // Check if the address is a valid address
     if (!isAddress(address)) {
-      return { valid: false, error: `Claim address '${address}' is not a valid address.` };
+      errors.push(`Claim address '${address}' is not a valid address.`);
+      break;
     }
 
     // Validate the claim object
@@ -348,23 +354,20 @@ export const validateMerkleTree = (data: any) => {
       !("amount" in claim) ||
       !("proof" in claim)
     ) {
-      return { valid: false, error: `Claim for address '${address}' is missing required keys.` };
+      errors.push(`Claim for address '${address}' is missing required keys.`);
+      break;
     }
 
     // Validate index
     if (typeof claim.index !== "number" || claim.index < 0) {
-      return {
-        valid: false,
-        error: `Claim index for address '${address}' must be a non-negative number.`,
-      };
+      errors.push(`Claim index for address '${address}' must be a non-negative number.`);
+      break;
     }
 
     // Validate amount
     if (typeof claim.amount !== "string" || !isHexString(claim.amount)) {
-      return {
-        valid: false,
-        error: `Claim amount for address '${address}' must be a valid hex string.`,
-      };
+      errors.push(`Claim amount for address '${address}' must be a valid hex string.`);
+      break;
     }
 
     // Validate proof
@@ -372,11 +375,13 @@ export const validateMerkleTree = (data: any) => {
       !Array.isArray(claim.proof) ||
       !claim.proof.every((item) => typeof item === "string" && isHashString(item))
     ) {
-      return {
-        valid: false,
-        error: `Claim proof for address '${address}' must be an array of valid hex strings.`,
-      };
+      errors.push(`Claim proof for address '${address}' must be an array of valid hex strings.`);
+      break;
     }
+  }
+
+  if (errors.length > 0) {
+    return { valid, error: new InvalidMerkletreeError(errors.join(" ")) };
   }
 
   return { valid: true };

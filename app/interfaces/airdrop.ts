@@ -1,7 +1,5 @@
 import type { GetContractReturnType, PublicClient } from "viem";
-import MerkleAirdropBase from "@/app/lib/constants/abis/MerkleAirdropBase.json";
-import Standard from "@/app/lib/constants/abis/Standard.json";
-import LinearVesting from "@/app/lib/constants/abis/LinearVesting.json";
+import { MerkleAirdropBase, Standard, LinearVesting } from "@/app/lib/constants/abis";
 
 export interface ClaimProps {
   isLinearVesting: boolean;

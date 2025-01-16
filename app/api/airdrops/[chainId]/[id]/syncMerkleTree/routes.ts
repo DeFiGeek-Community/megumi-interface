@@ -1,31 +1,20 @@
 import { NextResponse } from "next/server";
-import { GetCodeReturnType, type PublicClient } from "viem";
-import type { Airdrop } from "@prisma/client";
-import { GetObjectCommand, GetObjectCommandOutput } from "@aws-sdk/client-s3";
 import { getServerSession } from "next-auth";
-import { prisma } from "@/prisma/client";
-import { authOptions } from "../../../../auth/authOptions";
+import { GetCodeReturnType, type PublicClient } from "viem";
+import { MAirdrop, prisma } from "@/prisma";
+import { authOptions } from "@/app/api/auth/authOptions";
 import {
   convertAirdropWithUint8ArrayToHexString,
   getAirdropAddressFromUUID,
+  getErrorMessage,
   MerkleTreeData,
   processMerkleTree,
   validateMerkleTree,
 } from "@/app/lib/utils";
-import { getViemProvider } from "@/app/lib/api";
-import { s3Client } from "@/app/lib/aws";
+import { getViemProvider, requireOwner, respondError } from "@/app/lib/utils/api";
+import { s3Client, GetObjectCommand, GetObjectCommandOutput } from "@/app/lib/aws";
 import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
-
-// TODO util -->
-export const getErrorMessage = (error: unknown): string => {
-  return error instanceof Error ? `${error.name} ${error.message}` : `${error}`;
-};
-export const respondError = (error: unknown) => {
-  const message = getErrorMessage(error);
-  console.error(`[ERROR] ${message}`);
-  return NextResponse.json({ error: message }, { status: 500 });
-};
-// <--
+import { AirdropNotFoundError } from "@/app/types/errors";
 
 // TODO
 // 1. Check if contrcat is deployed
@@ -38,26 +27,17 @@ export async function POST(req: Request, { params }: { params: { chainId: string
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  // Owner check (TODO move to util) -->
-  let airdrop: Airdrop | null;
-  try {
-    airdrop = await prisma.airdrop.findUnique({
-      where: { id: params.id },
-    });
-  } catch (error: unknown) {
+  const airdrop = await MAirdrop.getAirdropById(params.id);
+  if (!airdrop) {
+    return respondError(new AirdropNotFoundError());
+  }
+  const { error } = await requireOwner(airdrop, session.user.address);
+
+  if (error) {
     return respondError(error);
   }
 
-  if (!airdrop) {
-    return NextResponse.json({ error: "Not Found" }, { status: 404 });
-  }
-
   const formattedAirdrop = convertAirdropWithUint8ArrayToHexString(airdrop);
-
-  if (session.user.address !== formattedAirdrop.owner) {
-    return NextResponse.json({ error: "You are not the owner of this contract" }, { status: 403 });
-  }
-  // <--
 
   // Check if contract is already registered
   let contractAddress =
@@ -116,10 +96,10 @@ export async function POST(req: Request, { params }: { params: { chainId: string
     const error = getErrorMessage(e);
     return NextResponse.json({ error }, { status: 422 });
   }
-  const { valid, error } = validateMerkleTree(merkletree);
+  const { valid, error: invalidError } = validateMerkleTree(merkletree);
 
   if (!valid) {
-    return NextResponse.json({ error }, { status: 422 });
+    return respondError(invalidError);
   }
 
   // TODO
@@ -130,9 +110,7 @@ export async function POST(req: Request, { params }: { params: { chainId: string
     await processMerkleTree(prisma, merkletree, params.id);
     return NextResponse.json({ result: "ok" });
   } catch (e: unknown) {
-    const error = getErrorMessage(e);
-    console.error(`[ERROR] ${error}`);
-    return NextResponse.json({ error }, { status: 422 });
+    return respondError(e);
   }
 }
 
