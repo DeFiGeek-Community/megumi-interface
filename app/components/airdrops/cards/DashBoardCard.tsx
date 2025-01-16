@@ -7,14 +7,16 @@ import Status from "@/app/components/airdrops/cards/Status";
 import DateContent from "@/app/components/airdrops/cards/DateContent";
 import DetailedInfo from "@/app/components/airdrops/cards/DetailedInfo";
 import AirdropInfo from "@/app/components/airdrops/cards/AirdropInfo";
-import { Airdrop } from "@/app/interfaces/dashboard";
+
 import {
   formatDate,
   formatTotalAirdropAmount,
   formatClaimedAccounts,
   formatVestingEndsAt,
 } from "@/app/lib/airdrop/airdropUtils";
-import { TemplateType } from "@/app/interfaces/dashboard";
+import { TemplateNames } from "@/app/lib/constants/templates";
+// TODO remove mock type
+import { Airdrop } from "@/app/types/airdrop";
 
 export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
   let airdropContractDeployedAt = "-",
@@ -35,7 +37,7 @@ export default function DashBoardCard({ airdrop }: { airdrop: Airdrop }) {
   }
   isRegisteredAirdrop = !!airdrop.merkleTreeUploadedAt;
   isRegisteredContract = !!airdrop.contractAddress;
-  isLinearVesting = airdrop.templateName === TemplateType.LINEAR_VESTING;
+  isLinearVesting = airdrop.templateName === TemplateNames.LINEAR_VESTING;
 
   return (
     <Card width="100%">
