@@ -2,8 +2,8 @@ import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { erc20Abi, getContract, type PublicClient } from "viem";
 import { prisma, type Airdrop } from "@/prisma";
-import { getViemProvider } from "@/app/lib/utils/api";
-import { isSupportedChain } from "@/app/lib/chain";
+import { getViemProvider } from "@/app/utils/apiHelper";
+import { isSupportedChain } from "@/app/utils/chain";
 import { authOptions } from "@/app/api/auth/authOptions";
 import {
   convertAirdropWithUint8ArrayToHexString,

@@ -21,7 +21,7 @@ import {
   validateAirdropData,
   validateMerkleTree,
 } from "@/app/lib/utils";
-import { getViemProvider, requireOwner, respondError } from "@/app/lib/utils/api";
+import { getViemProvider, requireOwner, respondError } from "@/app/utils/apiHelper";
 
 // Upload merkle tree file
 export async function POST(req: Request, { params }: { params: { chainId: string; id: string } }) {

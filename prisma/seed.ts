@@ -1,6 +1,6 @@
 import { parseArgs } from "node:util";
 import { PrismaClient } from "@prisma/client";
-import { TemplateType } from "@/app/lib/constants/templates";
+import { TemplateNames } from "@/app/lib/constants/templates";
 
 interface ParseArgsOptionConfig {
   type: "string" | "boolean";
@@ -31,7 +31,7 @@ async function main() {
             chainId: 11155111,
             title: `YMWK Airdrop ${i}`,
             contractAddress: null,
-            templateName: Uint8Array.from(Buffer.from(TemplateType.STANDARD.slice(2), "hex")),
+            templateName: Uint8Array.from(Buffer.from(TemplateNames.STANDARD.slice(2), "hex")),
             owner: Uint8Array.from(Buffer.from("0xabcd".slice(2), "hex")),
             tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
             tokenName: `Yamawake DAO Token${i}`,

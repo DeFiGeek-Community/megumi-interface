@@ -4,7 +4,7 @@ import { mainnet, sepolia } from "wagmi/chains";
 import { createWeb3Modal } from "@web3modal/wagmi/react";
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
 import i18next from "@/app/lib/i18nConfig";
-import { getDefaultChain } from "@/app/lib/chain";
+import { getDefaultChain } from "@/app/utils/chain";
 
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!;
 const t = i18next.t;

@@ -20,7 +20,7 @@ import type {
   AirdropValidationType,
   TemplateType,
 } from "@/app/types/airdrop";
-import { isSupportedChain } from "@/app/lib/chain";
+import { isSupportedChain } from "@/app/utils/chain";
 import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
 import { Factory, MerkleAirdropBase, Standard, LinearVesting } from "@/app/lib/constants/abis";
 import { s3Client, ListObjectsV2Command, DeleteObjectsCommand } from "@/app/lib/aws";

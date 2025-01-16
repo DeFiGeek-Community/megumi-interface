@@ -11,7 +11,7 @@ import {
   processMerkleTree,
   validateMerkleTree,
 } from "@/app/lib/utils";
-import { getViemProvider, requireOwner, respondError } from "@/app/lib/utils/api";
+import { getViemProvider, requireOwner, respondError } from "@/app/utils/apiHelper";
 import { s3Client, GetObjectCommand, GetObjectCommandOutput } from "@/app/lib/aws";
 import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
 import { AirdropNotFoundError } from "@/app/types/errors";

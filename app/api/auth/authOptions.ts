@@ -3,7 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
 import { ethers } from "ethers";
-import { getSupportedChain } from "@/app/lib/chain";
+import { getSupportedChain } from "@/app/utils/chain";
 
 export const authOptions: AuthOptions = {
   providers: [

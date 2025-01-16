@@ -1,4 +1,4 @@
-import { TemplateType } from "@/app/interfaces/dashboard";
+import { TemplateType } from "@/app/types/airdrop";
 import { fromHex } from "viem";
 
 export const formatDate = (timestamp: number | undefined) => {

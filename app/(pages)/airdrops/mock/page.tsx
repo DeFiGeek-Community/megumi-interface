@@ -21,7 +21,7 @@ import {
   formatClaimedAccounts,
   formatVestingEndsAt,
   formatTemplateType,
-} from "@/app/lib/airdrop/airdropUtils";
+} from "@/app/utils/clientHelper";
 import Claim from "@/app/components/airdrops/Claim";
 import OwnerMenu from "@/app/components/airdrops/OwnerMenu";
 import { TemplateNames } from "@/app/lib/constants/templates";

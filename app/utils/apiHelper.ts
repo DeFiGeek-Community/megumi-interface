@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createPublicClient, fallback, http, type PublicClient } from "viem";
 import { prisma, type Airdrop } from "@/prisma";
-import { getSupportedChain } from "@/app/lib/chain";
+import { getSupportedChain } from "@/app/utils/chain";
 import { CHAIN_INFO } from "@/app/lib/constants/chains";
 import { getErrorMessage, uint8ObjectToHexString } from "@/app/lib/utils";
 import { InvalidOwnerError, NetworkAccessError } from "@/app/types/errors";

@@ -13,7 +13,7 @@ import {
   formatTotalAirdropAmount,
   formatClaimedAccounts,
   formatVestingEndsAt,
-} from "@/app/lib/airdrop/airdropUtils";
+} from "@/app/utils/clientHelper";
 import { TemplateNames } from "@/app/lib/constants/templates";
 // TODO remove mock type
 import { Airdrop } from "@/app/types/airdrop";

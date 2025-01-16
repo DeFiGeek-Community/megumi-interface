@@ -1,6 +1,6 @@
 import * as chains from "viem/chains";
-import { CHAIN_INFO } from "../constants/chains";
-import type { ChainInfo } from "../constants/chains";
+import { CHAIN_INFO } from "../lib/constants/chains";
+import type { ChainInfo } from "../lib/constants/chains";
 
 export const isSupportedChain = (chainId: string | number): boolean => {
   return !!getSupportedChain(chainId);
