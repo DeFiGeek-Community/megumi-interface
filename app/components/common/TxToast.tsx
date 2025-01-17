@@ -11,7 +11,7 @@ import {
   CloseButton,
   Link,
 } from "@chakra-ui/react";
-import { getEtherscanLink } from "@/app/lib/utils";
+import { getEtherscanLink } from "@/app/utils/clientHelper";
 
 export type TxSentToast = {
   txid: `0x${string}`;

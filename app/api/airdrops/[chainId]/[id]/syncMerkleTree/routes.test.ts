@@ -3,14 +3,12 @@ import path from "path";
 import { describe } from "node:test";
 import { testApiHandler } from "next-test-api-route-handler";
 import type { Session } from "next-auth";
-import {
-  convertAirdropWithUint8ArrayToHexString,
-  deleteAllObjects,
-  uint8ObjectToHexString,
-} from "@/app/lib/utils";
+import { deleteAllObjects } from "@/app/lib/utils";
+import { uint8ObjectToHexString } from "@/app/utils/apiHelper";
 import { TemplateNames } from "@/app/lib/constants/templates";
 import { s3Client, PutObjectCommand } from "@/app/lib/aws";
 import * as appHandler from "./routes";
+import * as AirdropUtils from "@/app/utils/airdrop";
 
 const chainId = "11155111"; // Sepolia
 const YMWK = "0xdE2832DE0b4C0b4b6742e60186E290622B2B766C".toLowerCase(); // Sepolia YMWK
@@ -57,8 +55,7 @@ describe("POST /api/airdrops/:id/syncMerkletree", () => {
         tokenLogo: "https://example.com/logo.png",
       },
     });
-
-    const expectedData = convertAirdropWithUint8ArrayToHexString(airdrop);
+    const expectedData = AirdropUtils.toHexString(airdrop);
 
     const filePath = path.join(__dirname, "../../../../../lib/sample/merkletree.json");
     const buffer = fs.readFileSync(filePath);
@@ -115,7 +112,7 @@ describe("POST /api/airdrops/:id/syncMerkletree", () => {
       },
     };
 
-    const expectedData = convertAirdropWithUint8ArrayToHexString(airdrop);
+    const expectedData = AirdropUtils.toHexString(airdrop);
 
     const filePath = path.join(__dirname, "../../../../../lib/sample/merkletree.json");
     const buffer = fs.readFileSync(filePath);
@@ -173,7 +170,7 @@ describe("POST /api/airdrops/:id/syncMerkletree", () => {
       },
     };
 
-    const expectedData = convertAirdropWithUint8ArrayToHexString(airdrop);
+    const expectedData = AirdropUtils.toHexString(airdrop);
 
     const filePath = path.join(__dirname, "../../../../../lib/sample/merkletree.json");
     const buffer = fs.readFileSync(filePath);
@@ -207,7 +204,7 @@ describe("POST /api/airdrops/:id/syncMerkletree", () => {
 
         expect(airdropWithClaimerMap).not.toBeNull();
         expect(airdropWithClaimerMap?.AirdropClaimerMap).not.toBeNull();
-        const convertedAirdrop = convertAirdropWithUint8ArrayToHexString(airdropWithClaimerMap!);
+        const convertedAirdrop = AirdropUtils.toHexString(airdropWithClaimerMap!);
 
         const length = convertedAirdrop.AirdropClaimerMap!.length;
         for (let i = 0; i < length; i++) {

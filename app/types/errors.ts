@@ -14,6 +14,12 @@ export class NetworkAccessError extends BaseError {
   }
 }
 
+export class InvalidParameterError extends NetworkAccessError {
+  constructor(e = "Invalid Parameter") {
+    super(422, e);
+  }
+}
+
 export class InvalidMerkletreeError extends NetworkAccessError {
   constructor(e = "Invalid Merkletree") {
     super(422, e);

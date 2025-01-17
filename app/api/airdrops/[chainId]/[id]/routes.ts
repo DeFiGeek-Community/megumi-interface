@@ -1,27 +1,23 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import type { PublicClient } from "viem";
-import { prisma, MAirdrop } from "@/prisma";
+import { prisma } from "@/prisma";
 import { authOptions } from "@/app/api/auth/authOptions";
 import { s3Client, GetObjectCommand, NoSuchKey, PutObjectCommand } from "@/app/lib/aws";
 import {
   AirdropNotFoundError,
   InvalidMerkletreeError,
-  InvalidOwnerError,
   UnauthorizedError,
 } from "@/app/types/errors";
+import { getTokenInfo } from "@/app/lib/utils";
 import {
-  convertAirdropWithUint8ArrayToHexString,
-  getMerkleRootFromAirdropAddress,
-  getTemplateNameFromAirdropAddress,
-  getTokenInfo,
+  getViemProvider,
+  requireOwner,
+  respondError,
   hexStringToUint8Array,
   uint8ArrayToHexString,
-  validateAirdropContract,
-  validateAirdropData,
-  validateMerkleTree,
-} from "@/app/lib/utils";
-import { getViemProvider, requireOwner, respondError } from "@/app/utils/apiHelper";
+} from "@/app/utils/apiHelper";
+import * as AirdropUtils from "@/app/utils/airdrop";
 
 // Upload merkle tree file
 export async function POST(req: Request, { params }: { params: { chainId: string; id: string } }) {
@@ -30,7 +26,7 @@ export async function POST(req: Request, { params }: { params: { chainId: string
     return respondError(new UnauthorizedError());
   }
 
-  const airdrop = await MAirdrop.getAirdropById(params.id);
+  const airdrop = await AirdropUtils.getAirdropById(params.id);
 
   if (!airdrop) {
     return respondError(new AirdropNotFoundError());
@@ -47,7 +43,7 @@ export async function POST(req: Request, { params }: { params: { chainId: string
   const json = JSON.parse(buffer.toString("utf-8"));
 
   // Validate merkle tree format
-  const { valid, error: formatError } = validateMerkleTree(json);
+  const { valid, error: formatError } = AirdropUtils.validateMerkleTree(json);
   if (!valid) {
     return respondError(formatError);
   }
@@ -55,7 +51,7 @@ export async function POST(req: Request, { params }: { params: { chainId: string
   // Check if contract is already registered
   if (airdrop.contractAddress) {
     const provider = getViemProvider(parseInt(params.chainId)) as PublicClient;
-    const merkleRoot = await getMerkleRootFromAirdropAddress(
+    const merkleRoot = await AirdropUtils.getMerkleRootFromAirdropAddress(
       uint8ArrayToHexString(airdrop.contractAddress),
       provider,
     );
@@ -82,11 +78,11 @@ export async function POST(req: Request, { params }: { params: { chainId: string
 // Get an airdrop by ID
 export async function GET(req: Request, { params }: { params: { chainId: string; id: string } }) {
   try {
-    const airdrop = await MAirdrop.getAirdropById(params.id);
+    const airdrop = await AirdropUtils.getAirdropById(params.id);
     if (!airdrop) {
       return respondError(new AirdropNotFoundError());
     }
-    const formattedAirdrop = convertAirdropWithUint8ArrayToHexString(airdrop);
+    const formattedAirdrop = AirdropUtils.toHexString(airdrop);
 
     return NextResponse.json(formattedAirdrop);
   } catch (error: unknown) {
@@ -101,7 +97,7 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const airdrop = await MAirdrop.getAirdropById(params.id);
+  const airdrop = await AirdropUtils.getAirdropById(params.id);
   if (!airdrop) {
     return respondError(new AirdropNotFoundError());
   }
@@ -139,19 +135,16 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
           { status: 422 },
         );
       }
-
+      // try {
       // 2. Check if the contract is registered in Factory
-      const { isRegistered, airdropContract } = await validateAirdropContract(
-        contractAddress,
-        provider,
-      );
-
-      if (!airdropContract || !isRegistered) {
+      const isRegistered = await AirdropUtils.isRegisteredAirdrop(contractAddress, provider);
+      if (!isRegistered) {
         return NextResponse.json({ error: "Invalid airdrop contract address" }, { status: 422 });
       }
+
       // 3. Check if the user is the owner
-      const owner = (await airdropContract.read.owner()) as string;
-      if (owner.toLowerCase() !== session.user.address) {
+      const isOwner = await AirdropUtils.isOwnerOf(contractAddress, session.user.address, provider);
+      if (!isOwner) {
         return NextResponse.json(
           { error: "You are not the owner of this airdrop" },
           { status: 403 },
@@ -159,55 +152,44 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
       }
 
       // 4. Check if Template type is valid
-      const _templateName = await getTemplateNameFromAirdropAddress(contractAddress, provider);
-      if (uint8ArrayToHexString(airdrop.templateName) !== _templateName) {
+      const isCorrectTemplate = await AirdropUtils.checkTemplateName(
+        uint8ArrayToHexString(airdrop.templateName),
+        contractAddress,
+        provider,
+      );
+      if (!isCorrectTemplate) {
         return NextResponse.json({ error: "Template type does not match" }, { status: 422 });
       }
 
       // 5. Check if merkle tree is registered
-      const command = new GetObjectCommand({
-        Bucket: process.env.AWS_S3_BUCKET_NAME,
-        Key: `${params.chainId}/${params.id}-merkletree.json`,
-      });
+      const merkletree = await AirdropUtils.getMerkleTreeFile(params.chainId, params.id);
+      const isCorrectMerkleRoot = await AirdropUtils.validateMerkleRoot(
+        merkletree,
+        contractAddress,
+        provider,
+      );
 
-      try {
-        const response = await s3Client.send(command);
-        const str = await response.Body?.transformToString();
-        if (!str) throw new Error("No json file");
-        const merkleTree = JSON.parse(str);
-        const merkleRoot = await getMerkleRootFromAirdropAddress(contractAddress, provider);
-
-        // If merkle tree is registered, merkle root should be identical
-        if (merkleTree.merkleRoot !== merkleRoot) {
-          // If not, return 422
-          return NextResponse.json(
-            { error: "Contract does not match merkle root with merkle tree file" },
-            { status: 422 },
-          );
-        }
-      } catch (e: unknown) {
-        // NoSuchKey error is expected if merkle tree file is not uploaded yet
-        if (!(e instanceof NoSuchKey))
-          return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+      // If merkle tree is registered, merkle root should be identical
+      if (!isCorrectMerkleRoot) {
+        // If not, return 422
+        return NextResponse.json(
+          { error: "Contract does not match merkle root with merkle tree file" },
+          { status: 422 },
+        );
       }
 
       // 6. Fetch token address from the airdrop contract address
-      const tokenAddress = (await airdropContract.read.token()) as `0x${string}`;
+      const tokenAddress = await AirdropUtils.getTokenAddress(contractAddress, provider);
 
       // 7. Fetch token information from the token contract address
       let tokenName;
       let tokenSymbol;
       let tokenDecimals;
+      const token = await getTokenInfo(tokenAddress, provider);
+      tokenName = token.tokenName;
+      tokenSymbol = token.tokenSymbol;
+      tokenDecimals = token.tokenDecimals;
 
-      try {
-        const token = await getTokenInfo(tokenAddress, provider);
-        tokenName = token.tokenName;
-        tokenSymbol = token.tokenSymbol;
-        tokenDecimals = token.tokenDecimals;
-      } catch (error: unknown) {
-        console.error(error);
-        return NextResponse.json({ error: String(error) }, { status: 422 });
-      }
       resAirdrop = {
         ...airdrop,
         contractAddress: hexStringToUint8Array(contractAddress),
@@ -215,6 +197,15 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
         tokenSymbol,
         tokenDecimals,
       };
+      // } catch (error: unknown) {
+      // NoSuchKey error is expected if merkle tree file is not uploaded yet
+      // if (!(error instanceof NoSuchKey))
+      //   return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
+
+      // console.error(error);
+      // return NextResponse.json({ error: String(error) }, { status: 422 });
+      //   return respondError(error);
+      // }
     } else {
       resAirdrop = {
         ...airdrop,
@@ -223,8 +214,6 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
         templateName: hexStringToUint8Array(templateName),
       };
     }
-
-    // validateAirdropData(session, airdrop, provider);
 
     const updatedAirdrop = await prisma.airdrop.update({
       where: { id: params.id },
@@ -247,7 +236,7 @@ export async function DELETE(
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const airdrop = await MAirdrop.getAirdropById(params.id);
+  const airdrop = await AirdropUtils.getAirdropById(params.id);
   if (!airdrop) {
     return respondError(new AirdropNotFoundError());
   }

@@ -3,8 +3,26 @@ import { createPublicClient, fallback, http, type PublicClient } from "viem";
 import { prisma, type Airdrop } from "@/prisma";
 import { getSupportedChain } from "@/app/utils/chain";
 import { CHAIN_INFO } from "@/app/lib/constants/chains";
-import { getErrorMessage, uint8ObjectToHexString } from "@/app/lib/utils";
+import { getErrorMessage } from "@/app/utils/shared";
 import { InvalidOwnerError, NetworkAccessError } from "@/app/types/errors";
+
+export const uint8ObjectToHexString = (
+  object: { [key: string]: number } | Uint8Array,
+): `0x${string}` => {
+  const values = Object.values(object);
+  return uint8ArrayToHexString(new Uint8Array(values));
+};
+
+export const uint8ArrayToHexString = (uint8Array: Uint8Array): `0x${string}` => {
+  return ("0x" +
+    Array.from(uint8Array)
+      .map((byte) => byte.toString(16).padStart(2, "0"))
+      .join("")) as `0x${string}`;
+};
+
+export const hexStringToUint8Array = (hexString: `0x${string}`): Uint8Array => {
+  return Uint8Array.from(Buffer.from(hexString.slice(2), "hex"));
+};
 
 export const getViemProvider = (chainId: number): PublicClient => {
   const chain = getSupportedChain(chainId);
@@ -29,7 +47,7 @@ export const getViemProvider = (chainId: number): PublicClient => {
 export const respondError = (error: unknown) => {
   const message = getErrorMessage(error);
   const statusCode = error instanceof NetworkAccessError ? error.statusCode : 500;
-  console.error(`[ERROR] ${message}`);
+  console.log(`[ERROR] ${message}`);
   return NextResponse.json({ error: message }, { status: statusCode });
 };
 

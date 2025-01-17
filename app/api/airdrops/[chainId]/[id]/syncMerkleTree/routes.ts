@@ -1,20 +1,15 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { GetCodeReturnType, type PublicClient } from "viem";
-import { MAirdrop, prisma } from "@/prisma";
+import { prisma } from "@/prisma";
 import { authOptions } from "@/app/api/auth/authOptions";
-import {
-  convertAirdropWithUint8ArrayToHexString,
-  getAirdropAddressFromUUID,
-  getErrorMessage,
-  MerkleTreeData,
-  processMerkleTree,
-  validateMerkleTree,
-} from "@/app/lib/utils";
+import { getErrorMessage } from "@/app/utils/shared";
 import { getViemProvider, requireOwner, respondError } from "@/app/utils/apiHelper";
 import { s3Client, GetObjectCommand, GetObjectCommandOutput } from "@/app/lib/aws";
 import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
 import { AirdropNotFoundError } from "@/app/types/errors";
+import { MerkleTreeData } from "@/app/types/airdrop";
+import * as AirdropUtils from "@/app/utils/airdrop";
 
 // TODO
 // 1. Check if contrcat is deployed
@@ -27,7 +22,7 @@ export async function POST(req: Request, { params }: { params: { chainId: string
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const airdrop = await MAirdrop.getAirdropById(params.id);
+  const airdrop = await AirdropUtils.getAirdropById(params.id);
   if (!airdrop) {
     return respondError(new AirdropNotFoundError());
   }
@@ -37,12 +32,12 @@ export async function POST(req: Request, { params }: { params: { chainId: string
     return respondError(error);
   }
 
-  const formattedAirdrop = convertAirdropWithUint8ArrayToHexString(airdrop);
+  const formattedAirdrop = AirdropUtils.toHexString(airdrop);
 
   // Check if contract is already registered
   let contractAddress =
     formattedAirdrop.contractAddress ||
-    getAirdropAddressFromUUID({
+    AirdropUtils.getAirdropAddressFromUUID({
       templateAddress: CONTRACT_ADDRESSES[parseInt(params.chainId)][formattedAirdrop.templateName],
       uuid: `0x${airdrop.id.replaceAll("-", "")}`, // TODO Util
       deployer: formattedAirdrop.owner,
@@ -96,7 +91,7 @@ export async function POST(req: Request, { params }: { params: { chainId: string
     const error = getErrorMessage(e);
     return NextResponse.json({ error }, { status: 422 });
   }
-  const { valid, error: invalidError } = validateMerkleTree(merkletree);
+  const { valid, error: invalidError } = AirdropUtils.validateMerkleTree(merkletree);
 
   if (!valid) {
     return respondError(invalidError);
@@ -107,7 +102,7 @@ export async function POST(req: Request, { params }: { params: { chainId: string
 
   try {
     // TODO Condider removing await and return 200 and let the process run in the background
-    await processMerkleTree(prisma, merkletree, params.id);
+    await AirdropUtils.processMerkleTree(prisma, merkletree, params.id);
     return NextResponse.json({ result: "ok" });
   } catch (e: unknown) {
     return respondError(e);

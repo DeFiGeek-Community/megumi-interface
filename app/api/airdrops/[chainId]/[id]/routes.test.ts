@@ -4,14 +4,12 @@ import { describe } from "node:test";
 import { testApiHandler } from "next-test-api-route-handler";
 import type { Session } from "next-auth";
 import { zeroAddress } from "viem";
-import {
-  convertAirdropWithUint8ArrayToHexString,
-  deleteAllObjects,
-  uint8ObjectToHexString,
-} from "@/app/lib/utils";
+import { deleteAllObjects } from "@/app/lib/utils";
+import { uint8ObjectToHexString } from "@/app/utils/apiHelper";
 import { TemplateNames } from "@/app/lib/constants/templates";
 import * as appHandler from "./routes";
 import { s3Client, GetObjectCommand, PutObjectCommand } from "@/app/lib/aws";
+import * as AirdropUtils from "@/app/utils/airdrop";
 
 const YMWK = "0xdE2832DE0b4C0b4b6742e60186E290622B2B766C".toLowerCase(); // Sepolia YMWK
 const YMWK_INFO = {
@@ -50,7 +48,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
     const airdrop = await jestPrisma.client.airdrop.findFirst();
     if (!airdrop) throw new Error("Airdrop not found");
 
-    const expectedData = convertAirdropWithUint8ArrayToHexString(airdrop);
+    const expectedData = AirdropUtils.toHexString(airdrop);
 
     await testApiHandler({
       appHandler,
@@ -91,7 +89,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
       },
     };
 
-    const expectedData = convertAirdropWithUint8ArrayToHexString(airdrop);
+    const expectedData = AirdropUtils.toHexString(airdrop);
 
     await testApiHandler({
       appHandler,
@@ -133,7 +131,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
       },
     };
 
-    const expectedData = convertAirdropWithUint8ArrayToHexString(airdrop);
+    const expectedData = AirdropUtils.toHexString(airdrop);
 
     await testApiHandler({
       appHandler,
@@ -177,7 +175,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
       },
     };
 
-    const expectedData = convertAirdropWithUint8ArrayToHexString(airdrop);
+    const expectedData = AirdropUtils.toHexString(airdrop);
 
     await testApiHandler({
       appHandler,
@@ -243,7 +241,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
       },
     };
 
-    const expectedData = convertAirdropWithUint8ArrayToHexString(airdrop);
+    const expectedData = AirdropUtils.toHexString(airdrop);
 
     await testApiHandler({
       appHandler,
@@ -299,7 +297,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
       },
     };
 
-    const expectedData = convertAirdropWithUint8ArrayToHexString(airdrop);
+    const expectedData = AirdropUtils.toHexString(airdrop);
 
     await testApiHandler({
       appHandler,
@@ -337,7 +335,7 @@ describe("GET /api/airdrop/:id - Retrieve an airdrop detail", () => {
     const airdrop = await jestPrisma.client.airdrop.findFirst();
     if (!airdrop) throw new Error("Airdrop not found");
 
-    const expectedData = convertAirdropWithUint8ArrayToHexString(airdrop);
+    const expectedData = AirdropUtils.toHexString(airdrop);
 
     await testApiHandler({
       appHandler,
@@ -479,16 +477,17 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
             body: JSON.stringify(data),
           });
 
+          console.log(await res.json());
           expect(res.status).toStrictEqual(200);
           const airdropAfterRaw = await jestPrisma.client.airdrop.findUnique({
             where: { id: airdrop.id },
           });
           if (!airdropAfterRaw) throw new Error("Airdrop not found");
-          const airdropAfter = convertAirdropWithUint8ArrayToHexString(airdropAfterRaw);
+          const airdropAfter = AirdropUtils.toHexString(airdropAfterRaw);
 
           // Only contractAddress should be updated
           const expectedData = {
-            ...convertAirdropWithUint8ArrayToHexString(airdrop),
+            ...AirdropUtils.toHexString(airdrop),
             contractAddress: sampleAirdropAddress,
           };
 
@@ -503,6 +502,47 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
               expect(value).toEqual(expectedValue);
             }
           });
+        },
+      });
+    });
+
+    test("owner update invalid contractAddress", async () => {
+      const airdrop = await jestPrisma.client.airdrop.create({
+        data: {
+          chainId: 11155111,
+          title: `Sample airdrop`,
+          contractAddress: null,
+          templateName: Uint8Array.from(Buffer.from(TemplateNames.STANDARD.slice(2), "hex")),
+          owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
+          tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
+          tokenName: "18 Decimals Sample Token",
+          tokenSymbol: "SMPL18",
+          tokenDecimals: 18,
+          tokenLogo: "https://example.com/logo.png",
+        },
+      });
+
+      mockedSession = {
+        expires: "expires",
+        user: {
+          address: uint8ObjectToHexString(airdrop.owner),
+        },
+      };
+      const data = {
+        ...newData,
+        contractAddress: zeroAddress,
+      };
+      await testApiHandler({
+        appHandler,
+        params: { chainId, id: airdrop.id },
+        test: async ({ fetch }) => {
+          const res = await fetch({
+            method: "PATCH",
+            body: JSON.stringify(data),
+          });
+          const json = await res.json();
+          expect(res.status).toStrictEqual(422);
+          expect(json.error).toStrictEqual("Invalid airdrop contract address");
         },
       });
     });
@@ -543,10 +583,10 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
             where: { id: airdrop.id },
           });
           if (!airdropAfterRaw) throw new Error("Airdrop not found");
-          const airdropAfter = convertAirdropWithUint8ArrayToHexString(airdropAfterRaw);
+          const airdropAfter = AirdropUtils.toHexString(airdropAfterRaw);
 
           const expectedData = {
-            ...convertAirdropWithUint8ArrayToHexString(airdrop),
+            ...AirdropUtils.toHexString(airdrop),
             ...newData,
           };
 

@@ -2,7 +2,7 @@ import { describe } from "node:test";
 import { testApiHandler } from "next-test-api-route-handler";
 import type { Session } from "next-auth";
 import { zeroAddress } from "viem";
-import { uint8ObjectToHexString } from "@/app/lib/utils";
+import { uint8ObjectToHexString } from "@/app/utils/apiHelper";
 import { TemplateNames } from "@/app/lib/constants/templates";
 import * as appHandler from "./routes";
 
@@ -41,7 +41,7 @@ describe("POST /api/airdrops Create a new airdrop", () => {
     title: `YMWK Airdrop`,
     contractAddress: null,
     templateName: TemplateNames.STANDARD,
-    owner: "0xabcd",
+    owner: "0xabcd" as `0x${string}`,
     tokenAddress: YMWK,
     tokenLogo: "https://example.com/logo.png",
   };
@@ -70,7 +70,7 @@ describe("POST /api/airdrops Create a new airdrop", () => {
       mockedSession = {
         expires: "expires",
         user: {
-          address: "0x1234",
+          address: basicMockData.owner,
         },
       };
 
@@ -150,7 +150,7 @@ describe("POST /api/airdrops Create a new airdrop", () => {
       mockedSession = {
         expires: "expires",
         user: {
-          address: "0x1234",
+          address: basicMockData.owner,
         },
       };
 
@@ -178,7 +178,7 @@ describe("POST /api/airdrops Create a new airdrop", () => {
       mockedSession = {
         expires: "expires",
         user: {
-          address: "0x1234",
+          address: basicMockData.owner,
         },
       };
 
@@ -206,7 +206,7 @@ describe("POST /api/airdrops Create a new airdrop", () => {
       mockedSession = {
         expires: "expires",
         user: {
-          address: "0x1234",
+          address: basicMockData.owner,
         },
       };
 

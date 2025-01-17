@@ -1,16 +1,14 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { erc20Abi, getContract, type PublicClient } from "viem";
+import { type PublicClient } from "viem";
 import { prisma, type Airdrop } from "@/prisma";
-import { getViemProvider } from "@/app/utils/apiHelper";
+import { getViemProvider, respondError } from "@/app/utils/apiHelper";
 import { isSupportedChain } from "@/app/utils/chain";
 import { authOptions } from "@/app/api/auth/authOptions";
-import {
-  convertAirdropWithUint8ArrayToHexString,
-  getTokenInfo,
-  hexStringToUint8Array,
-  validateAirdropData,
-} from "@/app/lib/utils";
+import { getTokenInfo } from "@/app/lib/utils";
+import { hexStringToUint8Array } from "@/app/utils/apiHelper";
+import { InvalidParameterError } from "@/app/types/errors";
+import * as AirdropUtils from "@/app/utils/airdrop";
 
 // Create new airdrop
 export async function POST(request: NextRequest, { params }: { params: { chainId: string } }) {
@@ -27,12 +25,16 @@ export async function POST(request: NextRequest, { params }: { params: { chainId
 
   try {
     const body = await request.json();
-    const { chainId, title, contractAddress, templateName, owner, tokenAddress, tokenLogo } = body;
-
+    const { chainId, title, templateName, tokenAddress, tokenLogo } = body;
+    const contractAddress = null; // Always null for the creation
+    // TODO Take Safe into account
+    // ↓ From Yamawake
+    // (!session.user.siwe.resources && contractOwner === session.siwe.address) ||
+    // (session.siwe.resources && contractOwner === session.siwe.resources[0])
+    const owner = session.user.address;
     const provider = getViemProvider(parseInt(params.chainId)) as PublicClient;
 
-    const { isValid, errors } = await validateAirdropData(
-      session,
+    const { isValid, errors } = await AirdropUtils.validateParams(
       {
         chainId,
         title,
@@ -46,7 +48,7 @@ export async function POST(request: NextRequest, { params }: { params: { chainId
     );
 
     if (!isValid) {
-      return NextResponse.json({ error: errors }, { status: 422 });
+      return respondError(new InvalidParameterError());
     }
 
     // Fetch token information from the contract address
@@ -61,14 +63,14 @@ export async function POST(request: NextRequest, { params }: { params: { chainId
       tokenDecimals = token.tokenDecimals;
     } catch (error: unknown) {
       console.error(error);
-      return NextResponse.json({ error: String(error) }, { status: 422 });
+      return respondError(new InvalidParameterError());
     }
 
     const airdrop = await prisma.airdrop.create({
       data: {
         chainId,
         title,
-        contractAddress: contractAddress ? hexStringToUint8Array(contractAddress) : null,
+        contractAddress, // Always null for the creation
         templateName: hexStringToUint8Array(templateName),
         owner: hexStringToUint8Array(owner),
         tokenAddress: hexStringToUint8Array(tokenAddress),
@@ -76,7 +78,7 @@ export async function POST(request: NextRequest, { params }: { params: { chainId
         tokenSymbol,
         tokenDecimals,
         tokenLogo,
-      } as Airdrop,
+      },
     });
 
     return NextResponse.json(airdrop, { status: 201 });
@@ -104,9 +106,7 @@ export async function GET(req: NextRequest, { params }: { params: { chainId: str
         createdAt: "desc",
       },
     });
-    const formattedAirdrops = airdrops.map((airdrop: Airdrop) =>
-      convertAirdropWithUint8ArrayToHexString(airdrop),
-    );
+    const formattedAirdrops = airdrops.map((airdrop: Airdrop) => AirdropUtils.toHexString(airdrop));
 
     return NextResponse.json({
       airdrops: formattedAirdrops,
