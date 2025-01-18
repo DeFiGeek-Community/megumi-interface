@@ -2,29 +2,13 @@ import { useState, useEffect, useCallback } from "react";
 import { API_BASE_URL } from "@/app/lib/constants";
 import { AirdropHex } from "@/app/types/airdrop";
 
-interface Airdrop {
-  id: string;
-  chainId: number;
-  title: string;
-  contractAddress: string | null;
-  templateName: string;
-  owner: string;
-  tokenAddress: string;
-  tokenName: string;
-  tokenSymbol: string;
-  tokenDecimals: number;
-  tokenLogo: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-interface FetchAirdropsResponse {
+type FetchAirdropsResponse = {
   airdrops: AirdropHex[];
   totalCount: number;
   page: number;
   limit: number;
   totalPages: number;
-}
+};
 
 export type FetchMode = "all" | "mine" | "eligible";
 
@@ -43,7 +27,7 @@ export const useInfiniteScrollAirdrops = ({
   const limit = 10;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<AirdropHex[]>([]);
+  const [data, setData] = useState<AirdropHex[] | null>(null);
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
@@ -78,10 +62,14 @@ export const useInfiniteScrollAirdrops = ({
 
       const responseData: FetchAirdropsResponse = await response.json();
       setData((prevData) => {
-        const newData = responseData.airdrops.filter(
-          (newAirdrop) => !prevData.some((existingAirdrop) => existingAirdrop.id === newAirdrop.id),
-        );
-        return [...prevData, ...newData];
+        const _prevData = prevData || [];
+        const newData = _prevData
+          ? responseData.airdrops.filter(
+              (newAirdrop) =>
+                !_prevData.some((existingAirdrop) => existingAirdrop.id === newAirdrop.id),
+            )
+          : responseData.airdrops;
+        return [..._prevData, ...newData];
       });
       setTotalPages(responseData.totalPages);
       setHasMore(responseData.page < responseData.totalPages);
@@ -100,5 +88,5 @@ export const useInfiniteScrollAirdrops = ({
     fetchAirdrops();
   }, [page]);
 
-  return { data, loading, error, fetchNextPage, hasMore, page };
+  return { data, loading, error, fetchNextPage, hasMore, page, totalPages };
 };

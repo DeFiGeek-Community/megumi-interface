@@ -61,17 +61,25 @@ export type AirdropClaimerMapHex = Omit<AirdropClaimerMap, "proofs" | "amount"> 
   proofs: `0x${string}`[];
   amount: bigint;
 };
+
+export type AirdropAggregationData = {
+  eligibleUsersNum?: number;
+  claimedUsersNum?: number;
+};
+
+// For frontend
 export type AirdropHex = Omit<
   AirdropM,
-  "contractAddress" | "templateName" | "owner" | "tokenAddress"
+  "contractAddress" | "templateName" | "owner" | "tokenAddress" | "totalAirdropAmount"
 > & {
   contractAddress: `0x${string}` | null;
-  templateName: `0x${string}`;
+  templateName: TemplateType;
   owner: `0x${string}`;
   tokenAddress: `0x${string}`;
-};
-export type AirdropWithClaimMap = AirdropM & { AirdropClaimerMap?: AirdropClaimerMap[] };
-export type AirdropWithClaimMapHex = AirdropHex & { AirdropClaimerMap?: AirdropClaimerMapHex[] };
+  totalAirdropAmount: bigint | null;
+} & AirdropAggregationData & { AirdropClaimerMap?: AirdropClaimerMapHex[] };
+export type AirdropWithClaimMap = AirdropM &
+  AirdropAggregationData & { AirdropClaimerMap?: AirdropClaimerMap[] };
 
 export type MerkleTreeClaim = {
   index: number;

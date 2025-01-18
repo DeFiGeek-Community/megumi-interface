@@ -1,17 +1,12 @@
 import { concat, getContract, getContractAddress, isAddress, keccak256, PublicClient } from "viem";
 import { Prisma, prisma, PrismaClient, type Airdrop, type AirdropClaimerMap } from "@/prisma";
-import {
-  hexStringToUint8Array,
-  uint8ArrayToHexString,
-  uint8ObjectToHexString,
-} from "@/app/utils/apiHelper";
+import { hexStringToUint8Array, uint8ObjectToHexString } from "@/app/utils/apiHelper";
 import {
   AirdropABIType,
-  AirdropContractType,
   AirdropFormType,
   AirdropValidationType,
+  AirdropHex,
   AirdropWithClaimMap,
-  AirdropWithClaimMapHex,
   MerkleTreeData,
   TemplateType,
 } from "@/app/types/airdrop";
@@ -32,7 +27,7 @@ export const getAirdropById = async (airdropId: string): Promise<Airdrop | null>
   return airdrop;
 };
 
-export const toHexString = (airdrop: AirdropWithClaimMap): AirdropWithClaimMapHex => {
+export const toHexString = (airdrop: AirdropWithClaimMap): AirdropHex => {
   let AirdropClaimerMap;
 
   if ("AirdropClaimerMap" in airdrop) {
@@ -46,9 +41,13 @@ export const toHexString = (airdrop: AirdropWithClaimMap): AirdropWithClaimMapHe
   return {
     ...airdrop,
     contractAddress: airdrop.contractAddress && uint8ObjectToHexString(airdrop.contractAddress),
-    templateName: uint8ObjectToHexString(airdrop.templateName),
+    templateName: uint8ObjectToHexString(airdrop.templateName) as TemplateType,
     owner: uint8ObjectToHexString(airdrop.owner),
     tokenAddress: uint8ObjectToHexString(airdrop.tokenAddress),
+    claimedUsersNum: Number(airdrop.claimedUsersNum),
+    eligibleUsersNum: Number(airdrop.eligibleUsersNum),
+    totalAirdropAmount:
+      airdrop.totalAirdropAmount && BigInt(uint8ObjectToHexString(airdrop.totalAirdropAmount)),
     AirdropClaimerMap,
   };
 };

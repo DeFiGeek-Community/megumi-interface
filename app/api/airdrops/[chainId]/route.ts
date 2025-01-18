@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { isAddress, type PublicClient } from "viem";
-import { prisma, type Airdrop } from "@/prisma";
+import { Prisma, prisma, type Airdrop } from "@/prisma";
 import { getViemProvider, respondError } from "@/app/utils/apiHelper";
 import { isSupportedChain } from "@/app/utils/chain";
 import { authOptions } from "@/app/api/auth/authOptions";
@@ -110,7 +110,7 @@ export async function GET(req: NextRequest, { params }: { params: { chainId: str
 
     if (session && mine) {
       whereClause.OR.push({
-        owner: session.user.address,
+        owner: hexStringToUint8Array(session.user.address),
       });
     }
 
@@ -119,7 +119,7 @@ export async function GET(req: NextRequest, { params }: { params: { chainId: str
         AirdropClaimerMap: {
           some: {
             claimer: {
-              address: eligible,
+              address: hexStringToUint8Array(eligible),
             },
           },
         },
@@ -127,13 +127,73 @@ export async function GET(req: NextRequest, { params }: { params: { chainId: str
     }
 
     const totalCount = await prisma.airdrop.count();
-    const airdrops = await prisma.airdrop.findMany({
-      skip,
-      take: limit,
-      orderBy: {
-        createdAt: "desc",
-      },
-    });
+    // Hope this feature will be added to Prisma soon
+    // https://github.com/prisma/prisma/issues/15423
+    const airdrops = await prisma.$queryRaw<Airdrop[]>`
+        SELECT DISTINCT
+            "Airdrop".*,
+            (
+                    SELECT
+                        COUNT(*) 
+                    FROM
+                        "AirdropClaimerMap" 
+                    WHERE 
+                        "AirdropClaimerMap"."airdropId"="Airdrop"."id" 
+                        AND 
+                        "AirdropClaimerMap"."isClaimed" = true
+            ) AS "claimedUsersNum",
+            (
+                  SELECT
+                      COUNT(*)
+                  FROM
+                      "AirdropClaimerMap"
+                  WHERE 
+                      "AirdropClaimerMap"."airdropId"="Airdrop"."id"
+            ) AS "eligibleUsersNum"
+        FROM
+            "Airdrop"
+        LEFT JOIN "AirdropClaimerMap" ON "Airdrop"."id" = "AirdropClaimerMap"."airdropId"
+        LEFT JOIN "Claimer" ON "AirdropClaimerMap"."claimerId" = "Claimer"."id"
+        ${session && mine && !eligible ? Prisma.sql`WHERE "Airdrop"."owner" = ${hexStringToUint8Array(session.user.address)}` : Prisma.empty}
+        ${eligible && isAddress(eligible) ? Prisma.sql`WHERE "Claimer"."address" = ${hexStringToUint8Array(eligible)}` : Prisma.empty}
+    `;
+    // console.log(airdrops, session?.user.address, mine, eligible);
+    // const a = await prisma.$queryRaw`
+    //   SELECT
+    //     a.id AS airdropId,
+    //     COUNT(acm.claimerId) AS eligibleUsersNum,
+    //     COUNT(CASE WHEN acm.isClaimed THEN 1 END) AS claimedUsersNum
+    //   FROM
+    //     Airdrop a
+    //   LEFT JOIN
+    //     AirdropClaimerMap acm ON a.id = acm.airdropId
+    //   GROUP BY a.id;
+    // `;
+    // console.log(a);
+    // const airdrops = await prisma.airdrop.findMany({
+    //   skip,
+    //   take: limit,
+    //   where: whereClause,
+    //   orderBy: {
+    //     createdAt: "desc",
+    //   },
+    //   include: {
+    //     _count: {
+    //       select: {
+    //         AirdropClaimerMap: { where: { isClaimed: true } },
+    //       },
+    //     },
+    //     AirdropClaimerMap: {
+    //       select: {
+    //         claimer: {
+    //           select: {
+    //             address: true,
+    //           },
+    //         },
+    //       },
+    //     },
+    //   },
+    // });
     const formattedAirdrops = airdrops.map((airdrop: Airdrop) => AirdropUtils.toHexString(airdrop));
 
     return NextResponse.json({

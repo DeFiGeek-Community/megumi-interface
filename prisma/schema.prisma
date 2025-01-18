@@ -21,6 +21,10 @@ model Airdrop {
   tokenLogo      String?
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
+  contractRegisteredAt  DateTime?
+  merkleTreeRegisteredAt  DateTime?
+  vestingEndsAt  DateTime?
+  totalAirdropAmount Bytes?
   AirdropClaimerMap AirdropClaimerMap[]
 
   @@unique([contractAddress, chainId])
