@@ -7,7 +7,7 @@ import { zeroAddress } from "viem";
 import { deleteAllObjects } from "@/app/utils/testHelper";
 import { uint8ObjectToHexString } from "@/app/utils/apiHelper";
 import { TemplateNames } from "@/app/lib/constants/templates";
-import * as appHandler from "./routes";
+import * as appHandler from "./route";
 import { s3Client, GetObjectCommand, PutObjectCommand } from "@/app/lib/aws";
 import * as AirdropUtils from "@/app/utils/airdrop";
 import { uploadMerkleTree } from "@/app/utils/testHelper";

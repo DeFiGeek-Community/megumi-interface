@@ -1,6 +1,6 @@
 import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
-import { type PublicClient } from "viem";
+import { isAddress, type PublicClient } from "viem";
 import { prisma, type Airdrop } from "@/prisma";
 import { getViemProvider, respondError } from "@/app/utils/apiHelper";
 import { isSupportedChain } from "@/app/utils/chain";
@@ -97,6 +97,34 @@ export async function GET(req: NextRequest, { params }: { params: { chainId: str
     const page = parseInt(searchParams.get("page") || String(defaultPage)) || defaultPage;
     const limit = parseInt(searchParams.get("limit") || String(defaultLimit)) || defaultLimit;
     const skip = (page - 1) * limit;
+
+    const session = await getServerSession(authOptions);
+    const mine = searchParams.get("mine") === "true";
+    const eligible = searchParams.get("eligible");
+
+    // TODO
+    // mine以外は公開日でフィルター airdrop.contractDeployedAt
+    const whereClause: any = {
+      OR: [],
+    };
+
+    if (session && mine) {
+      whereClause.OR.push({
+        owner: session.user.address,
+      });
+    }
+
+    if (eligible && isAddress(eligible)) {
+      whereClause.OR.push({
+        AirdropClaimerMap: {
+          some: {
+            claimer: {
+              address: eligible,
+            },
+          },
+        },
+      });
+    }
 
     const totalCount = await prisma.airdrop.count();
     const airdrops = await prisma.airdrop.findMany({
