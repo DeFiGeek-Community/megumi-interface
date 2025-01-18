@@ -4,7 +4,7 @@ import type { Session } from "next-auth";
 import { zeroAddress } from "viem";
 import { uint8ObjectToHexString } from "@/app/utils/apiHelper";
 import { TemplateNames } from "@/app/lib/constants/templates";
-import * as appHandler from "./routes";
+import * as appHandler from "./route";
 
 const YMWK = "0xdE2832DE0b4C0b4b6742e60186E290622B2B766C".toLowerCase(); // Sepolia YMWK
 const YMWK_INFO = {
