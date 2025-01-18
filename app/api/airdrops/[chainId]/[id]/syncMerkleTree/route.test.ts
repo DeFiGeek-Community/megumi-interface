@@ -7,7 +7,7 @@ import { deleteAllObjects } from "@/app/utils/testHelper";
 import { uint8ObjectToHexString } from "@/app/utils/apiHelper";
 import { TemplateNames } from "@/app/lib/constants/templates";
 import { s3Client, PutObjectCommand } from "@/app/lib/aws";
-import * as appHandler from "./routes";
+import * as appHandler from "./route";
 import * as AirdropUtils from "@/app/utils/airdrop";
 
 const chainId = "11155111"; // Sepolia
