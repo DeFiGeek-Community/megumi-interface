@@ -33,7 +33,7 @@
     "yourAirdrops": "あなたのエアドロップ"
   },
   "airdrop": {
-    "airdropContract": "エアドロップコントラクト",
+    "airdropContract": "コントラクト",
     "airdropList": "エアドロップリスト",
     "basicInformation": "基本情報",
     "edit": "編集する",
@@ -46,7 +46,7 @@
     "feeNotice": "A claim fee of 0.0001 ETH and a platform fee of 0.0001 ETH, totaling 0.0002 ETH, will be required in addition to the transaction fee.",
     "ownerMenu": "オーナーメニュー",
     "register": "登録する",
-    "tokenAddress": "トークンアドレス",
+    "tokenAddress": "トークン",
     "totalAmount": "合計",
     "unregistered": "未登録",
     "yourAllocatedAmount": "あなたの割り当て額"

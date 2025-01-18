@@ -9,33 +9,58 @@ import {
   AirdropWithClaimMap,
   MerkleTreeData,
   TemplateType,
+  AirdropClaimerMapHex,
 } from "@/app/types/airdrop";
 import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
-import { Factory, MerkleAirdropBase, Standard, LinearVesting } from "@/app/lib/constants/abis";
-import { TemplateNames } from "@/app/lib/constants/templates";
+import { Factory, MerkleAirdropBase } from "@/app/lib/constants/abis";
+import { AirdropABI, TemplateNames } from "@/app/lib/constants/templates";
 import { GetObjectCommand, s3Client } from "@/app/lib/aws";
 import { isSupportedTemplate } from "@/app/utils/shared";
 import { isSupportedChain } from "@/app/utils/chain";
 import { InvalidMerkletreeError } from "@/app/types/errors";
 import { DefaultArgs } from "@prisma/client/runtime/library";
 
-export const getAirdropById = async (airdropId: string): Promise<Airdrop | null> => {
+export const getAirdropById = async (
+  airdropId: string,
+  withClaimParamsOf?: `0x${string}`,
+): Promise<Airdrop | null> => {
   const airdrop = await prisma.airdrop.findUnique({
     where: { id: airdropId },
+    include: withClaimParamsOf
+      ? {
+          AirdropClaimerMap: {
+            where: {
+              claimer: {
+                address: hexStringToUint8Array(withClaimParamsOf),
+              },
+            },
+            include: {
+              claimer: true,
+            },
+          },
+        }
+      : null,
   });
 
   return airdrop;
 };
 
+export const airdropClaimerMaptoHexString = (
+  airdropClaimerMap: AirdropClaimerMap,
+): AirdropClaimerMapHex => {
+  return {
+    ...airdropClaimerMap,
+    proofs: airdropClaimerMap.proofs.map((p: any) => uint8ObjectToHexString(p)),
+    amount: BigInt(uint8ObjectToHexString(airdropClaimerMap.amount)),
+  };
+};
 export const toHexString = (airdrop: AirdropWithClaimMap): AirdropHex => {
   let AirdropClaimerMap;
 
   if ("AirdropClaimerMap" in airdrop) {
-    AirdropClaimerMap = airdrop.AirdropClaimerMap?.map((airdropClaimerMap) => ({
-      ...airdropClaimerMap,
-      proofs: airdropClaimerMap.proofs.map((p: any) => uint8ObjectToHexString(p)),
-      amount: BigInt(uint8ObjectToHexString(airdropClaimerMap.amount)),
-    }));
+    AirdropClaimerMap = airdrop.AirdropClaimerMap?.map((airdropClaimerMap) =>
+      airdropClaimerMaptoHexString(airdropClaimerMap),
+    );
   }
 
   return {
@@ -232,10 +257,6 @@ export const getABIFromAirdropAddress = async (
   return templateKey && AirdropABI[templateKey];
 };
 
-const AirdropABI: { [key: string]: AirdropABIType } = {
-  STANDARD: Standard,
-  LINEAR_VESTING: LinearVesting,
-};
 // <--
 
 // TODO Test

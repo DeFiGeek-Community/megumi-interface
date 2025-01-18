@@ -1,4 +1,5 @@
 "use client";
+import { useSession } from "next-auth/react";
 import {
   Center,
   Container,
@@ -11,6 +12,7 @@ import {
   Avatar,
   Flex,
   Icon,
+  Link,
 } from "@chakra-ui/react";
 import { useRequireAccount } from "@/app/hooks/common/useRequireAccount";
 import { useIsMounted } from "@/app/hooks/common/useIsMounted";
@@ -19,50 +21,52 @@ import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
   formatTotalAirdropAmount,
   formatClaimedAccounts,
-  formatVestingEndsAt,
   formatTemplateType,
+  formatDate,
+  getEllipsizedAddress,
+  getEtherscanLink,
 } from "@/app/utils/clientHelper";
 import Claim from "@/app/components/airdrops/Claim";
 import OwnerMenu from "@/app/components/airdrops/OwnerMenu";
-import { TemplateNames } from "@/app/lib/constants/templates";
-// TODO remove mock type
-import { Airdrop } from "@/app/types/airdrop";
+import { AirdropNameABI, TemplateNames } from "@/app/lib/constants/templates";
+import { useFetchClaimParams } from "@/app/hooks/airdrops/useFetchClaimParams";
+import {
+  useBalance,
+  useReadContract,
+  useSimulateContract,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
+import { parseEther } from "viem";
+import type { AirdropHex } from "@/app/types/airdrop";
+import { useContext, useEffect, useState } from "react";
+import { TxToastsContext } from "@/app/providers/ToastProvider";
 
-export default function AirdropPage() {
-  const { address, isConnecting, isReconnecting } = useRequireAccount();
+export default function AirdropDetail({
+  chainId,
+  airdrop,
+}: {
+  chainId: string;
+  airdrop: AirdropHex;
+}) {
+  const {
+    address,
+    isConnecting,
+    isReconnecting,
+    isConnected: isConnectedRaw,
+  } = useRequireAccount();
+  const { data: session } = useSession();
   const isMounted = useIsMounted();
   const { t } = useTranslation();
-  const airdrops: Airdrop[] = [
-    {
-      id: "asdf",
-      title: "Vesting",
-      templateName: TemplateNames.LINEAR_VESTING,
-      owner: "0x",
-      tokenAddress: "0x",
-      createdAt: 1731897560,
-      merkleTreeUploadedAt: 1731897560,
-      contractAddress: "0x",
-      totalAirdropAmount: BigInt(0.005 * 1e18),
-      eligibleUsersNum: 1000,
-      claimedUsersNum: 40,
-      contractDeployedAt: 1731897560,
-      vestingEndsAt: 1731897560,
-    },
-    {
-      id: "zxcv",
-      title: "Standard",
-      templateName: TemplateNames.STANDARD,
-      owner: "0x",
-      tokenAddress: "0x",
-      createdAt: 1731897560,
-      merkleTreeUploadedAt: undefined,
-      contractAddress: undefined,
-      totalAirdropAmount: BigInt(0.005 * 1e18),
-      eligibleUsersNum: 1000,
-      claimedUsersNum: 40,
-      contractDeployedAt: 1731897560,
-    },
-  ];
+
+  const [isConnected, setIsConnected] = useState<boolean>(false);
+  useEffect(() => setIsConnected(isConnectedRaw), [isConnectedRaw]);
+
+  // Get token balance on airdrop contract
+  const { data: balanceOnContract } = useBalance({
+    address: airdrop.contractAddress || "0x",
+    token: airdrop.tokenAddress || "0x",
+  });
 
   if (!isMounted || !address)
     return (
@@ -70,23 +74,8 @@ export default function AirdropPage() {
         <Spinner />
       </Center>
     );
-  const isOwner = true;
-
-  let currentTotalAirdropAmount = "0",
-    currentClaimedAccounts = "0 / 0",
-    currentVestingEndsAt = "-",
-    isLinearVesting = false;
-
-  currentTotalAirdropAmount = formatTotalAirdropAmount(airdrops[0].totalAirdropAmount);
-  currentClaimedAccounts = formatClaimedAccounts(
-    airdrops[0].eligibleUsersNum,
-    airdrops[0].claimedUsersNum,
-  );
-  if ("vestingEndsAt" in airdrops[0]) {
-    currentVestingEndsAt = formatVestingEndsAt(airdrops[0].vestingEndsAt);
-  }
-  isLinearVesting = airdrops[0].templateName === TemplateNames.LINEAR_VESTING;
-
+  const isOwner =
+    session?.user?.address && session.user.address.toLowerCase() === airdrop?.owner.toLowerCase();
   return (
     <Container maxW={"container.xl"} mb={4}>
       <VStack spacing="4">
@@ -109,7 +98,7 @@ export default function AirdropPage() {
                   alignItems="center"
                 >
                   <Text fontSize={{ base: "sm", sm: "md" }} marginRight="1">
-                    {t(`dashboard.${formatTemplateType(airdrops[0].templateName)}`)}
+                    {t(`dashboard.${formatTemplateType(airdrop.templateName)}`)}
                   </Text>
                   <Box
                     bg="white"
@@ -126,17 +115,17 @@ export default function AirdropPage() {
                   </Box>
                 </Box>
                 <Text fontSize="3xl" fontWeight="bold">
-                  {airdrops[0].title}
+                  {airdrop.title}
                 </Text>
                 <Flex alignItems="baseline" direction={{ base: "column", xl: "row" }}>
                   <Flex alignItems="baseline" direction="row">
                     <Text fontSize="md" fontWeight="bold" mr={4}>
-                      {currentTotalAirdropAmount}
+                      {formatTotalAirdropAmount(airdrop.totalAirdropAmount)}
                     </Text>
                   </Flex>
                   <Flex alignItems="baseline" direction="row">
                     <Text fontSize="md" fontWeight="bold" mr={1}>
-                      {currentClaimedAccounts}
+                      {formatClaimedAccounts(airdrop.eligibleUsersNum, airdrop.claimedUsersNum)}
                     </Text>
                     <Text fontSize="sm">{t("dashboard.claimedAccount")}</Text>
                   </Flex>
@@ -154,20 +143,22 @@ export default function AirdropPage() {
                 display="inline-flex"
                 alignItems="center"
               >
-                <Text fontSize={{ base: "sm" }} marginRight="1">
+                <Text fontSize={{ base: "xs" }} marginRight="1">
                   {t("airdrop.tokenAddress")}
                 </Text>
               </Box>
-              <Text
+              <Link
                 fontSize="sm"
                 fontWeight={{ sm: "bold" }}
                 py={{ base: "0.5", sm: "1" }}
                 mt="1.5"
                 mr={{ base: "0", lg: "4" }}
+                href={getEtherscanLink(chainId, airdrop.tokenAddress, "address")}
+                target="_blank"
               >
-                {airdrops[0].tokenAddress}
+                {getEllipsizedAddress({ address: airdrop.tokenAddress })}
                 <Icon as={ExternalLinkIcon} ml={1} mb={1} />
-              </Text>
+              </Link>
               <Box
                 bg="gray.500"
                 borderRadius="md"
@@ -178,24 +169,48 @@ export default function AirdropPage() {
                 display="inline-flex"
                 alignItems="center"
               >
-                <Text fontSize={{ base: "sm" }} marginRight="1">
+                <Text fontSize={{ base: "xs" }} marginRight="1">
                   {t("airdrop.airdropContract")}
                 </Text>
               </Box>
-              <Text
+              <Link
                 fontSize="sm"
                 fontWeight={{ sm: "bold" }}
                 py={{ base: "0.5", sm: "1" }}
                 mt="1.5"
+                _hover={!airdrop.contractAddress ? { textDecoration: "none" } : undefined}
+                cursor={!airdrop.contractAddress ? "default" : "pointer"}
+                href={
+                  airdrop.contractAddress
+                    ? getEtherscanLink(chainId, airdrop.contractAddress, "address")
+                    : undefined
+                }
+                target="_blank"
               >
-                {airdrops[0].contractAddress}
-                <Icon as={ExternalLinkIcon} ml={1} mb={1} />
-              </Text>
+                {airdrop.contractAddress
+                  ? getEllipsizedAddress({ address: airdrop.contractAddress })
+                  : "Not registered"}
+                {airdrop.contractAddress && <Icon as={ExternalLinkIcon} ml={1} mb={1} />}
+              </Link>
             </Flex>
           </Box>
 
           {/* Status Section */}
-          <Claim isLinearVesting={isLinearVesting} currentVestingEndsAt={currentVestingEndsAt} />
+          {/* TODO If eligible */}
+          {airdrop.contractAddress && (
+            <Claim
+              chainId={chainId}
+              address={address}
+              airdropId={airdrop.id}
+              contractAddress={airdrop.contractAddress}
+              tokenAddress={airdrop.tokenAddress}
+              tokenName={airdrop.tokenName}
+              tokenSymbol={airdrop.tokenSymbol}
+              tokenDecimals={airdrop.tokenDecimals}
+              vestingEndsAt={airdrop.vestingEndsAt}
+              templateName={airdrop.templateName}
+            />
+          )}
 
           {/* Menu Section */}
           {isOwner && <OwnerMenu />}

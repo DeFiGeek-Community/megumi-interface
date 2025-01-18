@@ -60,6 +60,8 @@ export type AirdropCreationData = Omit<AirdropM, "id" | "createdAt" | "updatedAt
 export type AirdropClaimerMapHex = Omit<AirdropClaimerMap, "proofs" | "amount"> & {
   proofs: `0x${string}`[];
   amount: bigint;
+  index: number;
+  isClaimed: boolean;
 };
 
 export type AirdropAggregationData = {

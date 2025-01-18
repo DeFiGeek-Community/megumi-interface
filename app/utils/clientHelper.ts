@@ -3,12 +3,14 @@ import type { Chain } from "viem/chains";
 import type { GetEnsNameReturnType } from "viem/ens";
 import { DateArg, format, FormatOptions } from "date-fns";
 import { TemplateType } from "@/app/types/airdrop";
+import { getChainById } from "@/app/utils/chain";
 
 export const getEtherscanLink = (
-  chain: Chain | undefined,
+  chainId: number | string,
   hash: string,
   type: "tx" | "token" | "address" | "block",
 ): string => {
+  const chain = getChainById(chainId);
   if (typeof chain === "undefined" || typeof chain.blockExplorers === "undefined") return "";
 
   return `${chain.blockExplorers.default.url}/${type}/${hash}`;
@@ -48,4 +50,14 @@ export const formatClaimedAccounts = (
   return tempClaimedUsersNum && tempEligibleUsersNum
     ? `${tempClaimedUsersNum} / ${tempEligibleUsersNum}`
     : "0 / 0";
+};
+
+export const formatAmount = (
+  amount: bigint | `0x${string}`,
+  decimals: number = 18,
+  precision: number = 3,
+) => {
+  const amountStr = typeof amount === "bigint" ? amount.toString() : amount;
+  const amountNum = Number(amountStr) / 10 ** decimals;
+  return amountNum.toFixed(precision);
 };
