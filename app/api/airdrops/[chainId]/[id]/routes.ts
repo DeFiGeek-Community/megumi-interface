@@ -9,7 +9,7 @@ import {
   InvalidMerkletreeError,
   UnauthorizedError,
 } from "@/app/types/errors";
-import { getTokenInfo } from "@/app/lib/utils";
+import { getTokenInfo } from "@/app/utils/apiHelper";
 import {
   getViemProvider,
   requireOwner,
@@ -161,6 +161,9 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
         return NextResponse.json({ error: "Template type does not match" }, { status: 422 });
       }
 
+      // TODO
+      // Consider if contract address can be registered without merkle tree file
+      // Currently, it throws an error if merkle tree file is not uploaded
       // 5. Check if merkle tree is registered
       const merkletree = await AirdropUtils.getMerkleTreeFile(params.chainId, params.id);
       const isCorrectMerkleRoot = await AirdropUtils.validateMerkleRoot(
@@ -197,15 +200,6 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
         tokenSymbol,
         tokenDecimals,
       };
-      // } catch (error: unknown) {
-      // NoSuchKey error is expected if merkle tree file is not uploaded yet
-      // if (!(error instanceof NoSuchKey))
-      //   return NextResponse.json({ error: "Something went wrong" }, { status: 500 });
-
-      // console.error(error);
-      // return NextResponse.json({ error: String(error) }, { status: 422 });
-      //   return respondError(error);
-      // }
     } else {
       resAirdrop = {
         ...airdrop,

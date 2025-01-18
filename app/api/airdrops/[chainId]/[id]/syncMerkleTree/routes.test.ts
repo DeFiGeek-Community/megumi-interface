@@ -3,7 +3,7 @@ import path from "path";
 import { describe } from "node:test";
 import { testApiHandler } from "next-test-api-route-handler";
 import type { Session } from "next-auth";
-import { deleteAllObjects } from "@/app/lib/utils";
+import { deleteAllObjects } from "@/app/utils/testHelper";
 import { uint8ObjectToHexString } from "@/app/utils/apiHelper";
 import { TemplateNames } from "@/app/lib/constants/templates";
 import { s3Client, PutObjectCommand } from "@/app/lib/aws";

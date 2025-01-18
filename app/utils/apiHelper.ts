@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { createPublicClient, fallback, http, type PublicClient } from "viem";
+import { createPublicClient, fallback, http, erc20Abi, getContract, type PublicClient } from "viem";
 import { prisma, type Airdrop } from "@/prisma";
 import { getSupportedChain } from "@/app/utils/chain";
 import { CHAIN_INFO } from "@/app/lib/constants/chains";
@@ -44,11 +44,11 @@ export const getViemProvider = (chainId: number): PublicClient => {
   return client;
 };
 
-export const respondError = (error: unknown) => {
+export const respondError = (error: unknown, status?: number) => {
   const message = getErrorMessage(error);
   const statusCode = error instanceof NetworkAccessError ? error.statusCode : 500;
   console.log(`[ERROR] ${message}`);
-  return NextResponse.json({ error: message }, { status: statusCode });
+  return NextResponse.json({ error: message }, { status: status || statusCode });
 };
 
 export const requireOwner = async (
@@ -65,12 +65,18 @@ export const requireOwner = async (
   return {};
 };
 
-// Airdrop ---->
-export const getAirdropById = async (airdropId: string): Promise<Airdrop | null> => {
-  const airdrop = await prisma.airdrop.findUnique({
-    where: { id: airdropId },
+export const getTokenInfo = async (
+  tokenAddress: `0x${string}`,
+  provider: PublicClient,
+): Promise<{ tokenName: string; tokenSymbol: string; tokenDecimals: number }> => {
+  const token = getContract({
+    address: tokenAddress,
+    abi: erc20Abi,
+    client: provider,
   });
+  const tokenName = await token.read.name();
+  const tokenSymbol = await token.read.symbol();
+  const tokenDecimals = await token.read.decimals();
 
-  return airdrop;
+  return { tokenName, tokenSymbol, tokenDecimals };
 };
-// <---- Airdrop

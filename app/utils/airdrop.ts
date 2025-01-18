@@ -21,7 +21,6 @@ import { TemplateNames } from "@/app/lib/constants/templates";
 import { GetObjectCommand, s3Client } from "@/app/lib/aws";
 import { isSupportedTemplate } from "@/app/utils/shared";
 import { isSupportedChain } from "@/app/utils/chain";
-import { getTokenInfo } from "@/app/lib/utils";
 import { InvalidMerkletreeError } from "@/app/types/errors";
 import { DefaultArgs } from "@prisma/client/runtime/library";
 

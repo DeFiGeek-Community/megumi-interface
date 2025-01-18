@@ -5,10 +5,11 @@ import { prisma, type Airdrop } from "@/prisma";
 import { getViemProvider, respondError } from "@/app/utils/apiHelper";
 import { isSupportedChain } from "@/app/utils/chain";
 import { authOptions } from "@/app/api/auth/authOptions";
-import { getTokenInfo } from "@/app/lib/utils";
+import { getTokenInfo } from "@/app/utils/apiHelper";
 import { hexStringToUint8Array } from "@/app/utils/apiHelper";
 import { InvalidParameterError } from "@/app/types/errors";
 import * as AirdropUtils from "@/app/utils/airdrop";
+import { objectToKeyValueString } from "@/app/utils/shared";
 
 // Create new airdrop
 export async function POST(request: NextRequest, { params }: { params: { chainId: string } }) {
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest, { params }: { params: { chainId
     );
 
     if (!isValid) {
-      return respondError(new InvalidParameterError());
+      return respondError(new InvalidParameterError(objectToKeyValueString(errors)));
     }
 
     // Fetch token information from the contract address
@@ -62,8 +63,7 @@ export async function POST(request: NextRequest, { params }: { params: { chainId
       tokenSymbol = token.tokenSymbol;
       tokenDecimals = token.tokenDecimals;
     } catch (error: unknown) {
-      console.error(error);
-      return respondError(new InvalidParameterError());
+      return respondError(error, 422);
     }
 
     const airdrop = await prisma.airdrop.create({

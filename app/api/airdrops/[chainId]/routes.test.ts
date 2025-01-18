@@ -46,22 +46,24 @@ describe("POST /api/airdrops Create a new airdrop", () => {
     tokenLogo: "https://example.com/logo.png",
   };
 
-  test("no session", async () => {
-    await testApiHandler({
-      appHandler,
-      params: { chainId },
-      test: async ({ fetch }) => {
-        const res = await fetch({
-          method: "POST",
-          body: JSON.stringify(basicMockData),
-        });
-        expect(res.status).toStrictEqual(401);
-      },
+  describe("Not signed in", () => {
+    test("should reject the request if user is not signed in", async () => {
+      await testApiHandler({
+        appHandler,
+        params: { chainId },
+        test: async ({ fetch }) => {
+          const res = await fetch({
+            method: "POST",
+            body: JSON.stringify(basicMockData),
+          });
+          expect(res.status).toStrictEqual(401);
+        },
+      });
     });
   });
 
-  describe("with session", () => {
-    test("Success create airdrop", async () => {
+  describe("Signed in", () => {
+    test("should create a new airdrop", async () => {
       const expectedData = {
         ...basicMockData,
         ...YMWK_INFO,
@@ -113,16 +115,18 @@ describe("POST /api/airdrops Create a new airdrop", () => {
       });
     });
 
-    test("Invalid contract", async () => {
-      const sampleData = {
+    // Airdrop should be created regardless of the contract address since it is not used in the creation
+    test("should success the creation with invalid contract", async () => {
+      const expectedData = {
         ...basicMockData,
-        contractAddress: zeroAddress,
+        ...YMWK_INFO,
+        contractAddress: "0x0000000000000000000000000000000000000001",
       };
 
       mockedSession = {
         expires: "expires",
         user: {
-          address: "0x1234",
+          address: basicMockData.owner,
         },
       };
 
@@ -132,18 +136,43 @@ describe("POST /api/airdrops Create a new airdrop", () => {
         test: async ({ fetch }) => {
           const res = await fetch({
             method: "POST",
-            body: JSON.stringify(sampleData),
+            body: JSON.stringify(expectedData),
           });
-          expect(res.status).toStrictEqual(422);
-          const { error } = await res.json();
-          expect(error.contractAddress).toContain("ContractFunctionExecutionError");
+          expect(res.status).toStrictEqual(201);
+          const {
+            chainId,
+            title,
+            contractAddress,
+            templateName,
+            owner,
+            tokenAddress,
+            tokenName,
+            tokenSymbol,
+            tokenDecimals,
+            tokenLogo,
+          } = await res.json();
+
+          const resData = {
+            chainId,
+            title,
+            contractAddress: contractAddress,
+            templateName: uint8ObjectToHexString(templateName),
+            owner: uint8ObjectToHexString(owner),
+            tokenAddress: uint8ObjectToHexString(tokenAddress),
+            tokenName,
+            tokenSymbol,
+            tokenDecimals,
+            tokenLogo,
+          };
+          expect(resData).toEqual({ ...expectedData, contractAddress: null });
         },
       });
     });
 
-    test("No tokenAddress", async () => {
+    test("should fail to create if no token address is given", async () => {
       const sampleData = {
         ...basicMockData,
+        // Set undefined as a token address
         tokenAddress: undefined,
       };
 
@@ -164,14 +193,15 @@ describe("POST /api/airdrops Create a new airdrop", () => {
           });
           expect(res.status).toStrictEqual(422);
           const { error } = await res.json();
-          expect(error.tokenAddress).toEqual("Token address is required");
+          expect(error).toEqual("tokenAddress: Token address is invalid");
         },
       });
     });
 
-    test("Invalid tokenAddress", async () => {
+    test("should fail to create if invalid token address is given", async () => {
       const sampleData = {
         ...basicMockData,
+        // Set an invalid token address
         tokenAddress: zeroAddress,
       };
 
@@ -192,12 +222,12 @@ describe("POST /api/airdrops Create a new airdrop", () => {
           });
           expect(res.status).toStrictEqual(422);
           const { error } = await res.json();
-          expect(error).toContain("ContractFunctionExecutionError");
+          expect(error).toContain(`The contract function "name" returned no data ("0x")`);
         },
       });
     });
 
-    test("Invalid tokenLogo", async () => {
+    test("should fail to create if invalid tokenLogo URL is given", async () => {
       const sampleData = {
         ...basicMockData,
         tokenLogo: "asdf",
@@ -220,14 +250,14 @@ describe("POST /api/airdrops Create a new airdrop", () => {
           });
           expect(res.status).toStrictEqual(422);
           const { error } = await res.json();
-          expect(error.tokenLogo).toEqual("Invalid URL");
+          expect(error).toEqual("tokenLogo: Invalid URL");
         },
       });
     });
   });
 
   describe("GET /api/airdrops - Retrieve all airdrops", async () => {
-    test("No page and limit specified", async () => {
+    test("should return the list of airdrops if page and limit are NOT specified", async () => {
       const expectedData = {
         contractAddress: null,
         templateName: TemplateNames.STANDARD,
@@ -263,7 +293,7 @@ describe("POST /api/airdrops Create a new airdrop", () => {
         },
       });
     });
-    test("page and limit specified", async () => {
+    test("should return the list of airdrops if page and limit are specified", async () => {
       const expectedData = {
         chainId: 11155111,
         title: `YMWK Airdrop 24`,
