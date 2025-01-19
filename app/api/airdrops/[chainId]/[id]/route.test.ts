@@ -134,7 +134,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
         mockedSession = {
           expires: "expires",
           user: {
-            address: uint8ObjectToHexString(airdrop.owner),
+            address: uint8ObjectToHexString(airdrop.owner)!,
           },
         };
 
@@ -178,7 +178,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
         mockedSession = {
           expires: "expires",
           user: {
-            address: uint8ObjectToHexString(airdrop.owner),
+            address: uint8ObjectToHexString(airdrop.owner)!,
           },
         };
 
@@ -244,7 +244,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
         mockedSession = {
           expires: "expires",
           user: {
-            address: uint8ObjectToHexString(airdrop.owner),
+            address: uint8ObjectToHexString(airdrop.owner)!,
           },
         };
 
@@ -300,7 +300,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
         mockedSession = {
           expires: "expires",
           user: {
-            address: uint8ObjectToHexString(airdrop.owner),
+            address: uint8ObjectToHexString(airdrop.owner)!,
           },
         };
 
@@ -475,7 +475,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
         mockedSession = {
           expires: "expires",
           user: {
-            address: uint8ObjectToHexString(airdrop.owner),
+            address: uint8ObjectToHexString(airdrop.owner)!,
           },
         };
         const data = {
@@ -544,7 +544,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
         mockedSession = {
           expires: "expires",
           user: {
-            address: uint8ObjectToHexString(airdrop.owner),
+            address: uint8ObjectToHexString(airdrop.owner)!,
           },
         };
         const data = {
@@ -586,7 +586,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
         mockedSession = {
           expires: "expires",
           user: {
-            address: uint8ObjectToHexString(airdrop.owner),
+            address: uint8ObjectToHexString(airdrop.owner)!,
           },
         };
         await testApiHandler({
@@ -647,7 +647,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
         mockedSession = {
           expires: "expires",
           user: {
-            address: uint8ObjectToHexString(airdrop.owner),
+            address: uint8ObjectToHexString(airdrop.owner)!,
           },
         };
 
@@ -685,7 +685,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
         mockedSession = {
           expires: "expires",
           user: {
-            address: uint8ObjectToHexString(airdrop.owner),
+            address: uint8ObjectToHexString(airdrop.owner)!,
           },
         };
 
@@ -733,7 +733,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
         mockedSession = {
           expires: "expires",
           user: {
-            address: uint8ObjectToHexString(airdrop.owner),
+            address: uint8ObjectToHexString(airdrop.owner)!,
           },
         };
 
@@ -789,7 +789,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
         mockedSession = {
           expires: "expires",
           user: {
-            address: uint8ObjectToHexString(airdrop.owner),
+            address: uint8ObjectToHexString(airdrop.owner)!,
           },
         };
 
@@ -891,7 +891,7 @@ describe("DELETE /api/airdrop/:id - Delete an airdrop", () => {
       mockedSession = {
         expires: "expires",
         user: {
-          address: uint8ObjectToHexString(airdrop.owner),
+          address: uint8ObjectToHexString(airdrop.owner)!,
         },
       };
       await testApiHandler({

@@ -3,21 +3,21 @@ import { CheckCircleIcon } from "@chakra-ui/icons";
 import { useTranslation } from "react-i18next";
 
 export interface StatusProps {
-  isAirdropRegistered: boolean;
-  isContractRegistered: boolean;
+  merkleTreeRegisteredAt: Date | null;
+  contractRegisteredAt: Date | null;
 }
 
 export default function Status({
-  isAirdropRegistered,
-  isContractRegistered,
+  merkleTreeRegisteredAt,
+  contractRegisteredAt,
 }: StatusProps): JSX.Element {
   const { t } = useTranslation();
   return (
     <>
       <Flex
         alignItems="center"
-        bg={isAirdropRegistered ? "green.100" : undefined}
-        color={isAirdropRegistered ? "green.800" : "gray.400"}
+        bg={merkleTreeRegisteredAt ? "green.100" : undefined}
+        color={contractRegisteredAt ? "green.800" : "gray.400"}
         fontSize="xs"
         fontWeight="medium"
         px="2.5"
@@ -27,16 +27,16 @@ export default function Status({
         <CheckCircleIcon
           boxSize="3"
           marginRight="1"
-          color={isAirdropRegistered ? undefined : "gray.400"}
+          color={merkleTreeRegisteredAt ? undefined : "gray.400"}
         />
-        {isAirdropRegistered
+        {merkleTreeRegisteredAt
           ? t("dashboard.registeredAirdropList")
           : t("dashboard.unregisteredAirdropList")}
       </Flex>
       <Flex
         alignItems="center"
-        bg={isContractRegistered ? "blue.100" : undefined}
-        color={isContractRegistered ? "blue.800" : "gray.400"}
+        bg={contractRegisteredAt ? "blue.100" : undefined}
+        color={contractRegisteredAt ? "blue.800" : "gray.400"}
         fontSize="xs"
         fontWeight="medium"
         px="2.5"
@@ -46,9 +46,9 @@ export default function Status({
         <CheckCircleIcon
           boxSize="3"
           marginRight="1"
-          color={isContractRegistered ? undefined : "gray.400"}
+          color={contractRegisteredAt ? undefined : "gray.400"}
         />
-        {isContractRegistered
+        {contractRegisteredAt
           ? t("dashboard.registeredContract")
           : t("dashboard.unregisteredContract")}
       </Flex>

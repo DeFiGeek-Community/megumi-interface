@@ -1,19 +1,29 @@
 import { Text } from "@chakra-ui/react";
 import { Row } from "@/app/lib/chakra/chakraUtils";
 import { useTranslation } from "react-i18next";
+import { TemplateNames, TemplateNamesType } from "@/app/lib/constants/templates";
+import { formatAmount, formatClaimedAccounts, formatDate } from "@/app/utils/clientHelper";
 
 export interface DetailedInfoProps {
-  totalAmount: string;
-  claimedAccounts: string;
-  isLinearVesting: boolean;
-  vestingEndDate: string;
+  totalAirdropAmount: string | null;
+  eligibleUsersNum: number | undefined;
+  claimedUsersNum: number | undefined;
+  templateName: TemplateNamesType;
+  vestingEndsAt: Date | null;
+  tokenName: string;
+  tokenSymbol: string;
+  tokenDecimals: number;
 }
 
 export default function DetailedInfo({
-  totalAmount,
-  claimedAccounts,
-  isLinearVesting,
-  vestingEndDate,
+  totalAirdropAmount,
+  eligibleUsersNum,
+  claimedUsersNum,
+  templateName,
+  vestingEndsAt,
+  tokenName,
+  tokenSymbol,
+  tokenDecimals,
 }: DetailedInfoProps) {
   const { t } = useTranslation();
   return (
@@ -29,7 +39,8 @@ export default function DetailedInfo({
           {t("dashboard.totalAmount")}
         </Text>
         <Text flex="1" textAlign="right" fontSize="lg" fontWeight="medium">
-          {totalAmount}
+          {totalAirdropAmount ? formatAmount(BigInt(totalAirdropAmount), tokenDecimals) : "-"}{" "}
+          {tokenSymbol}
         </Text>
       </Row>
       <Row mainAxisAlignment="space-between" crossAxisAlignment="center" width="100%" paddingX="2">
@@ -37,10 +48,10 @@ export default function DetailedInfo({
           {t("dashboard.claimedAccount")}
         </Text>
         <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
-          {claimedAccounts}
+          {formatClaimedAccounts(eligibleUsersNum, claimedUsersNum)}
         </Text>
       </Row>
-      {isLinearVesting && (
+      {templateName === TemplateNames.LinearVesting && (
         <Row
           mainAxisAlignment="space-between"
           crossAxisAlignment="center"
@@ -51,7 +62,7 @@ export default function DetailedInfo({
             {t("dashboard.vestingDeadline")}
           </Text>
           <Text flex="1" textAlign="right" fontWeight="medium" fontSize="lg">
-            {vestingEndDate}
+            {formatDate(vestingEndsAt, "yyyy/MM/dd")}
           </Text>
         </Row>
       )}

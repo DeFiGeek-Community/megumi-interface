@@ -8,7 +8,10 @@ import { InvalidOwnerError, NetworkAccessError } from "@/app/types/errors";
 
 export const uint8ObjectToHexString = (
   object: { [key: string]: number } | Uint8Array,
-): `0x${string}` => {
+): `0x${string}` | null => {
+  if (!object) {
+    return null;
+  }
   const values = Object.values(object);
   return uint8ArrayToHexString(new Uint8Array(values));
 };
@@ -58,7 +61,7 @@ export const requireOwner = async (
   error?: InvalidOwnerError;
 }> => {
   const owner = uint8ObjectToHexString(airdrop.owner);
-  if (address.toLowerCase() !== owner.toLowerCase()) {
+  if (address.toLowerCase() !== owner?.toLowerCase()) {
     return { error: new InvalidOwnerError() };
   }
 

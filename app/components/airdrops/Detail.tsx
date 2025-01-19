@@ -25,6 +25,7 @@ import {
   formatTemplateType,
   getEllipsizedAddress,
   getEtherscanLink,
+  formatAmount,
 } from "@/app/utils/clientHelper";
 import Claim from "@/app/components/airdrops/Claim";
 import OwnerMenu from "@/app/components/airdrops/OwnerMenu";
@@ -51,12 +52,6 @@ export default function AirdropDetail({
   const [isConnected, setIsConnected] = useState<boolean>(false);
   useEffect(() => setIsConnected(isConnectedRaw), [isConnectedRaw]);
 
-  // Get token balance on airdrop contract
-  const { data: balanceOnContract } = useBalance({
-    address: airdrop.contractAddress || "0x",
-    token: airdrop.tokenAddress || "0x",
-  });
-
   if (!isMounted || !address)
     return (
       <Center>
@@ -64,13 +59,10 @@ export default function AirdropDetail({
       </Center>
     );
   const isOwner =
-    session?.user?.address && session.user.address.toLowerCase() === airdrop?.owner.toLowerCase();
+    session?.user?.address && session.user.address.toLowerCase() === airdrop?.owner?.toLowerCase();
   return (
     <Container maxW={"container.xl"} mb={4}>
       <VStack spacing="4">
-        <Box width={{ base: "100%", md: "50%" }} ml={4}>
-          <Heading fontSize="3xl">Airdrop</Heading>
-        </Box>
         <Box width={{ base: "100%", md: "50%" }}>
           {/* Header Section */}
           <Box borderRadius="md" boxShadow="md" p={{ base: "0", lg: "4" }} mb={4}>
@@ -109,7 +101,10 @@ export default function AirdropDetail({
                 <Flex alignItems="baseline" direction={{ base: "column", xl: "row" }}>
                   <Flex alignItems="baseline" direction="row">
                     <Text fontSize="md" fontWeight="bold" mr={4}>
-                      {formatTotalAirdropAmount(airdrop.totalAirdropAmount)}
+                      {airdrop.totalAirdropAmount
+                        ? formatAmount(BigInt(airdrop.totalAirdropAmount), airdrop.tokenDecimals)
+                        : "-"}{" "}
+                      {airdrop.tokenSymbol}
                     </Text>
                   </Flex>
                   <Flex alignItems="baseline" direction="row">

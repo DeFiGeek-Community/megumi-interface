@@ -89,8 +89,8 @@ export default function AirdropCard({
                       marginBottom="1"
                     >
                       <Status
-                        isAirdropRegistered={isRegisteredAirdrop}
-                        isContractRegistered={isRegisteredContract}
+                        merkleTreeRegisteredAt={airdrop.merkleTreeRegisteredAt}
+                        contractRegisteredAt={airdrop.contractRegisteredAt}
                       />
                     </Row>
                   </Box>
@@ -112,20 +112,27 @@ export default function AirdropCard({
                       display={{ base: "none", md: "flex" }}
                     >
                       <Status
-                        isAirdropRegistered={isRegisteredAirdrop}
-                        isContractRegistered={isRegisteredContract}
+                        merkleTreeRegisteredAt={airdrop.merkleTreeRegisteredAt}
+                        contractRegisteredAt={airdrop.contractRegisteredAt}
                       />
                     </Row>
-                    <AirdropInfo airdropTitle={airdrop.title} templateType={airdrop.templateName} />
+                    <AirdropInfo
+                      airdropTitle={airdrop.title}
+                      templateNamesType={airdrop.templateName}
+                    />
                   </Box>
                 </Row>
               </Box>
               <Box textAlign="right" width={{ base: "full", md: "40%" }}>
                 <DetailedInfo
-                  totalAmount={currentTotalAirdropAmount}
-                  claimedAccounts={currentClaimedAccounts}
-                  isLinearVesting={isLinearVesting}
-                  vestingEndDate={currentVestingEndsAt}
+                  totalAirdropAmount={airdrop.totalAirdropAmount}
+                  eligibleUsersNum={airdrop.eligibleUsersNum}
+                  claimedUsersNum={airdrop.claimedUsersNum}
+                  templateName={airdrop.templateName}
+                  vestingEndsAt={airdrop.vestingEndsAt}
+                  tokenName={airdrop.tokenName}
+                  tokenSymbol={airdrop.tokenSymbol}
+                  tokenDecimals={airdrop.tokenDecimals}
                 />
               </Box>
             </Flex>

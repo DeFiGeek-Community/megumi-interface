@@ -166,7 +166,7 @@ describe("POST /api/airdrops/:id/syncMerkletree", () => {
     mockedSession = {
       expires: "expires",
       user: {
-        address: uint8ObjectToHexString(airdrop.owner),
+        address: uint8ObjectToHexString(airdrop.owner)!,
       },
     };
 
@@ -221,7 +221,7 @@ describe("POST /api/airdrops/:id/syncMerkletree", () => {
           });
           expect(claimer).not.toBeNull();
           expect(address.toLowerCase()).toStrictEqual(
-            uint8ObjectToHexString(claimer!.address).toLowerCase(),
+            uint8ObjectToHexString(claimer!.address)!.toLowerCase(),
           );
         }
       },

@@ -28,8 +28,8 @@ export const useFetchClaimParams = (chainId: string, id: string, address?: `0x${
       } finally {
         setLoading(false);
       }
-      fetchClaimParams();
     };
+    fetchClaimParams();
   }, [chainId, id, address]);
 
   return { data, loading, error };

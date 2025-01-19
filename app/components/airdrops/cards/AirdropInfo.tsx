@@ -1,14 +1,14 @@
 import { Box, Text } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
 import { formatTemplateType } from "@/app/utils/clientHelper";
-import type { TemplateType } from "@/app/types/airdrop";
+import { TemplateNamesType } from "@/app/lib/constants/templates";
 
 export interface AirdropInfoProps {
   airdropTitle: string;
-  templateType: TemplateType;
+  templateNamesType: TemplateNamesType;
 }
 
-export default function AirdropInfo({ airdropTitle, templateType }: AirdropInfoProps) {
+export default function AirdropInfo({ airdropTitle, templateNamesType }: AirdropInfoProps) {
   const { t } = useTranslation();
   return (
     <>
@@ -25,7 +25,7 @@ export default function AirdropInfo({ airdropTitle, templateType }: AirdropInfoP
         alignItems="center"
       >
         <Text fontSize={{ base: "sm", sm: "md" }} marginRight="1">
-          {t(`dashboard.${formatTemplateType(templateType)}`)}
+          {t(`dashboard.${formatTemplateType(templateNamesType)}`)}
         </Text>
         <Box
           bg="white"

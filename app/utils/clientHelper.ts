@@ -1,9 +1,8 @@
 import { fromHex } from "viem";
-import type { Chain } from "viem/chains";
 import type { GetEnsNameReturnType } from "viem/ens";
 import { DateArg, format, FormatOptions } from "date-fns";
-import { TemplateType } from "@/app/types/airdrop";
 import { getChainById } from "@/app/utils/chain";
+import { TemplateNamesType } from "@/app/lib/constants/templates";
 
 export const getEtherscanLink = (
   chainId: number | string,
@@ -34,22 +33,20 @@ export const formatDate = (
   return date ? format(date, formatStr, options) : "-";
 };
 
-export const formatTemplateType = (tempTemplateType: TemplateType) => {
+export const formatTemplateType = (tempTemplateType: TemplateNamesType) => {
   return fromHex(tempTemplateType, { size: 32, to: "string" });
 };
 
-export const formatTotalAirdropAmount = (tempTotalAirdropAmount: bigint | null) => {
-  const temp = tempTotalAirdropAmount ? tempTotalAirdropAmount.toString() : "0";
+export const formatTotalAirdropAmount = (tempTotalAirdropAmount: string | null) => {
+  const temp = tempTotalAirdropAmount ? tempTotalAirdropAmount : "0";
   return temp + " YMT";
 };
 
 export const formatClaimedAccounts = (
-  tempEligibleUsersNum: number | undefined,
-  tempClaimedUsersNum: number | undefined,
+  eligibleUsersNum: number | undefined,
+  claimedUsersNum: number | undefined,
 ) => {
-  return tempClaimedUsersNum && tempEligibleUsersNum
-    ? `${tempClaimedUsersNum} / ${tempEligibleUsersNum}`
-    : "0 / 0";
+  return `${claimedUsersNum ?? "-"} / ${eligibleUsersNum ?? "-"}`;
 };
 
 export const formatAmount = (

@@ -43,7 +43,7 @@
     "claimable": "請求可能額",
     "claimed": "請求済み",
     "contract": "コントラクト",
-    "feeNotice": "A claim fee of 0.0001 ETH and a platform fee of 0.0001 ETH, totaling 0.0002 ETH, will be required in addition to the transaction fee.",
+    "feeNotice": "請求時にクレーム手数料0.0001ETH、プラットフォーム手数料0.0001ETH、合計0.0002ETHがトランザクション手数料の他に必要です",
     "ownerMenu": "オーナーメニュー",
     "register": "登録する",
     "tokenAddress": "トークン",
@@ -52,6 +52,7 @@
     "registered": "登録済み",
     "download": "ダウンロード",
     "yourAllocatedAmount": "あなたの割り当て額",
+    "contractBalance": "コントラクト残高",
     "contractForm": {
       "registerContract": "コントラクト登録",
       "newContract": "新規コントラクトのデプロイ",

@@ -8,12 +8,11 @@ import {
   AirdropHex,
   AirdropWithClaimMap,
   MerkleTreeData,
-  TemplateType,
   AirdropClaimerMapHex,
 } from "@/app/types/airdrop";
 import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
 import { Factory, MerkleAirdropBase } from "@/app/lib/constants/abis";
-import { AirdropABI, TemplateNames } from "@/app/lib/constants/templates";
+import { AirdropABI, TemplateNames, TemplateNamesType } from "@/app/lib/constants/templates";
 import { GetObjectCommand, s3Client } from "@/app/lib/aws";
 import { isSupportedTemplate } from "@/app/utils/shared";
 import { isSupportedChain } from "@/app/utils/chain";
@@ -24,25 +23,54 @@ export const getAirdropById = async (
   airdropId: string,
   withClaimParamsOf?: `0x${string}`,
 ): Promise<Airdrop | null> => {
-  const airdrop = await prisma.airdrop.findUnique({
-    where: { id: airdropId },
-    include: withClaimParamsOf
-      ? {
-          AirdropClaimerMap: {
-            where: {
-              claimer: {
-                address: hexStringToUint8Array(withClaimParamsOf),
-              },
-            },
-            include: {
-              claimer: true,
-            },
-          },
-        }
-      : null,
-  });
+  const airdrops = await prisma.$queryRaw<Airdrop[]>`
+          SELECT DISTINCT
+              "Airdrop".*,
+              (
+                      SELECT
+                          COUNT(*) 
+                      FROM
+                          "AirdropClaimerMap" 
+                      WHERE 
+                          "AirdropClaimerMap"."airdropId"="Airdrop"."id" 
+                          AND 
+                          "AirdropClaimerMap"."isClaimed" = true
+              ) AS "claimedUsersNum",
+              (
+                    SELECT
+                        COUNT(*)
+                    FROM
+                        "AirdropClaimerMap"
+                    WHERE 
+                        "AirdropClaimerMap"."airdropId"="Airdrop"."id"
+              ) AS "eligibleUsersNum"
+          FROM
+              "Airdrop"
+          LEFT JOIN "AirdropClaimerMap" ON "Airdrop"."id" = "AirdropClaimerMap"."airdropId"
+          LEFT JOIN "Claimer" ON "AirdropClaimerMap"."claimerId" = "Claimer"."id"
+          WHERE "Airdrop"."id" = ${airdropId}
+          GROUP BY "Airdrop"."id"
+          LIMIT 1
+      `;
 
-  return airdrop;
+  // const airdrop = await prisma.airdrop.findUnique({
+  //   where: { id: airdropId },
+  //   include: withClaimParamsOf
+  //     ? {
+  //         AirdropClaimerMap: {
+  //           where: {
+  //             claimer: {
+  //               address: hexStringToUint8Array(withClaimParamsOf),
+  //             },
+  //           },
+  //           include: {
+  //             claimer: true,
+  //           },
+  //         },
+  //       }
+  //     : null,
+  // });
+  return airdrops[0];
 };
 
 export const airdropClaimerMaptoHexString = (
@@ -50,8 +78,8 @@ export const airdropClaimerMaptoHexString = (
 ): AirdropClaimerMapHex => {
   return {
     ...airdropClaimerMap,
-    proofs: airdropClaimerMap.proofs.map((p: any) => uint8ObjectToHexString(p)),
-    amount: BigInt(uint8ObjectToHexString(airdropClaimerMap.amount)),
+    proofs: airdropClaimerMap.proofs.map((p: any) => uint8ObjectToHexString(p)!),
+    amount: BigInt(uint8ObjectToHexString(airdropClaimerMap.amount)!).toString(),
   };
 };
 export const toHexString = (airdrop: AirdropWithClaimMap): AirdropHex => {
@@ -66,13 +94,14 @@ export const toHexString = (airdrop: AirdropWithClaimMap): AirdropHex => {
   return {
     ...airdrop,
     contractAddress: airdrop.contractAddress && uint8ObjectToHexString(airdrop.contractAddress),
-    templateName: uint8ObjectToHexString(airdrop.templateName) as TemplateType,
-    owner: uint8ObjectToHexString(airdrop.owner),
-    tokenAddress: uint8ObjectToHexString(airdrop.tokenAddress),
+    templateName: uint8ObjectToHexString(airdrop.templateName) as TemplateNamesType,
+    owner: uint8ObjectToHexString(airdrop.owner)!,
+    tokenAddress: uint8ObjectToHexString(airdrop.tokenAddress)!,
     claimedUsersNum: Number(airdrop.claimedUsersNum),
     eligibleUsersNum: Number(airdrop.eligibleUsersNum),
     totalAirdropAmount:
-      airdrop.totalAirdropAmount && BigInt(uint8ObjectToHexString(airdrop.totalAirdropAmount)),
+      airdrop.totalAirdropAmount &&
+      BigInt(uint8ObjectToHexString(airdrop.totalAirdropAmount)!).toString(),
     AirdropClaimerMap,
   };
 };
@@ -228,7 +257,7 @@ export const getTemplateAddressFromAirdropAddress = async (
 export const getTemplateNameFromAirdropAddress = async (
   address: `0x${string}`,
   provider: PublicClient,
-): Promise<TemplateType | undefined> => {
+): Promise<TemplateNamesType | undefined> => {
   const proxyCode = await provider.getCode({
     address,
   });

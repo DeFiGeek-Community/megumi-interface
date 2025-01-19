@@ -2,12 +2,16 @@
 import { useContext, useEffect, useState } from "react";
 import { parseEther } from "viem";
 import { useTranslation } from "react-i18next";
-import { VStack, Box, HStack, Text, Button, chakra } from "@chakra-ui/react";
-import { AirdropNameABI, TemplateNames } from "@/app/lib/constants/templates";
+import { VStack, Box, HStack, Text, Button, chakra, Spinner } from "@chakra-ui/react";
+import { AirdropNameABI, TemplateNames, TemplateNamesType } from "@/app/lib/constants/templates";
 import { useFetchClaimParams } from "@/app/hooks/airdrops/useFetchClaimParams";
-import { useSimulateContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import {
+  useBalance,
+  useSimulateContract,
+  useWaitForTransactionReceipt,
+  useWriteContract,
+} from "wagmi";
 import { TxToastsContext } from "@/app/providers/ToastProvider";
-import { TemplateType } from "@/app/types/airdrop";
 import { formatAmount, formatDate } from "@/app/utils/clientHelper";
 
 interface ClaimProps {
@@ -19,7 +23,7 @@ interface ClaimProps {
   tokenName: string;
   tokenSymbol: string;
   tokenDecimals: number;
-  templateName: TemplateType;
+  templateName: TemplateNamesType;
   vestingEndsAt: Date | null;
 }
 
@@ -71,6 +75,12 @@ export default function Claim({
     }
   }, [failureReason, status]);
 
+  // Get token balance on airdrop contract
+  const { data: balanceOnContract } = useBalance({
+    address: contractAddress || "0x",
+    token: tokenAddress || "0x",
+  });
+
   const handleClaim = async () => {
     try {
       data && setWritePromise(writeContractAsync(data.request));
@@ -87,14 +97,25 @@ export default function Claim({
             {t("airdrop.yourAllocatedAmount")}
           </Text>
           <HStack justify="flex-start">
-            <Text fontSize="3xl" fontWeight="medium">
-              {`${claimParams?.amount ? formatAmount(claimParams.amount, tokenDecimals) : 0}`}
-            </Text>
+            {claimLoading ? (
+              <Spinner />
+            ) : (
+              <Text fontSize="3xl" fontWeight="medium">
+                {`${claimParams?.amount ? formatAmount(BigInt(claimParams.amount), tokenDecimals) : 0}`}
+              </Text>
+            )}
+
             <Text fontSize="md" fontWeight="medium">
               {tokenSymbol}
             </Text>
           </HStack>
         </HStack>
+        <chakra.p color={"gray.400"} fontSize={"sm"} textAlign={"right"}>
+          {t("airdrop.contractBalance")}:{" "}
+          {balanceOnContract
+            ? `${formatAmount(balanceOnContract.value, balanceOnContract.decimals)} ${balanceOnContract.symbol}`
+            : "-"}
+        </chakra.p>
         {templateName === TemplateNames.LinearVesting && (
           <>
             <HStack justify="space-between">
@@ -142,9 +163,7 @@ export default function Claim({
           </>
         )}
         <Button
-          isDisabled={
-            !Boolean(data?.request) || status === "pending" || status === "success" || isClaimed
-          }
+          isDisabled={!data?.request || status === "pending" || status === "success" || isClaimed}
           isLoading={status === "pending"}
           onClick={() => handleClaim()}
           size="sm"

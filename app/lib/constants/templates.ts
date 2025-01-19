@@ -12,6 +12,7 @@ export const TemplateNames = {
   [TemplateType.LINEAR_VESTING]:
     "0x4c696e65617256657374696e6700000000000000000000000000000000000000",
 } as const;
+export type TemplateNamesType = (typeof TemplateNames)[keyof typeof TemplateNames];
 
 export const AirdropABI: { [key: string]: AirdropABIType } = {
   [TemplateType.STANDARD]: Standard,

@@ -1,5 +1,5 @@
 import type { GetContractReturnType, PublicClient } from "viem";
-import { TemplateNames } from "@/app/lib/constants/templates";
+import { TemplateNames, TemplateNamesType } from "@/app/lib/constants/templates";
 import { MerkleAirdropBase, Standard, LinearVesting } from "@/app/lib/constants/abis";
 import { Airdrop as AirdropM, AirdropClaimerMap } from "@/prisma";
 
@@ -26,29 +26,29 @@ export type AirdropValidationType = {
   tokenLogo?: string;
 };
 
-export type TemplateType = (typeof TemplateNames)[keyof typeof TemplateNames];
+// export type TemplateType = (typeof TemplateNames)[keyof typeof TemplateNames];
 
 // Mock type ---->
-export type Airdrop = Standard | LinearVesting;
+// export type Airdrop = Standard | LinearVesting;
 
-export type Standard = {
-  id: string;
-  title: string;
-  templateName: TemplateType;
-  owner: string;
-  tokenAddress: string;
-  createdAt: number;
-  merkleTreeUploadedAt: number | undefined;
-  contractAddress: string | undefined;
-  totalAirdropAmount: bigint | undefined;
-  eligibleUsersNum: number | undefined;
-  claimedUsersNum: number | undefined;
-  contractDeployedAt: number | undefined;
-};
+// export type Standard = {
+//   id: string;
+//   title: string;
+//   templateName: TemplateType;
+//   owner: string;
+//   tokenAddress: string;
+//   createdAt: number;
+//   merkleTreeUploadedAt: number | undefined;
+//   contractAddress: string | undefined;
+//   totalAirdropAmount: bigint | undefined;
+//   eligibleUsersNum: number | undefined;
+//   claimedUsersNum: number | undefined;
+//   contractDeployedAt: number | undefined;
+// };
 
-export type LinearVesting = Standard & {
-  vestingEndsAt: number;
-};
+// export type LinearVesting = Standard & {
+//   vestingEndsAt: number;
+// };
 // <---- Mock type
 
 // Airdrop Creation
@@ -59,7 +59,7 @@ export type AirdropCreationData = Omit<AirdropM, "id" | "createdAt" | "updatedAt
 };
 export type AirdropClaimerMapHex = Omit<AirdropClaimerMap, "proofs" | "amount"> & {
   proofs: `0x${string}`[];
-  amount: bigint;
+  amount: string;
   index: number;
   isClaimed: boolean;
 };
@@ -75,10 +75,10 @@ export type AirdropHex = Omit<
   "contractAddress" | "templateName" | "owner" | "tokenAddress" | "totalAirdropAmount"
 > & {
   contractAddress: `0x${string}` | null;
-  templateName: TemplateType;
+  templateName: TemplateNamesType;
   owner: `0x${string}`;
   tokenAddress: `0x${string}`;
-  totalAirdropAmount: bigint | null;
+  totalAirdropAmount: string | null;
 } & AirdropAggregationData & { AirdropClaimerMap?: AirdropClaimerMapHex[] };
 export type AirdropWithClaimMap = AirdropM &
   AirdropAggregationData & { AirdropClaimerMap?: AirdropClaimerMap[] };

@@ -1,16 +1,6 @@
 import { NextResponse } from "next/server";
-import { getServerSession } from "next-auth";
-import { GetCodeReturnType, type PublicClient } from "viem";
-import { prisma } from "@/prisma";
-import { authOptions } from "@/app/api/auth/authOptions";
 import { getErrorMessage } from "@/app/utils/shared";
-import { getViemProvider, requireOwner, respondError } from "@/app/utils/apiHelper";
 import { s3Client, GetObjectCommand, GetObjectCommandOutput } from "@/app/lib/aws";
-import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
-import { AirdropNotFoundError } from "@/app/types/errors";
-import { MerkleTreeData } from "@/app/types/airdrop";
-import * as AirdropUtils from "@/app/utils/airdrop";
-import { uuidToHex } from "@/app/utils/shared";
 
 // Get an airdrop by ID
 export async function GET(req: Request, { params }: { params: { chainId: string; id: string } }) {
