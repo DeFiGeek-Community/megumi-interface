@@ -10,25 +10,35 @@ import {
   Divider,
   Icon,
   useDisclosure,
+  chakra,
+  Link,
+  Tooltip,
 } from "@chakra-ui/react";
-import { WarningTwoIcon } from "@chakra-ui/icons";
+import { CheckCircleIcon, DownloadIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import ContractFormModal from "./ContractFormModal";
 import MerkletreeFormModal from "./merkleTree/MerkletreeFormModal";
+import { formatDate } from "@/app/utils/clientHelper";
+import { useSyncMerkletree } from "@/app/hooks/airdrops/useSyncMerkletree";
 
 export default function OwnerMenu({
   chainId,
   airdropId,
   ownerAddress,
   contractAddress,
+  merkleTreeRegisteredAt,
+  contractRegisteredAt,
 }: {
   chainId: number;
   airdropId: string;
   ownerAddress: `0x${string}`;
   contractAddress: `0x${string}` | null;
+  merkleTreeRegisteredAt: Date | null;
+  contractRegisteredAt: Date | null;
 }) {
   const { t } = useTranslation();
   const merkletreeModalDisclosure = useDisclosure();
   const contractModalDisclosure = useDisclosure();
+  const sync = useSyncMerkletree(chainId, airdropId, contractAddress);
   return (
     <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4}>
       <VStack spacing={2} align="stretch">
@@ -47,10 +57,32 @@ export default function OwnerMenu({
         <HStack justify="space-between">
           <Stack>
             <Text fontWeight="medium">{t("airdrop.airdropList")}</Text>
-            <Text fontWeight="medium" textAlign="left">
-              <Icon as={WarningTwoIcon} mr={1} mb={1} color="yellow.500" />
-              {t("airdrop.unregistered")}
-            </Text>
+            {merkleTreeRegisteredAt ? (
+              <>
+                <Text fontWeight="medium" textAlign="left">
+                  <Icon as={CheckCircleIcon} mr={1} mb={1} color="green.500" />
+                  {t("airdrop.registered")}
+                  <chakra.span fontSize={"xs"} ml={2}>
+                    ({formatDate(merkleTreeRegisteredAt)})
+                  </chakra.span>
+                  <Tooltip label={t("airdrop.download")}>
+                    <Link
+                      href={`/api/airdrops/${chainId}/${airdropId}/merkletree`}
+                      download={`merkletree.json`}
+                      isExternal
+                      ml={2}
+                    >
+                      <Icon as={DownloadIcon} mr={1} mb={1} />
+                    </Link>
+                  </Tooltip>
+                </Text>
+              </>
+            ) : (
+              <Text fontWeight="medium" textAlign="left">
+                <Icon as={WarningTwoIcon} mr={1} mb={1} color="yellow.500" />
+                {t("airdrop.unregistered")}
+              </Text>
+            )}
           </Stack>
           <>
             <Button
@@ -77,16 +109,28 @@ export default function OwnerMenu({
         <HStack justify="space-between">
           <Stack>
             <Text fontWeight="medium">{t("airdrop.contract")}</Text>
-            <Text fontWeight="medium" textAlign="left">
-              <Icon as={WarningTwoIcon} mr={1} mb={1} color="yellow.500" />
-              {t("airdrop.unregistered")}
-            </Text>
+            {contractRegisteredAt ? (
+              <>
+                <Text fontWeight="medium" textAlign="left">
+                  <Icon as={CheckCircleIcon} mr={1} mb={1} color="green.500" />
+                  {t("airdrop.registered")}
+                  <chakra.span fontSize={"xs"} ml={2}>
+                    ({formatDate(contractRegisteredAt)})
+                  </chakra.span>
+                </Text>
+              </>
+            ) : (
+              <Text fontWeight="medium" textAlign="left">
+                <Icon as={WarningTwoIcon} mr={1} mb={1} color="yellow.500" />
+                {t("airdrop.unregistered")}
+              </Text>
+            )}
           </Stack>
-
           {contractAddress ? (
-            <>TODO</>
+            <></>
           ) : (
             <>
+              <Button onClick={sync.checkContractDeploymentAndSync}>sync</Button>
               <Button
                 variant={"solid"}
                 colorScheme="blue"
@@ -103,6 +147,7 @@ export default function OwnerMenu({
                   isOpen={contractModalDisclosure.isOpen}
                   onOpen={contractModalDisclosure.onOpen}
                   onClose={contractModalDisclosure.onClose}
+                  checkContractDeployment={sync.checkContractDeploymentAndSync}
                 />
               )}
             </>

@@ -208,6 +208,8 @@ export default function AirdropDetail({
               airdropId={airdrop.id}
               ownerAddress={address}
               contractAddress={airdrop.contractAddress}
+              merkleTreeRegisteredAt={airdrop.merkleTreeRegisteredAt}
+              contractRegisteredAt={airdrop.contractRegisteredAt}
             />
           )}
         </Box>

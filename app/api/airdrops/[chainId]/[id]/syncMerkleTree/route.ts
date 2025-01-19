@@ -3,8 +3,13 @@ import { getServerSession } from "next-auth";
 import { GetCodeReturnType, type PublicClient } from "viem";
 import { prisma } from "@/prisma";
 import { authOptions } from "@/app/api/auth/authOptions";
-import { getErrorMessage } from "@/app/utils/shared";
-import { getViemProvider, requireOwner, respondError } from "@/app/utils/apiHelper";
+import { getErrorMessage, getTemplateKeyByHex, getTemplateTypeByHex } from "@/app/utils/shared";
+import {
+  getViemProvider,
+  hexStringToUint8Array,
+  requireOwner,
+  respondError,
+} from "@/app/utils/apiHelper";
 import { s3Client, GetObjectCommand, GetObjectCommandOutput } from "@/app/lib/aws";
 import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
 import { AirdropNotFoundError } from "@/app/types/errors";
@@ -39,7 +44,10 @@ export async function POST(req: Request, { params }: { params: { chainId: string
   let contractAddress =
     formattedAirdrop.contractAddress ||
     AirdropUtils.getAirdropAddressFromUUID({
-      templateAddress: CONTRACT_ADDRESSES[parseInt(params.chainId)][formattedAirdrop.templateName],
+      templateAddress:
+        CONTRACT_ADDRESSES[parseInt(params.chainId)][
+          getTemplateKeyByHex(formattedAirdrop.templateName)
+        ],
       uuid: uuidToHex(airdrop.id),
       deployer: formattedAirdrop.owner,
       chainId: parseInt(params.chainId),
@@ -48,21 +56,44 @@ export async function POST(req: Request, { params }: { params: { chainId: string
   // Check if contract is deployed
   const provider = getViemProvider(parseInt(params.chainId)) as PublicClient;
 
-  // TODO
-  // Extract to util
-  // loop X times and wait for the contract to be deployed
-  const MAX_RETRY = 10;
-  const INTERVAL = 1000;
-  let bytecode: GetCodeReturnType | null;
-  for (let i = 0; i < MAX_RETRY; i++) {
-    bytecode = await provider.getCode({
-      address: contractAddress,
-    });
-    if (bytecode) break;
-    await new Promise((resolve) => setTimeout(resolve, INTERVAL));
+  if (!airdrop.contractAddress) {
+    // TODO
+    // Extract to util
+    // loop X times and wait for the contract to be deployed
+    const MAX_RETRY = 10;
+    const INTERVAL = 1000;
+    let bytecode: GetCodeReturnType | null;
+    for (let i = 0; i < MAX_RETRY; i++) {
+      bytecode = await provider.getCode({
+        address: contractAddress,
+      });
+      if (bytecode) {
+        const updatedAirdrop = await prisma.airdrop.update({
+          where: { id: params.id },
+          data: {
+            contractAddress: hexStringToUint8Array(contractAddress),
+            contractRegisteredAt: new Date(),
+          },
+        });
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, INTERVAL));
+    }
+    if (!bytecode) {
+      return NextResponse.json({ error: "Airdrop contract is not deployed yet" }, { status: 422 });
+    }
   }
-  if (!bytecode) {
-    return NextResponse.json({ error: "Airdrop contract is not deployed yet" }, { status: 422 });
+
+  if (!airdrop.merkleTreeRegisteredAt) {
+    // Skip if merkletree is not registered yet
+    return NextResponse.json({ result: "merkletree is not registered yet" });
+  }
+
+  if (
+    airdrop.lastSyncedAt &&
+    airdrop.lastSyncedAt.getTime() > airdrop.merkleTreeRegisteredAt.getTime()
+  ) {
+    return NextResponse.json({ result: "sync status is up-to-date" });
   }
 
   // Get merkletree file

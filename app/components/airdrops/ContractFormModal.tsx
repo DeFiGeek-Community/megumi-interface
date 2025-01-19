@@ -45,6 +45,7 @@ type ContractFormModalProps = {
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
+  checkContractDeployment: () => Promise<void>;
 };
 
 type ContractFormValues = {
@@ -58,6 +59,7 @@ export default function ContractFormModal({
   isOpen,
   onOpen,
   onClose,
+  checkContractDeployment,
 }: ContractFormModalProps) {
   const {
     address,
@@ -70,7 +72,12 @@ export default function ContractFormModal({
   const toast = useToast({ position: "top-right", isClosable: true });
   // const { isOpen, onOpen, onClose } = useDisclosure();
   const handleSubmit = () => {
-    writeFn.write({ onSuccess: onClose });
+    writeFn.write({
+      onSuccess: () => {
+        checkContractDeployment();
+        onClose();
+      },
+    });
   };
 
   const validate = (value: ContractFormValues) => {

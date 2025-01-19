@@ -107,14 +107,14 @@ export default function MerkletreeFormModal({
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{t("airdrop.merkletreeForm.registerContract")}</ModalHeader>
+          <ModalHeader>{t("airdrop.merkletreeForm.register")}</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Tabs>
               <TabList>
-                <Tab>リストファイルをアップロード</Tab>
-                <Tab isDisabled>マニュアル入力</Tab>
-                <Tab isDisabled>スナップショットから作成</Tab>
+                <Tab>{t("airdrop.merkletreeForm.uploadListFile")}</Tab>
+                <Tab isDisabled>{t("airdrop.merkletreeForm.manual")}</Tab>
+                <Tab isDisabled>{t("airdrop.merkletreeForm.snapshot")}</Tab>
               </TabList>
               <TabPanels>
                 <TabPanel>
@@ -122,7 +122,7 @@ export default function MerkletreeFormModal({
                     <HStack spacing={8} alignItems={"start"}>
                       <chakra.div w={"full"}>
                         <FormControl isInvalid={!file && formikProps.submitCount > 0}>
-                          <p>エアドロップリストファイルをアップロードしてください</p>
+                          <p>{t("airdrop.merkletreeForm.uploadListFileHint")}</p>
                           <InputGroup>
                             <InputLeftElement
                               pointerEvents="none"

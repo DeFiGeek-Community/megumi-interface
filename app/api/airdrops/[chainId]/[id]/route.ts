@@ -18,6 +18,7 @@ import {
   uint8ArrayToHexString,
 } from "@/app/utils/apiHelper";
 import * as AirdropUtils from "@/app/utils/airdrop";
+import { MerkleTreeData } from "@/app/types/airdrop";
 
 // Upload merkle tree file
 export async function POST(req: Request, { params }: { params: { chainId: string; id: string } }) {
@@ -69,8 +70,20 @@ export async function POST(req: Request, { params }: { params: { chainId: string
   });
   try {
     const response = await s3Client.send(command);
-    // TODO
-    // Update merkletreeRegisteredAt
+    const updatedAirdrop = await prisma.airdrop.update({
+      where: { id: params.id },
+      data: {
+        merkleTreeRegisteredAt: new Date(),
+        totalAirdropAmount: hexStringToUint8Array(
+          `0x${BigInt(json.airdropAmount as string).toString(16)}`,
+        ),
+      },
+    });
+
+    if (airdrop.contractAddress) {
+      // If contract is already registered, process merkle tree
+      await AirdropUtils.processMerkleTree(prisma, json as MerkleTreeData, params.id);
+    }
     return NextResponse.json({ result: "ok" });
   } catch (error: unknown) {
     return respondError(error);

@@ -432,4 +432,9 @@ export async function processMerkleTree(
       },
     });
   }
+  const updatedAirdrop = await prisma.airdrop.update({
+    where: { id: airdropUUID },
+    data: { lastSyncedAt: new Date() },
+  });
+  console.log(`[INFO] Finished merkle tree for airdrop ${airdropUUID}`);
 }

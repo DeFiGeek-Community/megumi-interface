@@ -48,6 +48,8 @@
     "tokenAddress": "トークン",
     "totalAmount": "合計",
     "unregistered": "未登録",
+    "registered": "登録済み",
+    "download": "ダウンロード",
     "yourAllocatedAmount": "あなたの割り当て額",
     "contractForm": {
       "registerContract": "コントラクト登録",
@@ -62,6 +64,14 @@
       "confirm": "入力内容の確認",
       "deploy": "コントラクトをデプロイする",
       "balance": "残高"
+    },
+    "merkletreeForm": {
+      "register": "登録する",
+      "uploadListFile" :"リストファイルをアップロード",
+      "manual" :"マニュアル入力",
+      "snapshot" :"スナップショットから作成",
+      "uploadListFileHint" :"リストファイルをアップロードしてください"
+
     }
   }
 }
