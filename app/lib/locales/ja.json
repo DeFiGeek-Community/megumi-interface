@@ -38,6 +38,7 @@
     "basicInformation": "基本情報",
     "edit": "編集する",
     "eligible": "エアドロップの対象です",
+    "notEligible": "エアドロップの対象外です",
     "claim": "請求する",
     "claimable": "請求可能額",
     "claimed": "請求済み",

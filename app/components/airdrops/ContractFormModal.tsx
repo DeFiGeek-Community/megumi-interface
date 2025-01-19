@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import { useFormik } from "formik";
 import { useSession } from "next-auth/react";
 import { erc20Abi, isAddress } from "viem";
@@ -35,8 +36,6 @@ import { formatAmount } from "@/app/utils/clientHelper";
 import { uuidToHex } from "@/app/utils/shared";
 import { TemplateType } from "@/app/lib/constants/templates";
 import useDeployAirdrop from "@/app/hooks/airdrops/useDeployAirdrop";
-import { useEffect, useState } from "react";
-import { getAirdropAddressFromUUID } from "@/app/utils/airdrop";
 
 type ContractFormModalProps = {
   chainId: number;
