@@ -67,20 +67,17 @@ export default function useDeployAirdrop<T extends TemplateType>({
     },
   });
 
-  console.log(chainId, CONTRACT_ADDRESSES[chainId].FACTORY, uuid);
-
   const writeFn = useWriteContract();
   const { setWritePromise, waitResult } = useContext(TxToastsContext);
 
-  const write = async () => {
-    console.log("prepareFn: ", TemplateNames[type], uuid, getEncodedArgs(), isReady, prepareFn);
+  const write = (callbacks?: { onSuccess?: () => void }): void => {
     if (!prepareFn.data || !writeFn.writeContractAsync) return;
-    return setWritePromise(writeFn.writeContractAsync(prepareFn.data.request));
+    return setWritePromise(writeFn.writeContractAsync(prepareFn.data.request, callbacks));
   };
 
   return {
     prepareFn,
-    writeFn: { ...writeFn, writeContractAsync: write },
+    writeFn: { ...writeFn, write },
     getDecodedArgs,
     getTransactionRawData,
     waitResult,

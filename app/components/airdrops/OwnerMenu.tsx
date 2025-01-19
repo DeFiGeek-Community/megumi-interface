@@ -1,19 +1,34 @@
 "use client";
 import { useTranslation } from "react-i18next";
-import { Stack, HStack, Text, Button, VStack, Box, Divider, Icon } from "@chakra-ui/react";
+import {
+  Stack,
+  HStack,
+  Text,
+  Button,
+  VStack,
+  Box,
+  Divider,
+  Icon,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { WarningTwoIcon } from "@chakra-ui/icons";
 import ContractFormModal from "./ContractFormModal";
+import MerkletreeFormModal from "./merkleTree/MerkletreeFormModal";
 
 export default function OwnerMenu({
   chainId,
   airdropId,
   ownerAddress,
+  contractAddress,
 }: {
   chainId: number;
   airdropId: string;
   ownerAddress: `0x${string}`;
+  contractAddress: `0x${string}` | null;
 }) {
   const { t } = useTranslation();
+  const merkletreeModalDisclosure = useDisclosure();
+  const contractModalDisclosure = useDisclosure();
   return (
     <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4}>
       <VStack spacing={2} align="stretch">
@@ -37,9 +52,26 @@ export default function OwnerMenu({
               {t("airdrop.unregistered")}
             </Text>
           </Stack>
-          <Button size="sm" width="20" colorScheme="blue">
-            {t("airdrop.register")}
-          </Button>
+          <>
+            <Button
+              variant={"solid"}
+              colorScheme="blue"
+              size={"sm"}
+              onClick={merkletreeModalDisclosure.onOpen}
+            >
+              {t("airdrop.register")}
+            </Button>
+            {merkletreeModalDisclosure.isOpen && (
+              <MerkletreeFormModal
+                chainId={chainId}
+                airdropId={airdropId}
+                ownerAddress={ownerAddress}
+                isOpen={merkletreeModalDisclosure.isOpen}
+                onOpen={merkletreeModalDisclosure.onOpen}
+                onClose={merkletreeModalDisclosure.onClose}
+              />
+            )}
+          </>
         </HStack>
         <Divider />
         <HStack justify="space-between">
@@ -50,10 +82,31 @@ export default function OwnerMenu({
               {t("airdrop.unregistered")}
             </Text>
           </Stack>
-          <ContractFormModal chainId={chainId} airdropId={airdropId} ownerAddress={ownerAddress} />
-          <Button size="sm" width="20" colorScheme="blue">
-            {t("airdrop.register")}
-          </Button>
+
+          {contractAddress ? (
+            <>TODO</>
+          ) : (
+            <>
+              <Button
+                variant={"solid"}
+                colorScheme="blue"
+                size={"sm"}
+                onClick={contractModalDisclosure.onOpen}
+              >
+                {t("airdrop.register")}
+              </Button>
+              {contractModalDisclosure.isOpen && (
+                <ContractFormModal
+                  chainId={chainId}
+                  airdropId={airdropId}
+                  ownerAddress={ownerAddress}
+                  isOpen={contractModalDisclosure.isOpen}
+                  onOpen={contractModalDisclosure.onOpen}
+                  onClose={contractModalDisclosure.onClose}
+                />
+              )}
+            </>
+          )}
         </HStack>
       </VStack>
     </Box>

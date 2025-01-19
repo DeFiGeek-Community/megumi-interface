@@ -58,7 +58,7 @@ export default function useApprove({
 
   return {
     prepareFn,
-    writeFn: { ...writeFn, writeContractAsync: write },
+    writeFn: { ...writeFn, write },
     allowance,
     waitResult,
     refetchAllowance: refetch,

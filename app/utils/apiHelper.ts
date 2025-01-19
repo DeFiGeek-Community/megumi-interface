@@ -58,7 +58,7 @@ export const requireOwner = async (
   error?: InvalidOwnerError;
 }> => {
   const owner = uint8ObjectToHexString(airdrop.owner);
-  if (address !== owner) {
+  if (address.toLowerCase() !== owner.toLowerCase()) {
     return { error: new InvalidOwnerError() };
   }
 

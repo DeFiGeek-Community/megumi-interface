@@ -69,6 +69,8 @@ export async function POST(req: Request, { params }: { params: { chainId: string
   });
   try {
     const response = await s3Client.send(command);
+    // TODO
+    // Update merkletreeRegisteredAt
     return NextResponse.json({ result: "ok" });
   } catch (error: unknown) {
     return respondError(error);

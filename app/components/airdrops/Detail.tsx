@@ -203,7 +203,12 @@ export default function AirdropDetail({
 
           {/* Menu Section */}
           {isOwner && (
-            <OwnerMenu chainId={parseInt(chainId)} airdropId={airdrop.id} ownerAddress={address} />
+            <OwnerMenu
+              chainId={parseInt(chainId)}
+              airdropId={airdrop.id}
+              ownerAddress={address}
+              contractAddress={airdrop.contractAddress}
+            />
           )}
         </Box>
       </VStack>
