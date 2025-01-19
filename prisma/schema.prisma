@@ -23,6 +23,7 @@ model Airdrop {
   updatedAt      DateTime @updatedAt
   contractRegisteredAt  DateTime?
   merkleTreeRegisteredAt  DateTime?
+  lastSyncedAt  DateTime?
   vestingEndsAt  DateTime?
   totalAirdropAmount Bytes?
   AirdropClaimerMap AirdropClaimerMap[]
