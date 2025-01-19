@@ -25,6 +25,7 @@ interface ClaimProps {
   tokenDecimals: number;
   templateName: TemplateNamesType;
   vestingEndsAt: Date | null;
+  refetchAirdrop: () => Promise<void>;
 }
 
 export default function Claim({
@@ -38,6 +39,7 @@ export default function Claim({
   tokenDecimals,
   vestingEndsAt,
   templateName,
+  refetchAirdrop,
 }: ClaimProps): JSX.Element {
   const { t } = useTranslation();
   const {

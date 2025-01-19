@@ -1,4 +1,3 @@
-import { Skeleton } from "@chakra-ui/react";
 import * as AirdropUtils from "@/app/utils/airdrop";
 import AirdropDetail from "@/app/components/airdrops/Detail";
 import Render404 from "@/app/components/errors/404";
@@ -12,7 +11,7 @@ export default async function AirdropPage({ params }: { params: { chainId: strin
   // TODO Set up meta tags
 
   return airdrop ? (
-    <AirdropDetail chainId={params.chainId} airdrop={AirdropUtils.toHexString(airdrop)} />
+    <AirdropDetail chainId={params.chainId} initAirdrop={AirdropUtils.toHexString(airdrop)} />
   ) : (
     <Render404 />
   );

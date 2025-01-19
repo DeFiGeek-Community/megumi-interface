@@ -45,6 +45,7 @@ type ContractFormModalProps = {
   onOpen: () => void;
   onClose: () => void;
   checkContractDeployment: () => Promise<void>;
+  refetchAirdrop: () => Promise<void>;
 };
 
 type ContractFormValues = {
@@ -59,6 +60,7 @@ export default function ContractFormModal({
   onOpen,
   onClose,
   checkContractDeployment,
+  refetchAirdrop,
 }: ContractFormModalProps) {
   const {
     address,
@@ -74,6 +76,7 @@ export default function ContractFormModal({
     writeFn.write({
       onSuccess: () => {
         checkContractDeployment();
+        refetchAirdrop();
         onClose();
       },
     });

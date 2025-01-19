@@ -8,27 +8,26 @@ export const useFetchAirdrop = (chainId: string, id: string) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchAirdrop = async () => {
-      setLoading(true);
-      setError(null);
+  const fetchAirdrop = async () => {
+    setLoading(true);
+    setError(null);
 
-      try {
-        const response = await fetch(`${API_URL}/${chainId}/${id}`);
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to fetch airdrop claim");
-        }
-
-        const responseData: AirdropHex = await response.json();
-        setData(responseData);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+    try {
+      const response = await fetch(`${API_URL}/${chainId}/${id}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to fetch airdrop claim");
       }
-    };
 
+      const responseData: AirdropHex = await response.json();
+      setData(responseData);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchAirdrop();
   }, [chainId, id]);
 

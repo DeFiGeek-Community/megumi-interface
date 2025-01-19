@@ -27,6 +27,7 @@ export default function OwnerMenu({
   contractAddress,
   merkleTreeRegisteredAt,
   contractRegisteredAt,
+  refetchAirdrop,
 }: {
   chainId: number;
   airdropId: string;
@@ -34,6 +35,7 @@ export default function OwnerMenu({
   contractAddress: `0x${string}` | null;
   merkleTreeRegisteredAt: Date | null;
   contractRegisteredAt: Date | null;
+  refetchAirdrop: () => Promise<void>;
 }) {
   const { t } = useTranslation();
   const merkletreeModalDisclosure = useDisclosure();
@@ -101,6 +103,7 @@ export default function OwnerMenu({
                 isOpen={merkletreeModalDisclosure.isOpen}
                 onOpen={merkletreeModalDisclosure.onOpen}
                 onClose={merkletreeModalDisclosure.onClose}
+                refetchAirdrop={refetchAirdrop}
               />
             )}
           </>
@@ -148,6 +151,7 @@ export default function OwnerMenu({
                   onOpen={contractModalDisclosure.onOpen}
                   onClose={contractModalDisclosure.onClose}
                   checkContractDeployment={sync.checkContractDeploymentAndSync}
+                  refetchAirdrop={refetchAirdrop}
                 />
               )}
             </>

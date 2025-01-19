@@ -37,6 +37,7 @@ type MerkletreeFormModalProps = {
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
+  refetchAirdrop: () => Promise<void>;
 };
 
 type MerkletreeFileFormValues = {
@@ -49,6 +50,7 @@ export default function MerkletreeFormModal({
   isOpen,
   onOpen,
   onClose,
+  refetchAirdrop,
 }: MerkletreeFormModalProps) {
   const {
     address,
@@ -67,6 +69,7 @@ export default function MerkletreeFormModal({
     await upload(file, {
       onSuccess: () => {
         toast({ title: "Uplaod succeeded", status: "success" });
+        refetchAirdrop();
         onClose();
       },
       onError: (error) => {

@@ -4,7 +4,6 @@ import { useSession } from "next-auth/react";
 import {
   Center,
   Container,
-  Heading,
   Spinner,
   VStack,
   Box,
@@ -20,7 +19,6 @@ import { useIsMounted } from "@/app/hooks/common/useIsMounted";
 import { useTranslation } from "react-i18next";
 import { ExternalLinkIcon } from "@chakra-ui/icons";
 import {
-  formatTotalAirdropAmount,
   formatClaimedAccounts,
   formatTemplateType,
   getEllipsizedAddress,
@@ -29,15 +27,15 @@ import {
 } from "@/app/utils/clientHelper";
 import Claim from "@/app/components/airdrops/Claim";
 import OwnerMenu from "@/app/components/airdrops/OwnerMenu";
-import { useBalance } from "wagmi";
 import type { AirdropHex } from "@/app/types/airdrop";
+import { API_BASE_URL } from "@/app/lib/constants";
 
 export default function AirdropDetail({
   chainId,
-  airdrop,
+  initAirdrop,
 }: {
   chainId: string;
-  airdrop: AirdropHex;
+  initAirdrop: AirdropHex;
 }) {
   const {
     address,
@@ -49,8 +47,21 @@ export default function AirdropDetail({
   const isMounted = useIsMounted();
   const { t } = useTranslation();
 
+  const [airdrop, setAirdrop] = useState<AirdropHex>(initAirdrop);
   const [isConnected, setIsConnected] = useState<boolean>(false);
   useEffect(() => setIsConnected(isConnectedRaw), [isConnectedRaw]);
+
+  const API_URL = `${API_BASE_URL}/airdrops`;
+  const refetchAirdrop = async () => {
+    const response = await fetch(`${API_URL}/${chainId}/${airdrop.id}`);
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || "Failed to fetch airdrop claim");
+    }
+
+    const responseData: AirdropHex = await response.json();
+    setAirdrop(responseData);
+  };
 
   if (!isMounted || !address)
     return (
@@ -59,7 +70,7 @@ export default function AirdropDetail({
       </Center>
     );
   const isOwner =
-    session?.user?.address && session.user.address.toLowerCase() === airdrop?.owner?.toLowerCase();
+    session?.user?.address && session.user.address.toLowerCase() === airdrop.owner.toLowerCase();
   return (
     <Container maxW={"container.xl"} mb={4}>
       <VStack spacing="4">
@@ -193,6 +204,7 @@ export default function AirdropDetail({
               tokenDecimals={airdrop.tokenDecimals}
               vestingEndsAt={airdrop.vestingEndsAt}
               templateName={airdrop.templateName}
+              refetchAirdrop={refetchAirdrop}
             />
           )}
 
@@ -205,6 +217,7 @@ export default function AirdropDetail({
               contractAddress={airdrop.contractAddress}
               merkleTreeRegisteredAt={airdrop.merkleTreeRegisteredAt}
               contractRegisteredAt={airdrop.contractRegisteredAt}
+              refetchAirdrop={refetchAirdrop}
             />
           )}
         </Box>

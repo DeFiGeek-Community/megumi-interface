@@ -12,7 +12,6 @@ export const useSyncMerkletree = (
   const [error, setError] = useState<string | null>(null);
 
   const checkContractDeploymentAndSync = useCallback(async () => {
-    console.log("checkContractDeploymentAndSync", contractAddress);
     if (contractAddress) return;
     setLoading(true);
     setError(null);
@@ -37,7 +36,6 @@ export const useSyncMerkletree = (
   }, [chainId, id, contractAddress]);
 
   useEffect(() => {
-    console.log("checkContractDeploymentAndSync");
     checkContractDeploymentAndSync();
   }, [chainId, id, contractAddress]);
 
