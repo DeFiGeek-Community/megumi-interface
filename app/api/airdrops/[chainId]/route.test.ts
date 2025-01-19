@@ -40,7 +40,7 @@ describe("POST /api/airdrops Create a new airdrop", () => {
     chainId: 11155111,
     title: `YMWK Airdrop`,
     contractAddress: null,
-    templateName: TemplateNames.STANDARD,
+    templateName: TemplateNames.Standard,
     owner: "0xabcd" as `0x${string}`,
     tokenAddress: YMWK,
     tokenLogo: "https://example.com/logo.png",
@@ -260,7 +260,7 @@ describe("POST /api/airdrops Create a new airdrop", () => {
     test("should return the list of airdrops if page and limit are NOT specified", async () => {
       const expectedData = {
         contractAddress: null,
-        templateName: TemplateNames.STANDARD,
+        templateName: TemplateNames.Standard,
         owner: "0xabcd",
         tokenAddress: YMWK,
         tokenName: "Yamawake DAO Token20",
@@ -298,7 +298,7 @@ describe("POST /api/airdrops Create a new airdrop", () => {
         chainId: 11155111,
         title: `YMWK Airdrop 24`,
         contractAddress: null,
-        templateName: TemplateNames.STANDARD,
+        templateName: TemplateNames.Standard,
         owner: "0xabcd",
         tokenAddress: YMWK,
         tokenName: "Yamawake DAO Token24",

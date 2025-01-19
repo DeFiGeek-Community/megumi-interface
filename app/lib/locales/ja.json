@@ -48,6 +48,19 @@
     "tokenAddress": "トークン",
     "totalAmount": "合計",
     "unregistered": "未登録",
-    "yourAllocatedAmount": "あなたの割り当て額"
+    "yourAllocatedAmount": "あなたの割り当て額",
+    "contractForm": {
+      "registerContract": "コントラクト登録",
+      "newContract": "新規コントラクトのデプロイ",
+      "existingContract": "既存コントラクトを紐付け",
+      "tokenAddress": "エアドロップするトークンのアドレス",
+      "depositAmount": "デポジットするトークン額",
+      "type": "エアドロップの形式",
+      "vestingDeadline": "べスティング期間終了日時",
+      "merkleroot": "マークルルート",
+      "approve": "トークンを承認する",
+      "confirm": "入力内容の確認",
+      "deploy": "コントラクトをデプロイする"
+    }
   }
 }

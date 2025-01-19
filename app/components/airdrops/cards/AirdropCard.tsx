@@ -41,7 +41,7 @@ export default function AirdropCard({
   }
   isRegisteredAirdrop = !!airdrop.merkleTreeRegisteredAt;
   isRegisteredContract = !!airdrop.contractRegisteredAt;
-  isLinearVesting = airdrop.templateName === TemplateNames.LINEAR_VESTING;
+  isLinearVesting = airdrop.templateName === TemplateNames.LinearVesting;
 
   const CardWrapper = editable ? Box : Link;
 

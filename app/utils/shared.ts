@@ -15,3 +15,7 @@ export const objectToKeyValueString = (obj: { [key: string]: any }) => {
     .map(([key, value]) => `${key}: ${value}`)
     .join(", ");
 };
+
+export const uuidToHex = (uuid: string): `0x${string}` => {
+  return `0x${uuid.replace(/-/g, "").padEnd(64, "0")}`;
+};

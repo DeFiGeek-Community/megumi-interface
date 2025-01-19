@@ -210,6 +210,21 @@ export const getMerkleRootFromAirdropAddress = async (
   return merkleRoot;
 };
 
+export const getTemplateAddressFromAirdropAddress = async (
+  address: `0x${string}`,
+  provider: PublicClient,
+) => {
+  const proxyCode = await provider.getCode({
+    address,
+  });
+
+  // Check if this is a EIP-1167 contract
+  if (!proxyCode || !proxyCode.startsWith("0x363d3d373d3d3d363d73")) {
+    throw new Error("The given address is not an EIP-1167 Minimal Proxy.");
+  }
+  return `0x${proxyCode.slice(22, 62)}`.toLowerCase();
+};
+
 export const getTemplateNameFromAirdropAddress = async (
   address: `0x${string}`,
   provider: PublicClient,
@@ -259,7 +274,6 @@ export const getABIFromAirdropAddress = async (
 
 // <--
 
-// TODO Test
 export function getAirdropAddressFromUUID({
   templateAddress,
   uuid,

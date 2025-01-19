@@ -68,7 +68,7 @@ export default function Dashboard() {
                         params: {
                           chainId: parseInt(process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID!),
                           title: "test",
-                          templateName: TemplateNames.STANDARD,
+                          templateName: TemplateNames.Standard,
                           tokenAddress: "0x5055d837992bE5e1fE193F180B22B232099017d8",
                           tokenLogo: "https://example.com/logo.png",
                         },

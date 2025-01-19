@@ -2,8 +2,17 @@
 import { useTranslation } from "react-i18next";
 import { Stack, HStack, Text, Button, VStack, Box, Divider, Icon } from "@chakra-ui/react";
 import { WarningTwoIcon } from "@chakra-ui/icons";
+import ContractFormModal from "./ContractFormModal";
 
-export default function OwnerMenu() {
+export default function OwnerMenu({
+  chainId,
+  airdropId,
+  ownerAddress,
+}: {
+  chainId: number;
+  airdropId: string;
+  ownerAddress: `0x${string}`;
+}) {
   const { t } = useTranslation();
   return (
     <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4}>
@@ -41,6 +50,7 @@ export default function OwnerMenu() {
               {t("airdrop.unregistered")}
             </Text>
           </Stack>
+          <ContractFormModal chainId={chainId} airdropId={airdropId} ownerAddress={ownerAddress} />
           <Button size="sm" width="20" colorScheme="blue">
             {t("airdrop.register")}
           </Button>

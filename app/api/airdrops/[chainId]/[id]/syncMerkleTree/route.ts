@@ -10,6 +10,7 @@ import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
 import { AirdropNotFoundError } from "@/app/types/errors";
 import { MerkleTreeData } from "@/app/types/airdrop";
 import * as AirdropUtils from "@/app/utils/airdrop";
+import { uuidToHex } from "@/app/utils/shared";
 
 // TODO
 // 1. Check if contrcat is deployed
@@ -39,7 +40,7 @@ export async function POST(req: Request, { params }: { params: { chainId: string
     formattedAirdrop.contractAddress ||
     AirdropUtils.getAirdropAddressFromUUID({
       templateAddress: CONTRACT_ADDRESSES[parseInt(params.chainId)][formattedAirdrop.templateName],
-      uuid: `0x${airdrop.id.replaceAll("-", "")}`, // TODO Util
+      uuid: uuidToHex(airdrop.id),
       deployer: formattedAirdrop.owner,
       chainId: parseInt(params.chainId),
     });

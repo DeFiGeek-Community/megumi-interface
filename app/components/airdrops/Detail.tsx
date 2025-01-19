@@ -1,4 +1,5 @@
 "use client";
+import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import {
   Center,
@@ -22,25 +23,13 @@ import {
   formatTotalAirdropAmount,
   formatClaimedAccounts,
   formatTemplateType,
-  formatDate,
   getEllipsizedAddress,
   getEtherscanLink,
 } from "@/app/utils/clientHelper";
 import Claim from "@/app/components/airdrops/Claim";
 import OwnerMenu from "@/app/components/airdrops/OwnerMenu";
-import { AirdropNameABI, TemplateNames } from "@/app/lib/constants/templates";
-import { useFetchClaimParams } from "@/app/hooks/airdrops/useFetchClaimParams";
-import {
-  useBalance,
-  useReadContract,
-  useSimulateContract,
-  useWaitForTransactionReceipt,
-  useWriteContract,
-} from "wagmi";
-import { parseEther } from "viem";
+import { useBalance } from "wagmi";
 import type { AirdropHex } from "@/app/types/airdrop";
-import { useContext, useEffect, useState } from "react";
-import { TxToastsContext } from "@/app/providers/ToastProvider";
 
 export default function AirdropDetail({
   chainId,
@@ -213,7 +202,9 @@ export default function AirdropDetail({
           )}
 
           {/* Menu Section */}
-          {isOwner && <OwnerMenu />}
+          {isOwner && (
+            <OwnerMenu chainId={parseInt(chainId)} airdropId={airdrop.id} ownerAddress={address} />
+          )}
         </Box>
       </VStack>
     </Container>

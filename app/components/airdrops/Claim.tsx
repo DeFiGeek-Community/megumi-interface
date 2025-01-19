@@ -42,6 +42,7 @@ export default function Claim({
     error: claimError,
   } = useFetchClaimParams(chainId, airdropId, address);
   const { data, isError, isSuccess, failureReason } = useSimulateContract({
+    chainId: parseInt(chainId),
     address: contractAddress,
     abi: AirdropNameABI[templateName],
     functionName: "claim",
@@ -50,6 +51,9 @@ export default function Claim({
         ? [claimParams.index, address, claimParams.amount, claimParams.proofs]
         : [],
     value: parseEther("0.0002"), // Fixed fee
+    query: {
+      enabled: !!claimParams && !!address,
+    },
   });
   const { writeContractAsync, status } = useWriteContract();
   const { setWritePromise } = useContext(TxToastsContext);
@@ -91,7 +95,7 @@ export default function Claim({
             </Text>
           </HStack>
         </HStack>
-        {templateName === TemplateNames.LINEAR_VESTING && (
+        {templateName === TemplateNames.LinearVesting && (
           <>
             <HStack justify="space-between">
               <Text fontSize="sm">{t("airdrop.totalAmount")}</Text>

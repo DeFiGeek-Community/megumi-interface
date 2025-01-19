@@ -231,7 +231,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
             chainId: 11155111,
             title: `Sample airdrop`,
             contractAddress: null,
-            templateName: Uint8Array.from(Buffer.from(TemplateNames.STANDARD.slice(2), "hex")),
+            templateName: Uint8Array.from(Buffer.from(TemplateNames.Standard.slice(2), "hex")),
             owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
             tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
             tokenName: "18 Decimals Sample Token",
@@ -287,7 +287,7 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
             chainId: 11155111,
             title: `Sample airdrop`,
             contractAddress: Uint8Array.from(Buffer.from(sampleAirdropAddress.slice(2), "hex")),
-            templateName: Uint8Array.from(Buffer.from(TemplateNames.STANDARD.slice(2), "hex")),
+            templateName: Uint8Array.from(Buffer.from(TemplateNames.Standard.slice(2), "hex")),
             owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
             tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
             tokenName: "18 Decimals Sample Token",
@@ -371,7 +371,7 @@ describe("GET /api/airdrop/:id - Retrieve an airdrop detail", () => {
 
 describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
   const newData = {
-    templateName: TemplateNames.STANDARD, // Can be updated only before the contract address is registered
+    templateName: TemplateNames.Standard, // Can be updated only before the contract address is registered
     tokenLogo: "https://example.com/logo_updated.png",
   };
 
@@ -462,7 +462,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
             chainId: 11155111,
             title: `Sample airdrop`,
             contractAddress: null,
-            templateName: Uint8Array.from(Buffer.from(TemplateNames.STANDARD.slice(2), "hex")),
+            templateName: Uint8Array.from(Buffer.from(TemplateNames.Standard.slice(2), "hex")),
             owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
             tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
             tokenName: "18 Decimals Sample Token",
@@ -531,7 +531,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
             chainId: 11155111,
             title: `Sample airdrop`,
             contractAddress: null,
-            templateName: Uint8Array.from(Buffer.from(TemplateNames.STANDARD.slice(2), "hex")),
+            templateName: Uint8Array.from(Buffer.from(TemplateNames.Standard.slice(2), "hex")),
             owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
             tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
             tokenName: "18 Decimals Sample Token",
@@ -573,7 +573,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
             chainId: 11155111,
             title: `Sample airdrop`,
             contractAddress: Uint8Array.from(Buffer.from(sampleAirdropAddress.slice(2), "hex")),
-            templateName: Uint8Array.from(Buffer.from(TemplateNames.STANDARD.slice(2), "hex")),
+            templateName: Uint8Array.from(Buffer.from(TemplateNames.Standard.slice(2), "hex")),
             owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
             tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
             tokenName: "18 Decimals Sample Token",
@@ -632,7 +632,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
             chainId: 11155111,
             title: `Sample airdrop`,
             contractAddress: Uint8Array.from(Buffer.from(sampleAirdropAddress.slice(2), "hex")),
-            templateName: Uint8Array.from(Buffer.from(TemplateNames.STANDARD.slice(2), "hex")),
+            templateName: Uint8Array.from(Buffer.from(TemplateNames.Standard.slice(2), "hex")),
             owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
             tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
             tokenName: "18 Decimals Sample Token",
@@ -642,7 +642,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
           },
         });
 
-        expect(uint8ObjectToHexString(airdrop.templateName)).toEqual(TemplateNames.STANDARD);
+        expect(uint8ObjectToHexString(airdrop.templateName)).toEqual(TemplateNames.Standard);
 
         mockedSession = {
           expires: "expires",
@@ -652,7 +652,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
         };
 
         const newData = {
-          templateName: TemplateNames.LINEAR_VESTING,
+          templateName: TemplateNames.LinearVesting,
         };
         await testApiHandler({
           appHandler,
@@ -670,7 +670,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
             if (!airdropAfterRaw) throw new Error("Airdrop not found");
 
             expect(uint8ObjectToHexString(airdropAfterRaw.templateName)).toEqual(
-              TemplateNames.STANDARD,
+              TemplateNames.Standard,
             );
           },
         });
@@ -680,7 +680,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
         const airdrop = await jestPrisma.client.airdrop.findFirst();
         if (!airdrop) throw new Error("Airdrop not found");
 
-        expect(uint8ObjectToHexString(airdrop.templateName)).toEqual(TemplateNames.STANDARD);
+        expect(uint8ObjectToHexString(airdrop.templateName)).toEqual(TemplateNames.Standard);
 
         mockedSession = {
           expires: "expires",
@@ -690,7 +690,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
         };
 
         const newData = {
-          templateName: TemplateNames.LINEAR_VESTING,
+          templateName: TemplateNames.LinearVesting,
         };
         await testApiHandler({
           appHandler,
@@ -708,7 +708,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
             if (!airdropAfterRaw) throw new Error("Airdrop not found");
 
             expect(uint8ObjectToHexString(airdropAfterRaw.templateName)).toEqual(
-              TemplateNames.LINEAR_VESTING,
+              TemplateNames.LinearVesting,
             );
           },
         });
@@ -720,7 +720,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
             chainId: 11155111,
             title: `Sample airdrop`,
             contractAddress: null,
-            templateName: Uint8Array.from(Buffer.from(TemplateNames.STANDARD.slice(2), "hex")),
+            templateName: Uint8Array.from(Buffer.from(TemplateNames.Standard.slice(2), "hex")),
             owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
             tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
             tokenName: "18 Decimals Sample Token",
@@ -776,7 +776,7 @@ describe("PATCH /api/airdrop/:id - Update an airdrop", () => {
             chainId: 11155111,
             title: `Sample airdrop`,
             contractAddress: null,
-            templateName: Uint8Array.from(Buffer.from(TemplateNames.STANDARD.slice(2), "hex")),
+            templateName: Uint8Array.from(Buffer.from(TemplateNames.Standard.slice(2), "hex")),
             owner: Uint8Array.from(Buffer.from(sampleOwnerAddress.slice(2), "hex")),
             tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
             tokenName: "18 Decimals Sample Token",
