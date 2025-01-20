@@ -13,6 +13,7 @@ import {
 } from "wagmi";
 import { TxToastsContext } from "@/app/providers/ToastProvider";
 import { formatAmount, formatDate } from "@/app/utils/clientHelper";
+import { useUpdateClaimStatus } from "@/app/hooks/airdrops/useUpdateIsClaimed";
 
 interface ClaimProps {
   chainId: string;
@@ -73,24 +74,20 @@ export default function Claim({
   const { writeContractAsync, status } = useWriteContract();
   const { setWritePromise } = useContext(TxToastsContext);
   const {} = useWaitForTransactionReceipt();
+  const { updateClaimStatus } = useUpdateClaimStatus(
+    chainId,
+    airdropId,
+    address,
+    claimParams === null ? true : claimParams.isClaimed,
+    { onSuccess: refetchAirdrop },
+  );
 
-  const [isClaimed, setIsClaimed] = useState<boolean>(false);
-  useEffect(() => {
-    const claimed = !!failureReason && failureReason.message.includes("Error: AlreadyClaimed()");
-    setIsClaimed(claimed);
-    if (claimed) {
-      // TODO
-      // update isClaimed in AirdropClaimerMap on database.
-      // API: PATCH /AirdropClaimerMap/:airdropId/:address
-      // Also, watch the claim status on the contract and sync with the database as much as possible.
-    }
-  }, [failureReason, status]);
+  const isClaimed = !!claimParams?.isClaimed;
 
   const handleClaim = async () => {
     try {
       data && setWritePromise(writeContractAsync(data.request));
-      // TODO
-      // update claim status on the contract and sync with the database as much as possible.
+      updateClaimStatus();
     } catch (error) {
       console.error("Error:", error);
     }
