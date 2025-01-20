@@ -13,7 +13,6 @@ export const useSyncMerkletree = (
 
   const checkContractDeploymentAndSync = useCallback(
     async (callbacks?: { onSuccess?: () => void; onError?: () => void }) => {
-      if (contractAddress) return;
       setLoading(true);
       setError(null);
 
@@ -40,6 +39,8 @@ export const useSyncMerkletree = (
   );
 
   useEffect(() => {
+    // Not need to sync if contract address is already set
+    if (contractAddress) return;
     checkContractDeploymentAndSync();
   }, [chainId, id, contractAddress]);
 

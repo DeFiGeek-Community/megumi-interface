@@ -153,6 +153,11 @@ export default function OwnerMenu({
           </Stack>
           {contractAddress ? (
             <>
+              {/* <Button
+                onClick={() => sync.checkContractDeploymentAndSync({ onSuccess: refetchAirdrop })}
+              >
+                Manual sync
+              </Button> */}
               <VStack>
                 <chakra.p color={"gray.400"} fontSize={"sm"} textAlign={"right"}>
                   {t("airdrop.ownerMenu.tokenBalance")}:{" "}
@@ -190,11 +195,6 @@ export default function OwnerMenu({
             </>
           ) : (
             <>
-              {/* <Button
-                onClick={() => sync.checkContractDeploymentAndSync({ onSuccess: refetchAirdrop })}
-              >
-                sync
-              </Button> */}
               <Button
                 variant={"solid"}
                 colorScheme="blue"

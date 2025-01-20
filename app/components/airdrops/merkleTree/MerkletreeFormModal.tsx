@@ -106,18 +106,22 @@ export default function MerkletreeFormModal({
         closeOnOverlayClick={false}
         blockScrollOnMount={false}
         isCentered={true}
-        size={"lg"}
+        size={"2xl"}
       >
         <ModalOverlay />
         <ModalContent>
           <ModalHeader>{t("airdrop.merkletreeForm.register")}</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
-            <Tabs>
+            <Tabs isFitted>
               <TabList>
-                <Tab>{t("airdrop.merkletreeForm.uploadListFile")}</Tab>
-                <Tab isDisabled>{t("airdrop.merkletreeForm.manual")}</Tab>
-                <Tab isDisabled>{t("airdrop.merkletreeForm.snapshot")}</Tab>
+                <Tab fontSize={"xs"}>{t("airdrop.merkletreeForm.uploadListFile")}</Tab>
+                <Tab fontSize={"xs"} isDisabled>
+                  {t("airdrop.merkletreeForm.manual")}
+                </Tab>
+                <Tab fontSize={"xs"} isDisabled>
+                  {t("airdrop.merkletreeForm.snapshot")}
+                </Tab>
               </TabList>
               <TabPanels>
                 <TabPanel>

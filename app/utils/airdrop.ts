@@ -12,7 +12,13 @@ import {
 } from "@/app/types/airdrop";
 import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
 import { Factory, MerkleAirdropBase } from "@/app/lib/constants/abis";
-import { AirdropABI, TemplateNames, TemplateNamesType } from "@/app/lib/constants/templates";
+import {
+  AirdropABI,
+  AirdropNameABI,
+  TemplateNames,
+  TemplateNamesType,
+  TemplateType,
+} from "@/app/lib/constants/templates";
 import { GetObjectCommand, s3Client } from "@/app/lib/aws";
 import { isSupportedTemplate } from "@/app/utils/shared";
 import { isSupportedChain } from "@/app/utils/chain";
@@ -297,10 +303,11 @@ export const getABIFromAirdropAddress = async (
 
   const templateKey = Object.keys(CONTRACT_ADDRESSES[chainId]).find(
     (key) =>
-      Object.keys(TemplateNames).includes(key) &&
+      Object.keys(TemplateType).includes(key) &&
       CONTRACT_ADDRESSES[chainId][key].toLowerCase() === implementationAddress,
-  ) as keyof typeof TemplateNames | undefined;
-  return templateKey && AirdropABI[templateKey];
+  ) as keyof typeof TemplateType | undefined;
+
+  return templateKey && AirdropABI[TemplateType[templateKey]];
 };
 
 // <--

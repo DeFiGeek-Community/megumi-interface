@@ -5,6 +5,7 @@ import { prisma } from "@/prisma";
 import { authOptions } from "@/app/api/auth/authOptions";
 import { getErrorMessage, getTemplateKeyByHex, getTemplateTypeByHex } from "@/app/utils/shared";
 import {
+  getTokenInfo,
   getViemProvider,
   hexStringToUint8Array,
   requireOwner,
@@ -68,11 +69,31 @@ export async function POST(req: Request, { params }: { params: { chainId: string
         address: contractAddress,
       });
       if (bytecode) {
+        // Fetch token information from the contract address
+        let tokenAddress;
+        let tokenName;
+        let tokenSymbol;
+        let tokenDecimals;
+
+        try {
+          tokenAddress = await AirdropUtils.getTokenAddress(contractAddress, provider);
+          const token = await getTokenInfo(tokenAddress, provider);
+          tokenName = token.tokenName;
+          tokenSymbol = token.tokenSymbol;
+          tokenDecimals = token.tokenDecimals;
+        } catch (error: unknown) {
+          return respondError(error, 422);
+        }
+
         const updatedAirdrop = await prisma.airdrop.update({
           where: { id: params.id },
           data: {
             contractAddress: hexStringToUint8Array(contractAddress),
             contractRegisteredAt: new Date(),
+            tokenAddress: hexStringToUint8Array(tokenAddress),
+            tokenName,
+            tokenSymbol,
+            tokenDecimals,
           },
         });
         break;
