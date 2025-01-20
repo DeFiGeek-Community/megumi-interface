@@ -1,11 +1,14 @@
 import styles from "./page.module.css";
-import NextLink from "next/link";
-import { Container, Heading, HStack, Link } from "@/app/components/common/chakra-ui";
+import { Container, Heading } from "@/app/components/common/chakra-ui";
+import AllAirdrops from "@/app/components/airdrops/AllAirdrops";
 export default async function Home() {
   return (
     <Container maxW={"container.lg"} py={8}>
-      <Heading fontSize={{ base: "xl", md: "3xl" }}>エアドロップ一覧</Heading>
-      <HStack spacing={8} py={8} w={"full"} flexWrap={"wrap"}>
+      <Heading mb={4} fontSize={{ base: "xl", md: "3xl" }}>
+        エアドロップ一覧
+      </Heading>
+      <AllAirdrops chainId={parseInt(process.env.NEXT_PUBLIC_DEFAULT_CHAIN_ID!)} />
+      {/* <HStack spacing={8} py={8} w={"full"} flexWrap={"wrap"}>
         <Link
           as={NextLink}
           _hover={{ opacity: 0.75 }}
@@ -13,7 +16,7 @@ export default async function Home() {
         >
           ・TXJPホルダーPNDエアドロップ
         </Link>
-      </HStack>
+      </HStack> */}
     </Container>
   );
 }
