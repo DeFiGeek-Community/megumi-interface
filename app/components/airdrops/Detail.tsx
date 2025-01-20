@@ -13,11 +13,13 @@ import {
   Flex,
   Icon,
   Link,
+  Tag,
+  Tooltip,
 } from "@chakra-ui/react";
 import { useRequireAccount } from "@/app/hooks/common/useRequireAccount";
 import { useIsMounted } from "@/app/hooks/common/useIsMounted";
 import { useTranslation } from "react-i18next";
-import { ExternalLinkIcon } from "@chakra-ui/icons";
+import { ExternalLinkIcon, QuestionIcon } from "@chakra-ui/icons";
 import {
   formatClaimedAccounts,
   formatTemplateType,
@@ -95,32 +97,17 @@ export default function AirdropDetail({
                 airdropTitle={airdrop.title}
               />
               <Box>
-                <Box
-                  bg="gray.500"
-                  borderRadius="md"
-                  px={{ base: "1", sm: "3" }}
-                  py={{ base: "0.5", sm: "1" }}
-                  mt="1.5"
-                  display="inline-flex"
-                  alignItems="center"
-                >
-                  <Text fontSize={{ base: "sm", sm: "md" }} marginRight="1">
-                    {t(`dashboard.${formatTemplateType(airdrop.templateName)}`)}
-                  </Text>
-                  <Box
-                    bg="white"
-                    borderRadius="full"
-                    width={{ base: "4", sm: "5" }}
-                    height={{ base: "4", sm: "5" }}
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="center"
+                <Tag>
+                  {t(`dashboard.${formatTemplateType(airdrop.templateName)}`)}
+                  <Tooltip
+                    hasArrow
+                    label={t(
+                      `common.templateExplanation.${formatTemplateType(airdrop.templateName)}`,
+                    )}
                   >
-                    <Text fontSize="sm" fontWeight="bold" color="black">
-                      ?
-                    </Text>
-                  </Box>
-                </Box>
+                    <QuestionIcon ml={1} />
+                  </Tooltip>
+                </Tag>
                 <Text fontSize="3xl" fontWeight="bold">
                   {airdrop.title}
                 </Text>

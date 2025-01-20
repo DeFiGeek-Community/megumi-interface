@@ -10,7 +10,11 @@
     "manageAirdrop": "Manage Airdrop",
     "viewAllAirdrops": "View All Airdrops",
     "transactionSent": "Transaction sent!",
-    "transactionConfirmed": "Transaction confirmed!"
+    "transactionConfirmed": "Transaction confirmed!",
+    "templateExplanation": {
+      "LinearVesting": "請求可能額が時間経過と共に線形に増加し、べスティング終了日時に全額が請求できるようになります",
+      "Standard": "いつでも全額の請求が可能です"
+    }
   },
   "airdrops": {
     "title": "Airdrops"
