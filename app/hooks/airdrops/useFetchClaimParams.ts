@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { API_BASE_URL } from "@/app/lib/constants";
 import type { AirdropClaimerMapHex } from "@/app/types/airdrop";
+import { getErrorMessage } from "@/app/utils/shared";
 
 const API_URL = `${API_BASE_URL}/airdrops`;
 export const useFetchClaimParams = (chainId: string, id: string, address?: `0x${string}`) => {
@@ -22,8 +23,8 @@ export const useFetchClaimParams = (chainId: string, id: string, address?: `0x${
 
       const responseData: AirdropClaimerMapHex = await response.json();
       setData(responseData);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(getErrorMessage(error));
     } finally {
       setLoading(false);
     }

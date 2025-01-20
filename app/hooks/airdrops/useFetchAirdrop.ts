@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { API_BASE_URL } from "@/app/lib/constants";
 import { AirdropHex } from "@/app/types/airdrop";
+import { getErrorMessage } from "@/app/utils/shared";
 
 const API_URL = `${API_BASE_URL}/airdrops`;
 export const useFetchAirdrop = (chainId: string, id: string) => {
@@ -8,7 +9,7 @@ export const useFetchAirdrop = (chainId: string, id: string) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchAirdrop = async () => {
+  const fetchAirdrop = useCallback(async () => {
     setLoading(true);
     setError(null);
 
@@ -21,12 +22,13 @@ export const useFetchAirdrop = (chainId: string, id: string) => {
 
       const responseData: AirdropHex = await response.json();
       setData(responseData);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
-  };
+  }, [chainId, id]);
+
   useEffect(() => {
     fetchAirdrop();
   }, [chainId, id]);

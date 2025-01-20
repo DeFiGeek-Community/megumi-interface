@@ -1,5 +1,5 @@
 import { TxToastsContext } from "@/app/providers/ToastProvider";
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import { useSimulateContract, useWriteContract } from "wagmi";
 
 export default function useWithdrawClaimFee({
@@ -35,10 +35,13 @@ export default function useWithdrawClaimFee({
   const writeFn = useWriteContract();
   const { setWritePromise, waitResult } = useContext(TxToastsContext);
 
-  const write = (callbacks?: { onSuccess?: () => void }): void => {
-    if (!prepareFn.data || !writeFn.writeContractAsync) return;
-    return setWritePromise(writeFn.writeContractAsync(prepareFn.data.request, callbacks));
-  };
+  const write = useCallback(
+    (callbacks?: { onSuccess?: () => void }): void => {
+      if (!prepareFn.data || !writeFn.writeContractAsync) return;
+      return setWritePromise(writeFn.writeContractAsync(prepareFn.data.request, callbacks));
+    },
+    [prepareFn.data, writeFn.writeContractAsync],
+  );
 
   return {
     prepareFn,

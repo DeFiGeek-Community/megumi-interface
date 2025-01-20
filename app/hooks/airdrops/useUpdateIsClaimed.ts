@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { API_BASE_URL } from "@/app/lib/constants";
 import type { AirdropClaimerMapHex } from "@/app/types/airdrop";
+import { getErrorMessage } from "@/app/utils/shared";
 
 const API_URL = `${API_BASE_URL}/airdrops`;
 export const useUpdateClaimStatus = (
@@ -29,9 +30,10 @@ export const useUpdateClaimStatus = (
       const responseData: AirdropClaimerMapHex = await response.json();
       setData(responseData);
       onSuccess?.();
-    } catch (err: any) {
-      setError(err.message);
-      onError?.(err.message);
+    } catch (err: unknown) {
+      const message = getErrorMessage(error);
+      setError(message);
+      onError?.(message);
     } finally {
       setLoading(false);
     }

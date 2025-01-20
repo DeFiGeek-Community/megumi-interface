@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { API_BASE_URL } from "@/app/lib/constants";
 import { getErrorMessage } from "@/app/utils/shared";
 
@@ -13,28 +13,35 @@ export const useFetchMerkleRoot = (chainId: number, airdropId: string) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchMerklrRoot = async (callbacks?: Callbacks) => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${API_URL}/${chainId}/${airdropId}/merkletree`);
+  const fetchMerklrRoot = useCallback(
+    async (callbacks?: Callbacks) => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${API_URL}/${chainId}/${airdropId}/merkletree`);
 
-      const data = await res.json();
+        const data = await res.json();
 
-      if (data.error) {
-        setError(data.error);
-        callbacks?.onError?.(data.error);
-      } else {
-        callbacks?.onSuccess?.();
+        if (data.error) {
+          setError(data.error);
+          callbacks?.onError?.(data.error);
+        } else {
+          callbacks?.onSuccess?.();
+        }
+        setMerkleRoot(data.merkleRoot);
+        setLoading(false);
+      } catch (error: unknown) {
+        const message = getErrorMessage(error);
+        setLoading(false);
+        setError(message);
+        callbacks?.onError?.(message);
       }
-      setMerkleRoot(data.merkleRoot);
-      setLoading(false);
-    } catch (error: unknown) {
-      setLoading(false);
-      callbacks?.onError?.(getErrorMessage(error));
-    }
-  };
+    },
+    [chainId, airdropId],
+  );
+
   useEffect(() => {
     fetchMerklrRoot();
   }, []);
+
   return { fetchMerklrRoot, merkleRoot, loading, error };
 };

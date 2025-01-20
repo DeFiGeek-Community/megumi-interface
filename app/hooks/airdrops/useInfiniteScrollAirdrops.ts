@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { API_BASE_URL } from "@/app/lib/constants";
 import { AirdropHex } from "@/app/types/airdrop";
+import { getErrorMessage } from "@/app/utils/shared";
 
 type FetchAirdropsResponse = {
   airdrops: AirdropHex[];
@@ -75,23 +76,23 @@ export const useInfiniteScrollAirdrops = ({
       setTotalPages(responseData.totalPages);
       setTotalCount(responseData.totalCount);
       setHasMore(responseData.page < responseData.totalPages);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(getErrorMessage(err));
     } finally {
       setLoading(false);
     }
   }, [chainId, page, limit, loading, hasMore]);
 
-  const fetchNextPage = () => {
+  const fetchNextPage = useCallback(() => {
     if (hasMore) setPage((prevPage) => prevPage + 1);
-  };
+  }, [hasMore]);
 
-  const unshiftAirdrop = (airdrop: AirdropHex) => {
+  const unshiftAirdrop = useCallback((airdrop: AirdropHex) => {
     setData((prevData) => {
       const _prevData = prevData || [];
       return [airdrop, ..._prevData];
     });
-  };
+  }, []);
 
   useEffect(() => {
     fetchAirdrops();

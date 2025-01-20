@@ -1,6 +1,6 @@
 import { TemplateArgs, TemplateNames, TemplateType } from "@/app/lib/constants/templates";
 import { TxToastsContext } from "@/app/providers/ToastProvider";
-import { useContext } from "react";
+import { useCallback, useContext, useMemo } from "react";
 import {
   decodeAbiParameters,
   encodeAbiParameters,
@@ -30,29 +30,34 @@ export default function useDeployAirdrop<T extends TemplateType>({
 }) {
   const isReady: boolean = !!chainId && enabled;
 
-  const getEncodedArgs = (): Hex => {
+  // TODO move to utils -->
+  const getEncodedArgs = useCallback((): Hex => {
     try {
       return encodeAbiParameters(parseAbiParameters(TemplateArgs[type]), args);
     } catch (e) {
       return "0x";
     }
-  };
+  }, [args, type]);
 
-  const getDecodedArgs = () => {
+  const getDecodedArgs = useCallback(() => {
     try {
       return decodeAbiParameters(parseAbiParameters(TemplateArgs[type]), getEncodedArgs());
     } catch (e) {
       return [];
     }
-  };
+  }, [getEncodedArgs, type]);
 
-  const getTransactionRawData = (templateName: string, args: string) => {
-    return encodeFunctionData({
-      abi: Factory,
-      functionName: "deployMerkleAirdrop",
-      args: [templateName, uuid, args],
-    });
-  };
+  const getTransactionRawData = useCallback(
+    (templateName: string, args: string) => {
+      return encodeFunctionData({
+        abi: Factory,
+        functionName: "deployMerkleAirdrop",
+        args: [templateName, uuid, args],
+      });
+    },
+    [uuid],
+  );
+  // <--
 
   const prepareFn = useSimulateContract({
     chainId,
@@ -70,10 +75,13 @@ export default function useDeployAirdrop<T extends TemplateType>({
   const writeFn = useWriteContract();
   const { setWritePromise, waitResult } = useContext(TxToastsContext);
 
-  const write = (callbacks?: { onSuccess?: () => void }): void => {
-    if (!prepareFn.data || !writeFn.writeContractAsync) return;
-    return setWritePromise(writeFn.writeContractAsync(prepareFn.data.request, callbacks));
-  };
+  const write = useCallback(
+    (callbacks?: { onSuccess?: () => void }): void => {
+      if (!prepareFn.data || !writeFn.writeContractAsync) return;
+      return setWritePromise(writeFn.writeContractAsync(prepareFn.data.request, callbacks));
+    },
+    [prepareFn.data, writeFn.writeContractAsync],
+  );
 
   return {
     prepareFn,

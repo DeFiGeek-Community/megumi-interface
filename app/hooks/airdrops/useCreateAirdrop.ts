@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { API_BASE_URL } from "@/app/lib/constants";
 import { AirdropHex } from "@/app/types/airdrop";
+import { getErrorMessage } from "@/app/utils/shared";
 
 interface AirdropParams {
   chainId: number;
@@ -17,46 +18,46 @@ export const useCreateAirdrop = () => {
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<AirdropHex | null>(null);
 
-  const updateOrCreateAirdrop = async ({
-    params,
-    onSuccess,
-    onError,
-  }: {
-    params: AirdropParams;
-    onSuccess?: (data: AirdropHex) => void;
-    onError?: (error: unknown) => void;
-  }) => {
-    const apiMethod = params.airdropId ? "PATCH" : "POST";
-    const apiEndpoint = params.airdropId
-      ? `${API_URL}/${params.chainId}/${params.airdropId}`
-      : `${API_URL}/${params.chainId}`;
-    setLoading(true);
-    setError(null);
+  const updateOrCreateAirdrop = useCallback(
+    async ({
+      params,
+      onSuccess,
+      onError,
+    }: {
+      params: AirdropParams;
+      onSuccess?: (data: AirdropHex) => void;
+      onError?: (error: unknown) => void;
+    }) => {
+      const apiMethod = params.airdropId ? "PATCH" : "POST";
+      const apiEndpoint = params.airdropId
+        ? `${API_URL}/${params.chainId}/${params.airdropId}`
+        : `${API_URL}/${params.chainId}`;
+      setLoading(true);
+      setError(null);
 
-    try {
-      const response = await fetch(apiEndpoint, {
-        method: apiMethod,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(params),
-      });
+      try {
+        const response = await fetch(apiEndpoint, {
+          method: apiMethod,
+          body: JSON.stringify(params),
+        });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to create airdrop");
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to create airdrop");
+        }
+
+        const responseData: AirdropHex = await response.json();
+        setData(responseData);
+        onSuccess?.(responseData);
+      } catch (err: unknown) {
+        setError(getErrorMessage(err));
+        onError?.(err);
+      } finally {
+        setLoading(false);
       }
-
-      const responseData: AirdropHex = await response.json();
-      setData(responseData);
-      onSuccess?.(responseData);
-    } catch (err: any) {
-      setError(err.message);
-      onError?.(err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    [],
+  );
 
   return { updateOrCreateAirdrop, data, loading, error };
 };
