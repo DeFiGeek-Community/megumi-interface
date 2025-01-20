@@ -136,11 +136,12 @@ export default function OwnerMenu({
               variant={"solid"}
               colorScheme="blue"
               size={"sm"}
+              disabled={!!contractRegisteredAt}
               onClick={merkletreeModalDisclosure.onOpen}
             >
               {t("airdrop.register")}
             </Button>
-            {merkletreeModalDisclosure.isOpen && (
+            {!contractRegisteredAt && merkletreeModalDisclosure.isOpen && (
               <MerkletreeFormModal
                 chainId={chainId}
                 airdropId={airdropId}

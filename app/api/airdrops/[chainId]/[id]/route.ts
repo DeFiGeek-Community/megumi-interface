@@ -1,11 +1,12 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import type { PublicClient } from "viem";
 import { prisma } from "@/prisma";
 import { authOptions } from "@/app/api/auth/authOptions";
-import { s3Client, GetObjectCommand, NoSuchKey, PutObjectCommand } from "@/app/lib/aws";
+import { s3Client, PutObjectCommand } from "@/app/lib/aws";
 import {
   AirdropNotFoundError,
+  ContractAlreadyRegisteredError,
   InvalidMerkletreeError,
   UnauthorizedError,
 } from "@/app/types/errors";
@@ -51,14 +52,16 @@ export async function POST(req: Request, { params }: { params: { chainId: string
 
   // Check if contract is already registered
   if (airdrop.contractAddress) {
-    const provider = getViemProvider(parseInt(params.chainId)) as PublicClient;
-    const merkleRoot = await AirdropUtils.getMerkleRootFromAirdropAddress(
-      uint8ArrayToHexString(airdrop.contractAddress),
-      provider,
-    );
-    if (json.merkleRoot !== merkleRoot) {
-      return respondError(new InvalidMerkletreeError("Merkle root does not match"));
-    }
+    // Return error if contract is already registered
+    return respondError(new ContractAlreadyRegisteredError());
+    // const provider = getViemProvider(parseInt(params.chainId)) as PublicClient;
+    // const merkleRoot = await AirdropUtils.getMerkleRootFromAirdropAddress(
+    //   uint8ArrayToHexString(airdrop.contractAddress),
+    //   provider,
+    // );
+    // if (json.merkleRoot !== merkleRoot) {
+    //   return respondError(new InvalidMerkletreeError("Merkle root does not match"));
+    // }
   }
 
   const itemKey = `${params.chainId}/${params.id}-merkletree.json`;

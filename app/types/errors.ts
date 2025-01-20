@@ -28,6 +28,12 @@ export class InvalidMerkletreeError extends NetworkAccessError {
   }
 }
 
+export class ContractAlreadyRegisteredError extends NetworkAccessError {
+  constructor(e: string | unknown = "Contract already registered") {
+    super(422, e);
+  }
+}
+
 export class UnauthorizedError extends NetworkAccessError {
   constructor(e: string | unknown = "Unauthorized") {
     super(401, e);
