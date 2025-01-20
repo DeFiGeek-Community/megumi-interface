@@ -1,5 +1,5 @@
 import type { GetContractReturnType, PublicClient } from "viem";
-import { TemplateNames, TemplateNamesType } from "@/app/lib/constants/templates";
+import { TemplateNamesType } from "@/app/lib/constants/templates";
 import { MerkleAirdropBase, Standard, LinearVesting } from "@/app/lib/constants/abis";
 import { Airdrop as AirdropM, AirdropClaimerMap } from "@/prisma";
 
@@ -25,31 +25,6 @@ export type AirdropValidationType = {
   tokenAddress?: string;
   tokenLogo?: string;
 };
-
-// export type TemplateType = (typeof TemplateNames)[keyof typeof TemplateNames];
-
-// Mock type ---->
-// export type Airdrop = Standard | LinearVesting;
-
-// export type Standard = {
-//   id: string;
-//   title: string;
-//   templateName: TemplateType;
-//   owner: string;
-//   tokenAddress: string;
-//   createdAt: number;
-//   merkleTreeUploadedAt: number | undefined;
-//   contractAddress: string | undefined;
-//   totalAirdropAmount: bigint | undefined;
-//   eligibleUsersNum: number | undefined;
-//   claimedUsersNum: number | undefined;
-//   contractDeployedAt: number | undefined;
-// };
-
-// export type LinearVesting = Standard & {
-//   vestingEndsAt: number;
-// };
-// <---- Mock type
 
 // Airdrop Creation
 export type AirdropCreationData = Omit<AirdropM, "id" | "createdAt" | "updatedAt"> & {
@@ -77,7 +52,7 @@ export type AirdropHex = Omit<
   contractAddress: `0x${string}` | null;
   templateName: TemplateNamesType;
   owner: `0x${string}`;
-  tokenAddress: `0x${string}`;
+  tokenAddress: `0x${string}` | null;
   totalAirdropAmount: string | null;
 } & AirdropAggregationData & { AirdropClaimerMap?: AirdropClaimerMapHex[] };
 export type AirdropWithClaimMap = AirdropM &
