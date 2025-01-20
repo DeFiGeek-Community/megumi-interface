@@ -25,6 +25,14 @@ interface ClaimProps {
   tokenDecimals: number;
   templateName: TemplateNamesType;
   vestingEndsAt: Date | null;
+  balanceOnContract:
+    | {
+        decimals: number;
+        formatted: string;
+        symbol: string;
+        value: bigint;
+      }
+    | undefined;
   refetchAirdrop: () => Promise<void>;
 }
 
@@ -39,6 +47,7 @@ export default function Claim({
   tokenDecimals,
   vestingEndsAt,
   templateName,
+  balanceOnContract,
   refetchAirdrop,
 }: ClaimProps): JSX.Element {
   const { t } = useTranslation();
@@ -76,12 +85,6 @@ export default function Claim({
       // Also, watch the claim status on the contract and sync with the database as much as possible.
     }
   }, [failureReason, status]);
-
-  // Get token balance on airdrop contract
-  const { data: balanceOnContract } = useBalance({
-    address: contractAddress || "0x",
-    token: tokenAddress || "0x",
-  });
 
   const handleClaim = async () => {
     try {

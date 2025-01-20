@@ -17,8 +17,11 @@ import {
 import { CheckCircleIcon, DownloadIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import ContractFormModal from "./ContractFormModal";
 import MerkletreeFormModal from "./merkleTree/MerkletreeFormModal";
-import { formatDate } from "@/app/utils/clientHelper";
+import { formatAmount, formatDate } from "@/app/utils/clientHelper";
 import { useSyncMerkletree } from "@/app/hooks/airdrops/useSyncMerkletree";
+import useWithdrawToken from "@/app/hooks/airdrops/useWithdrawToken";
+import useWithdrawClaimFee from "@/app/hooks/airdrops/useWithdrawClaimFee";
+import { useBalance } from "wagmi";
 
 export default function OwnerMenu({
   chainId,
@@ -27,6 +30,7 @@ export default function OwnerMenu({
   contractAddress,
   merkleTreeRegisteredAt,
   contractRegisteredAt,
+  balanceOnContract,
   refetchAirdrop,
 }: {
   chainId: number;
@@ -35,18 +39,32 @@ export default function OwnerMenu({
   contractAddress: `0x${string}` | null;
   merkleTreeRegisteredAt: Date | null;
   contractRegisteredAt: Date | null;
+  balanceOnContract:
+    | {
+        decimals: number;
+        formatted: string;
+        symbol: string;
+        value: bigint;
+      }
+    | undefined;
   refetchAirdrop: () => Promise<void>;
 }) {
   const { t } = useTranslation();
   const merkletreeModalDisclosure = useDisclosure();
   const contractModalDisclosure = useDisclosure();
   const sync = useSyncMerkletree(chainId, airdropId, contractAddress);
+  const withdrawToken = useWithdrawToken({ chainId, contractAddress });
+  const withdrawClaimFee = useWithdrawClaimFee({ chainId, contractAddress });
+  const feeBalance = useBalance({
+    chainId,
+    address: contractAddress ? contractAddress : undefined,
+  });
   return (
     <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4}>
       <VStack spacing={2} align="stretch">
         <HStack justify="space-between">
           <Text fontSize="md" fontWeight="900">
-            {t("airdrop.ownerMenu")}
+            {t("airdrop.ownerMenu.title")}
           </Text>
         </HStack>
         <HStack justify="space-between">
@@ -60,13 +78,10 @@ export default function OwnerMenu({
           <Stack>
             <Text fontWeight="medium">{t("airdrop.airdropList")}</Text>
             {merkleTreeRegisteredAt ? (
-              <>
+              <VStack alignItems={"baseline"}>
                 <Text fontWeight="medium" textAlign="left">
                   <Icon as={CheckCircleIcon} mr={1} mb={1} color="green.500" />
                   {t("airdrop.registered")}
-                  <chakra.span fontSize={"xs"} ml={2}>
-                    ({formatDate(merkleTreeRegisteredAt)})
-                  </chakra.span>
                   <Tooltip label={t("airdrop.download")}>
                     <Link
                       href={`/api/airdrops/${chainId}/${airdropId}/merkletree`}
@@ -78,7 +93,10 @@ export default function OwnerMenu({
                     </Link>
                   </Tooltip>
                 </Text>
-              </>
+                <chakra.span fontSize={"xs"} ml={2} color={"gray.400"}>
+                  {formatDate(merkleTreeRegisteredAt)}
+                </chakra.span>
+              </VStack>
             ) : (
               <Text fontWeight="medium" textAlign="left">
                 <Icon as={WarningTwoIcon} mr={1} mb={1} color="yellow.500" />
@@ -114,13 +132,15 @@ export default function OwnerMenu({
             <Text fontWeight="medium">{t("airdrop.contract")}</Text>
             {contractRegisteredAt ? (
               <>
-                <Text fontWeight="medium" textAlign="left">
-                  <Icon as={CheckCircleIcon} mr={1} mb={1} color="green.500" />
-                  {t("airdrop.registered")}
-                  <chakra.span fontSize={"xs"} ml={2}>
-                    ({formatDate(contractRegisteredAt)})
+                <VStack alignItems={"baseline"}>
+                  <Text fontWeight="medium" textAlign="left">
+                    <Icon as={CheckCircleIcon} mr={1} mb={1} color="green.500" />
+                    {t("airdrop.registered")}
+                  </Text>
+                  <chakra.span fontSize={"xs"} ml={2} color={"gray.400"}>
+                    {formatDate(contractRegisteredAt)}
                   </chakra.span>
-                </Text>
+                </VStack>
               </>
             ) : (
               <Text fontWeight="medium" textAlign="left">
@@ -130,7 +150,43 @@ export default function OwnerMenu({
             )}
           </Stack>
           {contractAddress ? (
-            <></>
+            <>
+              <VStack>
+                <chakra.p color={"gray.400"} fontSize={"sm"} textAlign={"right"}>
+                  {t("airdrop.ownerMenu.tokenBalance")}:{" "}
+                  {balanceOnContract
+                    ? `${formatAmount(balanceOnContract.value, balanceOnContract.decimals)} ${balanceOnContract.symbol}`
+                    : "-"}
+                </chakra.p>
+                <Button
+                  variant={"solid"}
+                  colorScheme="blue"
+                  size={"sm"}
+                  isLoading={withdrawToken.waitResult?.isLoading}
+                  disabled={withdrawToken.prepareFn.isPending || !balanceOnContract?.value}
+                  onClick={() => withdrawToken.writeFn.write()}
+                >
+                  {t("airdrop.ownerMenu.withdraw")}
+                </Button>
+              </VStack>
+              <VStack>
+                <chakra.p color={"gray.400"} fontSize={"sm"} textAlign={"right"}>
+                  {t("airdrop.ownerMenu.ethBalance")}:{" "}
+                  {feeBalance.data?.value ? `${formatAmount(feeBalance.data.value)} ETH` : "-"}
+                </chakra.p>
+                <Button
+                  variant={"solid"}
+                  colorScheme="blue"
+                  size={"sm"}
+                  isLoading={withdrawClaimFee.waitResult?.isLoading}
+                  disabled={withdrawClaimFee.prepareFn.isPending || !feeBalance.data?.value}
+                  onClick={() => withdrawClaimFee.writeFn.write()}
+                >
+                  {t("airdrop.ownerMenu.withdraw")}
+                </Button>
+              </VStack>
+              {console.log(withdrawToken, withdrawClaimFee)}
+            </>
           ) : (
             <>
               <Button onClick={sync.checkContractDeploymentAndSync}>sync</Button>

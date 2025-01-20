@@ -26,7 +26,6 @@ export const useSyncMerkletree = (
       }
 
       const responseData = await response.json();
-      console.log(responseData);
       // setStatus(responseData);
     } catch (err: any) {
       setError(err.message);

@@ -29,6 +29,7 @@ import Claim from "@/app/components/airdrops/Claim";
 import OwnerMenu from "@/app/components/airdrops/OwnerMenu";
 import type { AirdropHex } from "@/app/types/airdrop";
 import { API_BASE_URL } from "@/app/lib/constants";
+import { useBalance } from "wagmi";
 
 export default function AirdropDetail({
   chainId,
@@ -62,6 +63,12 @@ export default function AirdropDetail({
     const responseData: AirdropHex = await response.json();
     setAirdrop(responseData);
   };
+
+  // Get token balance on airdrop contract
+  const { data: balanceOnContract } = useBalance({
+    address: airdrop.contractAddress || "0x",
+    token: airdrop.tokenAddress || "0x",
+  });
 
   if (!isMounted || !address)
     return (
@@ -204,6 +211,7 @@ export default function AirdropDetail({
               tokenDecimals={airdrop.tokenDecimals}
               vestingEndsAt={airdrop.vestingEndsAt}
               templateName={airdrop.templateName}
+              balanceOnContract={balanceOnContract}
               refetchAirdrop={refetchAirdrop}
             />
           )}
@@ -217,6 +225,7 @@ export default function AirdropDetail({
               contractAddress={airdrop.contractAddress}
               merkleTreeRegisteredAt={airdrop.merkleTreeRegisteredAt}
               contractRegisteredAt={airdrop.contractRegisteredAt}
+              balanceOnContract={balanceOnContract}
               refetchAirdrop={refetchAirdrop}
             />
           )}
