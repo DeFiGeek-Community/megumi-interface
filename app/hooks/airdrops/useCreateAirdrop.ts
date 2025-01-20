@@ -2,8 +2,9 @@ import { useState } from "react";
 import { API_BASE_URL } from "@/app/lib/constants";
 import { AirdropHex } from "@/app/types/airdrop";
 
-interface CreateAirdropParams {
+interface AirdropParams {
   chainId: number;
+  airdropId?: string;
   title: string;
   owner: `0x${string}`;
   templateName: string;
@@ -16,21 +17,25 @@ export const useCreateAirdrop = () => {
   const [error, setError] = useState<string | null>(null);
   const [data, setData] = useState<AirdropHex | null>(null);
 
-  const createAirdrop = async ({
+  const updateOrCreateAirdrop = async ({
     params,
     onSuccess,
     onError,
   }: {
-    params: CreateAirdropParams;
+    params: AirdropParams;
     onSuccess?: (data: AirdropHex) => void;
     onError?: (error: unknown) => void;
   }) => {
+    const apiMethod = params.airdropId ? "PATCH" : "POST";
+    const apiEndpoint = params.airdropId
+      ? `${API_URL}/${params.chainId}/${params.airdropId}`
+      : `${API_URL}/${params.chainId}`;
     setLoading(true);
     setError(null);
 
     try {
-      const response = await fetch(`${API_URL}/${params.chainId}`, {
-        method: "POST",
+      const response = await fetch(apiEndpoint, {
+        method: apiMethod,
         headers: {
           "Content-Type": "application/json",
         },
@@ -53,5 +58,5 @@ export const useCreateAirdrop = () => {
     }
   };
 
-  return { createAirdrop, data, loading, error };
+  return { updateOrCreateAirdrop, data, loading, error };
 };

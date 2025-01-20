@@ -22,6 +22,8 @@ import { useSyncMerkletree } from "@/app/hooks/airdrops/useSyncMerkletree";
 import useWithdrawToken from "@/app/hooks/airdrops/useWithdrawToken";
 import useWithdrawClaimFee from "@/app/hooks/airdrops/useWithdrawClaimFee";
 import { useBalance } from "wagmi";
+import AirdropFormModal from "./AirdropFormModal";
+import { TemplateNamesType } from "@/app/lib/constants/templates";
 
 export default function OwnerMenu({
   chainId,
@@ -32,6 +34,9 @@ export default function OwnerMenu({
   merkleTreeRegisteredAt,
   contractRegisteredAt,
   balanceOnContract,
+  title,
+  templateName,
+  tokenLogo,
   refetchAirdrop,
 }: {
   chainId: number;
@@ -49,9 +54,13 @@ export default function OwnerMenu({
         value: bigint;
       }
     | undefined;
+  title: string;
+  templateName: TemplateNamesType;
+  tokenLogo: string | null;
   refetchAirdrop: () => Promise<void>;
 }) {
   const { t } = useTranslation();
+  const airdropModalDisclosure = useDisclosure();
   const merkletreeModalDisclosure = useDisclosure();
   const contractModalDisclosure = useDisclosure();
   const sync = useSyncMerkletree(chainId, airdropId, contractAddress);
@@ -71,9 +80,25 @@ export default function OwnerMenu({
         </HStack>
         <HStack justify="space-between">
           <Text fontWeight="medium">{t("airdrop.basicInformation")}</Text>
-          <Button size="sm" width="20" colorScheme="blue">
+          <Button size="sm" width="20" colorScheme="blue" onClick={airdropModalDisclosure.onOpen}>
             {t("airdrop.edit")}
           </Button>
+          {airdropModalDisclosure.isOpen && (
+            <AirdropFormModal
+              chainId={chainId}
+              airdropId={airdropId}
+              ownerAddress={ownerAddress}
+              isOpen={airdropModalDisclosure.isOpen}
+              onOpen={airdropModalDisclosure.onOpen}
+              onClose={airdropModalDisclosure.onClose}
+              callback={refetchAirdrop}
+              initialData={{
+                title,
+                templateName,
+                tokenLogo,
+              }}
+            />
+          )}
         </HStack>
         <Divider />
         <HStack justify="space-between">

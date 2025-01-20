@@ -42,6 +42,7 @@ type AirdropFormModalProps = {
   onOpen: () => void;
   onClose: () => void;
   callback?: (airdrop: AirdropHex) => void;
+  initialData?: Omit<AirdropFormValues, "tokenLogo"> & { tokenLogo: string | null };
 };
 
 type AirdropFormValues = {
@@ -57,6 +58,7 @@ export default function AirdropFormModal({
   onOpen,
   onClose,
   callback,
+  initialData,
 }: AirdropFormModalProps) {
   const {
     address,
@@ -67,12 +69,14 @@ export default function AirdropFormModal({
   const { data: session } = useSession();
   const { t } = useTranslation();
   const toast = useToast({ position: "top-right", isClosable: true });
-  const { createAirdrop, loading } = useCreateAirdrop();
+  const { updateOrCreateAirdrop, loading } = useCreateAirdrop();
 
   const handleSubmit = async (data: AirdropFormValues) => {
-    createAirdrop({
+    const successMessage = airdropId ? "Airdrop updated" : "Airdrop created";
+    updateOrCreateAirdrop({
       params: {
         chainId,
+        airdropId,
         owner: ownerAddress,
         title: data.title,
         templateName: data.templateName,
@@ -80,7 +84,7 @@ export default function AirdropFormModal({
       },
       onSuccess: (airdrop: AirdropHex) => {
         toast({
-          title: "Airdrop created",
+          title: successMessage,
           status: "success",
         });
         onClose();
@@ -112,11 +116,14 @@ export default function AirdropFormModal({
     }
     return errors;
   };
-  const initialValues: AirdropFormValues = {
-    title: "",
-    templateName: TemplateNames.Standard,
-    tokenLogo: "",
-  };
+  const initialValues: AirdropFormValues =
+    airdropId && initialData
+      ? { ...initialData, tokenLogo: initialData.tokenLogo || "" }
+      : {
+          title: "",
+          templateName: TemplateNames.Standard,
+          tokenLogo: "",
+        };
   const formikProps = useFormik<AirdropFormValues>({
     enableReinitialize: true,
     validateOnChange: true,
@@ -137,7 +144,11 @@ export default function AirdropFormModal({
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{t("airdrop.merkletreeForm.register")}</ModalHeader>
+          <ModalHeader>
+            {airdropId
+              ? t("airdrop.airdropForm.headerUpdate")
+              : t("airdrop.airdropForm.headerCreation")}
+          </ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <form onSubmit={formikProps.handleSubmit}>
@@ -208,7 +219,7 @@ export default function AirdropFormModal({
                   isLoading={loading}
                   disabled={!formikProps.isValid}
                 >
-                  {t("airdrop.airdropForm.register")}
+                  {airdropId ? t("airdrop.airdropForm.update") : t("airdrop.airdropForm.register")}
                 </Button>
               </>
             </form>

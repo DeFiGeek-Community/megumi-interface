@@ -53,11 +53,13 @@
     "yourAllocatedAmount": "あなたの割り当て額",
     "contractBalance": "コントラクト残高",
     "airdropForm": {
+      "headerCreation": "エアドロップの作成",
+      "headerUpdate": "エアドロップの更新",
       "title": "エアドロップタイトル",
       "templateName": "エアドロップの形式",
       "tokenLogo": "トークンのロゴURL",
       "register" :"作成する",
-      "edit" :"編集する"
+      "update" :"更新する"
     },
     "contractForm": {
       "registerContract": "コントラクト登録",

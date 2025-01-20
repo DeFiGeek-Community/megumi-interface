@@ -30,6 +30,7 @@ import OwnerMenu from "@/app/components/airdrops/OwnerMenu";
 import type { AirdropHex } from "@/app/types/airdrop";
 import { API_BASE_URL } from "@/app/lib/constants";
 import { useBalance } from "wagmi";
+import { TokenLogo } from "../common/TokenLogo";
 
 export default function AirdropDetail({
   chainId,
@@ -85,7 +86,14 @@ export default function AirdropDetail({
           {/* Header Section */}
           <Box borderRadius="md" boxShadow="md" p={{ base: "0", lg: "4" }} mb={4}>
             <HStack spacing={3} mb={4}>
-              <Avatar size="xl" name="YMT" bg="gray.500" />
+              <TokenLogo
+                width={"96px"}
+                height={"96px"}
+                borderRadius={"full"}
+                tokenName={airdrop.tokenName}
+                tokenLogo={airdrop.tokenLogo}
+                airdropTitle={airdrop.title}
+              />
               <Box>
                 <Box
                   bg="gray.500"
@@ -227,6 +235,9 @@ export default function AirdropDetail({
               merkleTreeRegisteredAt={airdrop.merkleTreeRegisteredAt}
               contractRegisteredAt={airdrop.contractRegisteredAt}
               balanceOnContract={balanceOnContract}
+              title={airdrop.title}
+              templateName={airdrop.templateName}
+              tokenLogo={airdrop.tokenLogo}
               refetchAirdrop={refetchAirdrop}
             />
           )}

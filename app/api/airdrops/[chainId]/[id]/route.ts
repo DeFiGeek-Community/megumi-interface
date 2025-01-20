@@ -130,7 +130,7 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
 
     if (
       templateName &&
-      templateName !== uint8ArrayToHexString(airdrop.templateName) &&
+      templateName.toLowerCase() !== uint8ArrayToHexString(airdrop.templateName).toLowerCase() &&
       airdrop.contractAddress
     ) {
       // template can be changed only before the contract address is registered
@@ -141,7 +141,7 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
       );
     }
 
-    let resAirdrop;
+    let updateParams;
     if (contractAddress) {
       // 1. Check if contract is already registered
       if (airdrop.contractAddress) {
@@ -208,16 +208,15 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
       tokenSymbol = token.tokenSymbol;
       tokenDecimals = token.tokenDecimals;
 
-      resAirdrop = {
-        ...airdrop,
+      // When contract is given, update params related to the contract
+      updateParams = {
         contractAddress: hexStringToUint8Array(contractAddress),
         tokenName,
         tokenSymbol,
         tokenDecimals,
       };
     } else {
-      resAirdrop = {
-        ...airdrop,
+      updateParams = {
         title,
         tokenLogo,
         templateName: hexStringToUint8Array(templateName),
@@ -226,7 +225,7 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
 
     const updatedAirdrop = await prisma.airdrop.update({
       where: { id: params.id },
-      data: resAirdrop,
+      data: updateParams,
     });
 
     return NextResponse.json(updatedAirdrop);
