@@ -26,7 +26,7 @@ import {
   NumberDecrementStepper,
   useToast,
   Input,
-  useDisclosure,
+  Spinner,
 } from "@chakra-ui/react";
 import { useRequireAccount } from "@/app/hooks/common/useRequireAccount";
 import useApprove from "@/app/hooks/common/useApprove";
@@ -36,25 +36,33 @@ import { formatAmount } from "@/app/utils/clientHelper";
 import { uuidToHex } from "@/app/utils/shared";
 import { TemplateType } from "@/app/lib/constants/templates";
 import useDeployAirdrop from "@/app/hooks/airdrops/useDeployAirdrop";
+import { useFetchMerkleRoot } from "@/app/hooks/airdrops/useFetchMerkleRoot";
+import { on } from "events";
 
 type ContractFormModalProps = {
   chainId: number;
   airdropId: string;
+  totalAirdropAmount: bigint | null;
   ownerAddress: `0x${string}`;
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
-  checkContractDeployment: () => Promise<void>;
+  checkContractDeployment: (callbacks?: {
+    onSuccess?: () => void;
+    onError?: () => void;
+  }) => Promise<void>;
   refetchAirdrop: () => Promise<void>;
 };
 
 type ContractFormValues = {
   tokenAddress: string;
   amount: string;
+  merkleRoot: `0x${string}` | null;
 };
 export default function ContractFormModal({
   chainId,
   airdropId,
+  totalAirdropAmount,
   ownerAddress,
   isOpen,
   onOpen,
@@ -71,11 +79,11 @@ export default function ContractFormModal({
   const { data: session } = useSession();
   const { t } = useTranslation();
   const toast = useToast({ position: "top-right", isClosable: true });
-  // const { isOpen, onOpen, onClose } = useDisclosure();
+  const { merkleRoot, fetchMerklrRoot, loading, error } = useFetchMerkleRoot(chainId, airdropId);
   const handleSubmit = () => {
     writeFn.write({
       onSuccess: () => {
-        checkContractDeployment();
+        checkContractDeployment({ onSuccess: () => refetchAirdrop() });
         refetchAirdrop();
         onClose();
       },
@@ -84,12 +92,21 @@ export default function ContractFormModal({
 
   const validate = (value: ContractFormValues) => {
     const errors: any = {};
-    // TODO
+    if (!isAddress(value.tokenAddress)) {
+      errors.tokenAddress = "Token address is required";
+    }
+    if (!value.amount) {
+      errors.amount = "Amount is required";
+    }
+    if (merkleRoot === null) {
+      errors.merkleRoot = "MerkleRoot is required";
+    }
     return errors;
   };
   const initialValues: ContractFormValues = {
     tokenAddress: "",
     amount: "0",
+    merkleRoot: null,
   };
   const formikProps = useFormik<ContractFormValues>({
     enableReinitialize: true,
@@ -106,8 +123,9 @@ export default function ContractFormModal({
     targetAddress: formikProps.values.tokenAddress as `0x${string}`,
     owner: session?.user.address,
     spender: CONTRACT_ADDRESSES[chainId].FACTORY,
-    amount:
-      BigInt(formikProps.values.amount) * BigInt(10 ** (token?.decimals ? token?.decimals : 18)),
+    amount: BigInt(
+      parseInt(formikProps.values.amount) * 10 ** (token?.decimals ? token?.decimals : 18),
+    ),
     enabled: isAddress(formikProps.values.tokenAddress),
   });
 
@@ -123,20 +141,18 @@ export default function ContractFormModal({
 
   const { prepareFn, writeFn, waitResult } = useDeployAirdrop({
     chainId,
-    // TODO
-    type: TemplateType.STANDARD,
+    type: TemplateType.STANDARD, // TODO
     args: [
       ownerAddress,
-      // TODO get this from merkle tree file
-      "0xfeea224f956367a8d8b915442393a5fc7973baa54029e852fb6b7df516f6dd70",
+      merkleRoot || "0x",
       formikProps.values.tokenAddress,
-      token ? BigInt(formikProps.values.amount) * BigInt(10 ** token.decimals) : 0n,
+      token ? BigInt(parseInt(formikProps.values.amount) * 10 ** token.decimals) : 0n,
     ],
     uuid: uuidToHex(airdropId),
     enabled:
       isAddress(ownerAddress) &&
       token &&
-      approvals.allowance >= BigInt(formikProps.values.amount) * BigInt(10 ** token.decimals),
+      approvals.allowance >= BigInt(parseInt(formikProps.values.amount) * 10 ** token.decimals),
   });
 
   useEffect(() => {
@@ -145,20 +161,13 @@ export default function ContractFormModal({
 
   return (
     <>
-      {/* {getAirdropAddressFromUUID({
-        templateAddress: CONTRACT_ADDRESSES[chainId].STANDARD,
-        uuid: uuidToHex(airdropId),
-        deployer: ownerAddress,
-        chainId,
-      })} */}
-
       <Modal
         isOpen={isOpen}
         onClose={onClose}
         closeOnOverlayClick={false}
         blockScrollOnMount={false}
         isCentered={true}
-        size={"md"}
+        size={"xl"}
       >
         <ModalOverlay />
         <ModalContent>
@@ -236,8 +245,56 @@ export default function ContractFormModal({
                     <chakra.p color={"gray.400"} fontSize={"sm"}>
                       {t("airdrop.contractForm.balance")}:{" "}
                       {balance ? formatAmount(balance, token?.decimals, 4) : "0"} {token?.symbol}
+                      <chakra.span
+                        color={"gray.400"}
+                        ml={4}
+                        cursor={"pointer"}
+                        onClick={() => {
+                          if (!totalAirdropAmount || !token) return;
+                          formikProps.setFieldValue(
+                            "amount",
+                            formatAmount(totalAirdropAmount, token.decimals),
+                          );
+                        }}
+                      >
+                        (エアドロップ総額:
+                        {totalAirdropAmount && token
+                          ? formatAmount(totalAirdropAmount, token?.decimals)
+                          : "0"}{" "}
+                        {token?.symbol})
+                      </chakra.span>
                     </chakra.p>
                     <FormErrorMessage fontSize={"xs"}>{formikProps.errors.amount}</FormErrorMessage>
+                  </FormControl>
+
+                  <FormControl
+                    mt={4}
+                    isInvalid={
+                      !!formikProps.errors.tokenAddress && !!formikProps.touched.tokenAddress
+                    }
+                  >
+                    <FormLabel htmlFor="merkleroot" alignItems={"baseline"}>
+                      {t("airdrop.contractForm.merkleroot")}
+                      {/* <Tooltip
+                        hasArrow
+                        label={""}
+                      >
+                        <QuestionIcon mb={1} ml={1} />
+                      </Tooltip> */}
+                    </FormLabel>
+                    <HStack>
+                      <Input
+                        id="merkleRoot"
+                        name="merkleRoot"
+                        value={merkleRoot || ""}
+                        isReadOnly={true}
+                        isDisabled={true}
+                        fontSize={"sm"}
+                        placeholder="e.g. 0x0123456789012345678901234567890123456789"
+                      />
+                      {loading && <Spinner />}
+                    </HStack>
+                    <FormErrorMessage>{formikProps.errors.merkleRoot}</FormErrorMessage>
                   </FormControl>
                 </chakra.div>
               </HStack>
@@ -245,7 +302,7 @@ export default function ContractFormModal({
               <>
                 {token &&
                 approvals.allowance >=
-                  BigInt(formikProps.values.amount) * BigInt(10 ** token.decimals) ? (
+                  BigInt(parseInt(formikProps.values.amount) * 10 ** token.decimals) ? (
                   <Button
                     mt={4}
                     w={"full"}

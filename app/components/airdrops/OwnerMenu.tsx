@@ -28,6 +28,7 @@ export default function OwnerMenu({
   airdropId,
   ownerAddress,
   contractAddress,
+  totalAirdropAmount,
   merkleTreeRegisteredAt,
   contractRegisteredAt,
   balanceOnContract,
@@ -37,6 +38,7 @@ export default function OwnerMenu({
   airdropId: string;
   ownerAddress: `0x${string}`;
   contractAddress: `0x${string}` | null;
+  totalAirdropAmount: bigint | null;
   merkleTreeRegisteredAt: Date | null;
   contractRegisteredAt: Date | null;
   balanceOnContract:
@@ -185,24 +187,29 @@ export default function OwnerMenu({
                   {t("airdrop.ownerMenu.withdraw")}
                 </Button>
               </VStack>
-              {console.log(withdrawToken, withdrawClaimFee)}
             </>
           ) : (
             <>
-              <Button onClick={sync.checkContractDeploymentAndSync}>sync</Button>
+              {/* <Button
+                onClick={() => sync.checkContractDeploymentAndSync({ onSuccess: refetchAirdrop })}
+              >
+                sync
+              </Button> */}
               <Button
                 variant={"solid"}
                 colorScheme="blue"
                 size={"sm"}
+                disabled={!merkleTreeRegisteredAt}
                 onClick={contractModalDisclosure.onOpen}
               >
                 {t("airdrop.register")}
               </Button>
-              {contractModalDisclosure.isOpen && (
+              {contractModalDisclosure.isOpen && merkleTreeRegisteredAt && (
                 <ContractFormModal
                   chainId={chainId}
                   airdropId={airdropId}
                   ownerAddress={ownerAddress}
+                  totalAirdropAmount={totalAirdropAmount}
                   isOpen={contractModalDisclosure.isOpen}
                   onOpen={contractModalDisclosure.onOpen}
                   onClose={contractModalDisclosure.onClose}

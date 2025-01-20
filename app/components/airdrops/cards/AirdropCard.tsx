@@ -1,5 +1,5 @@
 "use client";
-import { Card, CardBody, Link } from "@chakra-ui/react";
+import { Card, CardBody } from "@chakra-ui/react";
 import React from "react";
 import { Box, Flex } from "@chakra-ui/react";
 import { Row } from "@/app/lib/chakra/chakraUtils";
@@ -7,59 +7,25 @@ import Status from "@/app/components/airdrops/cards/Status";
 import DateContent from "@/app/components/airdrops/cards/DateContent";
 import DetailedInfo from "@/app/components/airdrops/cards/DetailedInfo";
 import AirdropInfo from "@/app/components/airdrops/cards/AirdropInfo";
-
-import {
-  formatDate,
-  formatTotalAirdropAmount,
-  formatClaimedAccounts,
-} from "@/app/utils/clientHelper";
-import { TemplateNames } from "@/app/lib/constants/templates";
+import { formatDate } from "@/app/utils/clientHelper";
 import type { AirdropHex } from "@/app/types/airdrop";
 import { TokenLogo } from "@/app/components/common/TokenLogo";
+import { Link } from "@/app/components/common/Link";
 
-export default function AirdropCard({
-  airdrop,
-  editable = false,
-}: {
-  airdrop: AirdropHex;
-  editable?: boolean;
-}) {
+export default function AirdropCard({ airdrop }: { airdrop: AirdropHex }) {
   let airdropContractDeployedAt = "-",
-    airdropCreatedAt = "-",
-    currentTotalAirdropAmount = "0",
-    currentClaimedAccounts = "0 / 0",
-    currentVestingEndsAt = "-",
-    isRegisteredAirdrop = false,
-    isRegisteredContract = false,
-    isLinearVesting = false;
-
-  airdropContractDeployedAt = formatDate(airdrop.contractRegisteredAt);
-  airdropCreatedAt = formatDate(airdrop.createdAt);
-  currentTotalAirdropAmount = formatTotalAirdropAmount(airdrop.totalAirdropAmount);
-  currentClaimedAccounts = formatClaimedAccounts(airdrop.eligibleUsersNum, airdrop.claimedUsersNum);
-  if ("vestingEndsAt" in airdrop) {
-    currentVestingEndsAt = formatDate(airdrop.vestingEndsAt);
-  }
-  isRegisteredAirdrop = !!airdrop.merkleTreeRegisteredAt;
-  isRegisteredContract = !!airdrop.contractRegisteredAt;
-  isLinearVesting = airdrop.templateName === TemplateNames.LinearVesting;
-
-  const CardWrapper = editable ? Box : Link;
+    airdropCreatedAt = formatDate(airdrop.createdAt);
 
   return (
-    <CardWrapper
-      href={editable ? undefined : `/airdrops/${airdrop.chainId}/${airdrop.id}`}
+    <Link
+      href={`/airdrops/${airdrop.chainId}/${airdrop.id}`}
       transition={"filter"}
       transitionDuration={"0.3s"}
       w={{ base: "100%" }}
-      _hover={
-        editable
-          ? undefined
-          : {
-              textDecoration: "none",
-              filter: "brightness(115%)",
-            }
-      }
+      _hover={{
+        textDecoration: "none",
+        filter: "brightness(115%)",
+      }}
     >
       <Card width="100%">
         <CardBody paddingX={{ base: "1", sm: "5" }}>
@@ -144,6 +110,6 @@ export default function AirdropCard({
           </Box>
         </CardBody>
       </Card>
-    </CardWrapper>
+    </Link>
   );
 }

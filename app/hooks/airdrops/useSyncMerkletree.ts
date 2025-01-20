@@ -11,28 +11,33 @@ export const useSyncMerkletree = (
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const checkContractDeploymentAndSync = useCallback(async () => {
-    if (contractAddress) return;
-    setLoading(true);
-    setError(null);
+  const checkContractDeploymentAndSync = useCallback(
+    async (callbacks?: { onSuccess?: () => void; onError?: () => void }) => {
+      if (contractAddress) return;
+      setLoading(true);
+      setError(null);
 
-    try {
-      const response = await fetch(`${API_URL}/${chainId}/${id}/syncMerkletree`, {
-        method: "POST",
-      });
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to fetch airdrop claim");
+      try {
+        const response = await fetch(`${API_URL}/${chainId}/${id}/syncMerkletree`, {
+          method: "POST",
+        });
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || "Failed to fetch airdrop claim");
+        }
+
+        const responseData = await response.json();
+        callbacks?.onSuccess?.();
+        // setStatus(responseData);
+      } catch (err: any) {
+        setError(err.message);
+        callbacks?.onError?.();
+      } finally {
+        setLoading(false);
       }
-
-      const responseData = await response.json();
-      // setStatus(responseData);
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }, [chainId, id, contractAddress]);
+    },
+    [chainId, id, contractAddress],
+  );
 
   useEffect(() => {
     checkContractDeploymentAndSync();
