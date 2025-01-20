@@ -170,7 +170,7 @@ export default function MerkletreeFormModal({
                         isLoading={loading}
                         disabled={!formikProps.isValid}
                       >
-                        {t("airdrop.contractForm.deploy")}
+                        {t("airdrop.merkletreeForm.register")}
                       </Button>
                     </>
                   </form>

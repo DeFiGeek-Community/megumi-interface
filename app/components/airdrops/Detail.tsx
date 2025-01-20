@@ -9,7 +9,6 @@ import {
   Box,
   HStack,
   Text,
-  Avatar,
   Flex,
   Icon,
   Link,
@@ -153,11 +152,23 @@ export default function AirdropDetail({
                 py={{ base: "0.5", sm: "1" }}
                 mt="1.5"
                 mr={{ base: "0", lg: "4" }}
-                href={getEtherscanLink(chainId, airdrop.tokenAddress, "address")}
+                href={
+                  airdrop.tokenAddress
+                    ? getEtherscanLink(chainId, airdrop.tokenAddress, "address")
+                    : undefined
+                }
+                _hover={!airdrop.tokenAddress ? { textDecoration: "none" } : undefined}
+                cursor={!airdrop.tokenAddress ? "default" : "pointer"}
                 target="_blank"
               >
-                {getEllipsizedAddress({ address: airdrop.tokenAddress })}
-                <Icon as={ExternalLinkIcon} ml={1} mb={1} />
+                {airdrop.tokenAddress ? (
+                  <>
+                    {getEllipsizedAddress({ address: airdrop.tokenAddress })}
+                    <Icon as={ExternalLinkIcon} ml={1} mb={1} />
+                  </>
+                ) : (
+                  "Not registered"
+                )}
               </Link>
               <Box
                 bg="gray.500"
