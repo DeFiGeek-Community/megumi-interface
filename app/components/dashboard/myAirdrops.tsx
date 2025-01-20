@@ -56,7 +56,9 @@ export default function MyAirdrops({
             No airdrops
           </Box>
         ) : (
-          myAirdrops.data.map((airdrop) => <AirdropCard key={airdrop.id} airdrop={airdrop} />)
+          myAirdrops.data.map((airdrop) => (
+            <AirdropCard key={airdrop.id} airdrop={airdrop} isOwner={true} />
+          ))
         )}
 
         {myAirdrops.hasMore && (

@@ -5,7 +5,6 @@ import { Prisma, prisma, type Airdrop } from "@/prisma";
 import { getViemProvider, respondError } from "@/app/utils/apiHelper";
 import { isSupportedChain } from "@/app/utils/chain";
 import { authOptions } from "@/app/api/auth/authOptions";
-import { getTokenInfo } from "@/app/utils/apiHelper";
 import { hexStringToUint8Array } from "@/app/utils/apiHelper";
 import { InvalidParameterError } from "@/app/types/errors";
 import * as AirdropUtils from "@/app/utils/airdrop";
@@ -117,15 +116,14 @@ export async function GET(req: NextRequest, { params }: { params: { chainId: str
       LEFT JOIN "AirdropClaimerMap" ON "Airdrop"."id" = "AirdropClaimerMap"."airdropId"
       LEFT JOIN "Claimer" ON "AirdropClaimerMap"."claimerId" = "Claimer"."id"
       ${
+        // Owner can see all airdrops, others can see only registered airdrops
         session && mine && !eligible
           ? Prisma.sql`WHERE "Airdrop"."owner" = ${hexStringToUint8Array(session.user.address)}`
-          : Prisma.empty
+          : Prisma.sql`WHERE "Airdrop"."contractRegisteredAt" IS NOT NULL`
       }
       ${
         eligible && isAddress(eligible)
-          ? session && mine && !eligible
-            ? Prisma.sql`AND "Claimer"."address" = ${hexStringToUint8Array(eligible)}`
-            : Prisma.sql`WHERE "Claimer"."address" = ${hexStringToUint8Array(eligible)}`
+          ? Prisma.sql`AND "Claimer"."address" = ${hexStringToUint8Array(eligible)}`
           : Prisma.empty
       }
     `;
@@ -160,8 +158,17 @@ export async function GET(req: NextRequest, { params }: { params: { chainId: str
             "Airdrop"
         LEFT JOIN "AirdropClaimerMap" ON "Airdrop"."id" = "AirdropClaimerMap"."airdropId"
         LEFT JOIN "Claimer" ON "AirdropClaimerMap"."claimerId" = "Claimer"."id"
-        ${session && mine && !eligible ? Prisma.sql`WHERE "Airdrop"."owner" = ${hexStringToUint8Array(session.user.address)}` : Prisma.empty}
-        ${eligible && isAddress(eligible) ? Prisma.sql`WHERE "Claimer"."address" = ${hexStringToUint8Array(eligible)}` : Prisma.empty}
+        ${
+          // Owner can see all airdrops, others can see only registered airdrops
+          session && mine && !eligible
+            ? Prisma.sql`WHERE "Airdrop"."owner" = ${hexStringToUint8Array(session.user.address)}`
+            : Prisma.sql`WHERE "Airdrop"."contractRegisteredAt" IS NOT NULL`
+        }
+        ${
+          eligible && isAddress(eligible)
+            ? Prisma.sql`AND "Claimer"."address" = ${hexStringToUint8Array(eligible)}`
+            : Prisma.empty
+        }
         ORDER BY "Airdrop"."createdAt" DESC
         LIMIT ${limit}
         OFFSET ${skip}

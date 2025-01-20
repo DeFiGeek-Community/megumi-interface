@@ -16,6 +16,10 @@ export const getEtherscanLink = (
   return `${chain.blockExplorers.default.url}/${type}/${hash}`;
 };
 
+export const ellipsisText = (text: string, maxLength: number = 20, ellipsis = "..."): string => {
+  return text.length >= maxLength ? text.slice(0, maxLength - ellipsis.length) + ellipsis : text;
+};
+
 export const getEllipsizedAddress = ({
   address,
   ensName,

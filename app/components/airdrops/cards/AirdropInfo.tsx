@@ -1,6 +1,6 @@
 import { Box, Tag, Text, Tooltip } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
-import { formatTemplateType } from "@/app/utils/clientHelper";
+import { ellipsisText, formatTemplateType } from "@/app/utils/clientHelper";
 import { TemplateNamesType } from "@/app/lib/constants/templates";
 import { QuestionIcon } from "@chakra-ui/icons";
 
@@ -14,7 +14,7 @@ export default function AirdropInfo({ airdropTitle, templateNamesType }: Airdrop
   return (
     <>
       <Text fontSize={{ base: "25px", sm: "30px" }} fontWeight={{ base: "600", sm: "400" }}>
-        {airdropTitle}
+        {ellipsisText(airdropTitle)}
       </Text>
       <Tag>
         {t(`dashboard.${formatTemplateType(templateNamesType)}`)}

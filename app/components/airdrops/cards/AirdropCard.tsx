@@ -7,15 +7,17 @@ import Status from "@/app/components/airdrops/cards/Status";
 import DateContent from "@/app/components/airdrops/cards/DateContent";
 import DetailedInfo from "@/app/components/airdrops/cards/DetailedInfo";
 import AirdropInfo from "@/app/components/airdrops/cards/AirdropInfo";
-import { formatDate } from "@/app/utils/clientHelper";
 import type { AirdropHex } from "@/app/types/airdrop";
 import { TokenLogo } from "@/app/components/common/TokenLogo";
 import { Link } from "@/app/components/common/Link";
 
-export default function AirdropCard({ airdrop }: { airdrop: AirdropHex }) {
-  let airdropContractDeployedAt = "-",
-    airdropCreatedAt = formatDate(airdrop.createdAt);
-
+export default function AirdropCard({
+  airdrop,
+  isOwner = false,
+}: {
+  airdrop: AirdropHex;
+  isOwner?: boolean;
+}) {
   return (
     <Link
       href={`/airdrops/${airdrop.chainId}/${airdrop.id}`}
@@ -31,8 +33,8 @@ export default function AirdropCard({ airdrop }: { airdrop: AirdropHex }) {
         <CardBody paddingX={{ base: "1", sm: "5" }}>
           <Box>
             <DateContent
-              creationDate={airdropCreatedAt}
-              publicationDate={airdropContractDeployedAt}
+              createdAt={airdrop.createdAt}
+              contractRegisteredAt={airdrop.contractRegisteredAt}
             />
             <Flex
               flexDirection={{ base: "column", md: "row" }}
@@ -41,27 +43,29 @@ export default function AirdropCard({ airdrop }: { airdrop: AirdropHex }) {
               gap="4"
             >
               <Box width={{ base: "full", md: "60%" }}>
-                <Row
-                  mainAxisAlignment="center"
-                  crossAxisAlignment="center"
-                  gap="4"
-                  marginTop="3"
-                  display={{ base: "block", md: "none" }}
-                >
-                  <Box flex="1">
-                    <Row
-                      mainAxisAlignment="flex-start"
-                      crossAxisAlignment="center"
-                      gap="2"
-                      marginBottom="1"
-                    >
-                      <Status
-                        merkleTreeRegisteredAt={airdrop.merkleTreeRegisteredAt}
-                        contractRegisteredAt={airdrop.contractRegisteredAt}
-                      />
-                    </Row>
-                  </Box>
-                </Row>
+                {isOwner && (
+                  <Row
+                    mainAxisAlignment="center"
+                    crossAxisAlignment="center"
+                    gap="4"
+                    marginTop="3"
+                    display={{ base: "block", md: "none" }}
+                  >
+                    <Box flex="1">
+                      <Row
+                        mainAxisAlignment="flex-start"
+                        crossAxisAlignment="center"
+                        gap="2"
+                        marginBottom="1"
+                      >
+                        <Status
+                          merkleTreeRegisteredAt={airdrop.merkleTreeRegisteredAt}
+                          contractRegisteredAt={airdrop.contractRegisteredAt}
+                        />
+                      </Row>
+                    </Box>
+                  </Row>
+                )}
                 <Row
                   mainAxisAlignment="center"
                   crossAxisAlignment="center"
@@ -75,18 +79,20 @@ export default function AirdropCard({ airdrop }: { airdrop: AirdropHex }) {
                     airdropTitle={airdrop.title}
                   />
                   <Box flex="1">
-                    <Row
-                      mainAxisAlignment="flex-start"
-                      crossAxisAlignment="center"
-                      gap="2"
-                      marginBottom="1"
-                      display={{ base: "none", md: "flex" }}
-                    >
-                      <Status
-                        merkleTreeRegisteredAt={airdrop.merkleTreeRegisteredAt}
-                        contractRegisteredAt={airdrop.contractRegisteredAt}
-                      />
-                    </Row>
+                    {isOwner && (
+                      <Row
+                        mainAxisAlignment="flex-start"
+                        crossAxisAlignment="center"
+                        gap="2"
+                        marginBottom="1"
+                        display={{ base: "none", md: "flex" }}
+                      >
+                        <Status
+                          merkleTreeRegisteredAt={airdrop.merkleTreeRegisteredAt}
+                          contractRegisteredAt={airdrop.contractRegisteredAt}
+                        />
+                      </Row>
+                    )}
                     <AirdropInfo
                       airdropTitle={airdrop.title}
                       templateNamesType={airdrop.templateName}
@@ -94,7 +100,7 @@ export default function AirdropCard({ airdrop }: { airdrop: AirdropHex }) {
                   </Box>
                 </Row>
               </Box>
-              <Box textAlign="right" width={{ base: "full", md: "40%" }}>
+              <Box textAlign="right" width={{ base: "full", md: "50%" }}>
                 <DetailedInfo
                   totalAirdropAmount={airdrop.totalAirdropAmount}
                   eligibleUsersNum={airdrop.eligibleUsersNum}

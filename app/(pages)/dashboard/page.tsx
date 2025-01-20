@@ -23,7 +23,7 @@ export default function Dashboard() {
     );
 
   return (
-    <Container maxW={"container.xl"}>
+    <Container maxW={"container.lg"}>
       <Heading fontSize={{ base: "xl", md: "3xl" }}>Dashboard</Heading>
       <Box margin="0 auto" py={{ base: "3", md: "6" }}>
         <Flex w={"full"} justifyContent="space-between" alignItems="center" marginBottom="4">
