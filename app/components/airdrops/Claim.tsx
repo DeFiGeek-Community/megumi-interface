@@ -5,12 +5,7 @@ import { useTranslation } from "react-i18next";
 import { VStack, Box, HStack, Text, Button, chakra, Spinner, Flex } from "@chakra-ui/react";
 import { AirdropNameABI, TemplateNames, TemplateNamesType } from "@/app/lib/constants/templates";
 import { useFetchClaimParams } from "@/app/hooks/airdrops/useFetchClaimParams";
-import {
-  useBalance,
-  useSimulateContract,
-  useWaitForTransactionReceipt,
-  useWriteContract,
-} from "wagmi";
+import { useSimulateContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
 import { TxToastsContext } from "@/app/providers/ToastProvider";
 import { formatAmount, formatDate } from "@/app/utils/clientHelper";
 import { useUpdateClaimStatus } from "@/app/hooks/airdrops/useUpdateIsClaimed";
@@ -56,6 +51,7 @@ export default function Claim({
     data: claimParams,
     loading: claimLoading,
     error: claimError,
+    fetchClaimParams,
   } = useFetchClaimParams(chainId, airdropId, address);
   const { data, isError, isSuccess, failureReason, isFetched } = useSimulateContract({
     chainId: parseInt(chainId),
@@ -79,10 +75,21 @@ export default function Claim({
     airdropId,
     address,
     claimParams === null ? true : claimParams.isClaimed,
-    { onSuccess: refetchAirdrop },
+    {
+      onSuccess: () => {
+        refetchAirdrop();
+        fetchClaimParams();
+      },
+    },
   );
 
-  const isClaimed = !!claimParams?.isClaimed;
+  const [isClaimed, setIsClaimed] = useState<boolean>(false);
+  useEffect(() => {
+    const claimed = !!failureReason && failureReason.message.includes("Error: AlreadyClaimed()");
+    setIsClaimed(claimed);
+  }, [failureReason, status]);
+
+  // const isClaimed = !!claimParams?.isClaimed;
 
   const handleClaim = async () => {
     try {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { API_BASE_URL } from "@/app/lib/constants";
 import type { AirdropClaimerMapHex } from "@/app/types/airdrop";
 
@@ -8,29 +8,30 @@ export const useFetchClaimParams = (chainId: string, id: string, address?: `0x${
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchClaimParams = useCallback(async () => {
     if (!address) return;
-    const fetchClaimParams = async () => {
-      setLoading(true);
-      setError(null);
+    setLoading(true);
+    setError(null);
 
-      try {
-        const response = await fetch(`${API_URL}/${chainId}/${id}/${address}`);
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || "Failed to fetch airdrop claim");
-        }
-
-        const responseData: AirdropClaimerMapHex = await response.json();
-        setData(responseData);
-      } catch (err: any) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
+    try {
+      const response = await fetch(`${API_URL}/${chainId}/${id}/${address}`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Failed to fetch airdrop claim");
       }
-    };
-    fetchClaimParams();
+
+      const responseData: AirdropClaimerMapHex = await response.json();
+      setData(responseData);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
   }, [chainId, id, address]);
 
-  return { data, loading, error };
+  useEffect(() => {
+    fetchClaimParams();
+  }, [fetchClaimParams]);
+
+  return { data, loading, error, fetchClaimParams };
 };
