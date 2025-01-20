@@ -1,5 +1,5 @@
 "use client";
-import { VStack, Box, Skeleton } from "@chakra-ui/react";
+import { VStack, Box, Skeleton, Button } from "@chakra-ui/react";
 import { useInfiniteScrollAirdrops } from "@/app/hooks/airdrops/useInfiniteScrollAirdrops";
 import AirdropCard from "@/app/components/airdrops/cards/AirdropCard";
 
@@ -29,6 +29,16 @@ export default function EligibleAirdrops({
         </Box>
       ) : (
         eligibleAirdrops.data.map((airdrop) => <AirdropCard key={airdrop.id} airdrop={airdrop} />)
+      )}
+
+      {eligibleAirdrops.hasMore && (
+        <Button
+          onClick={() => eligibleAirdrops.fetchNextPage()}
+          bg="gray.500"
+          _hover={{ bg: "gray.600" }}
+        >
+          Load more
+        </Button>
       )}
     </VStack>
   );
