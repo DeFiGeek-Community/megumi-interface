@@ -347,6 +347,7 @@ export const validateMerkleTree = (
 ): { valid: boolean; error?: InvalidMerkletreeError } => {
   const hashRegex = /^0x[a-fA-F0-9]{64}$/;
   const hexRegex = /^0x[a-fA-F0-9]+$/;
+  const maxEntries = 10000;
   const isHashString = (str: string) => hashRegex.test(str);
   const isHexString = (str: string) => hexRegex.test(str);
   let valid = false;
@@ -380,6 +381,16 @@ export const validateMerkleTree = (
   // Validate claims
   if (typeof data.claims !== "object") {
     errors.push("claims must be an object.");
+  }
+
+  if (Object.entries(data.claims).length === 0) {
+    errors.push("claims must not be empty.");
+  }
+
+  if (Object.entries(data.claims).length > maxEntries) {
+    // If the claims exceed 10,000 entries, return an error immediately
+    errors.push("claims must not exceed 10,000 entries.");
+    return { valid, error: new InvalidMerkletreeError(errors.join(" ")) };
   }
 
   for (const [address, claim] of Object.entries(data.claims)) {
