@@ -11,12 +11,14 @@ export type TxToastsContextType = {
   setTxid: Dispatch<SetStateAction<`0x${string}` | undefined>>;
   // TX write promise you want to wait for. ex) return value of sendTransactionAsync or writeContractAsync
   setWritePromise: Dispatch<SetStateAction<Promise<`0x${string}`> | undefined>>;
+  writePromise: Promise<`0x${string}`> | undefined;
   waitResult: ReturnType<typeof useWaitForTransactionReceipt> | null;
 };
 
 export const TxToastsContext = createContext<TxToastsContextType>({
   setTxid: () => {},
   setWritePromise: () => {},
+  writePromise: undefined,
   waitResult: null,
 });
 
@@ -72,7 +74,9 @@ const TxToastProvider: FC<ProviderProps> = ({ children }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [result.isSuccess, result.isError]);
   return (
-    <TxToastsContext.Provider value={{ txid, setTxid, setWritePromise, waitResult: result }}>
+    <TxToastsContext.Provider
+      value={{ txid, setTxid, setWritePromise, writePromise, waitResult: result }}
+    >
       {children}
     </TxToastsContext.Provider>
   );

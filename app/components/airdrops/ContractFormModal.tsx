@@ -309,7 +309,7 @@ export default function ContractFormModal({
                     variant="solid"
                     colorScheme="green"
                     type="submit"
-                    isLoading={waitResult?.isLoading}
+                    isLoading={writeFn.status === "pending" || waitResult?.isLoading}
                     disabled={
                       !token ||
                       !parseInt(formikProps.values.amount) ||
@@ -327,7 +327,9 @@ export default function ContractFormModal({
                     variant="solid"
                     colorScheme="blue"
                     onClick={approvals.writeFn.write}
-                    isLoading={approvals.waitResult?.isLoading}
+                    isLoading={
+                      approvals.writeFn.status === "pending" || approvals.waitResult?.isLoading
+                    }
                     disabled={
                       !token ||
                       !parseInt(formikProps.values.amount) ||

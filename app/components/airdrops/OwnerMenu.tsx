@@ -195,7 +195,10 @@ export default function OwnerMenu({
                   variant={"solid"}
                   colorScheme="blue"
                   size={"sm"}
-                  isLoading={withdrawToken.waitResult?.isLoading}
+                  isLoading={
+                    withdrawToken.writeFn.status === "pending" ||
+                    withdrawToken.waitResult?.isLoading
+                  }
                   disabled={withdrawToken.prepareFn.isPending || !balanceOnContract?.value}
                   onClick={() => withdrawToken.writeFn.write()}
                 >
@@ -211,7 +214,10 @@ export default function OwnerMenu({
                   variant={"solid"}
                   colorScheme="blue"
                   size={"sm"}
-                  isLoading={withdrawClaimFee.waitResult?.isLoading}
+                  isLoading={
+                    withdrawClaimFee.writeFn.status === "pending" ||
+                    withdrawClaimFee.waitResult?.isLoading
+                  }
                   disabled={withdrawClaimFee.prepareFn.isPending || !feeBalance.data?.value}
                   onClick={() => withdrawClaimFee.writeFn.write()}
                 >
