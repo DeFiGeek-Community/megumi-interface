@@ -200,8 +200,6 @@ export default function AirdropDetail({
             </Flex>
           </Box>
 
-          {/* Status Section */}
-          {/* TODO If eligible */}
           {airdrop.contractAddress && (
             <Claim
               chainId={chainId}
@@ -219,7 +217,6 @@ export default function AirdropDetail({
             />
           )}
 
-          {/* Menu Section */}
           {isOwner && (
             <OwnerMenu
               chainId={parseInt(chainId)}

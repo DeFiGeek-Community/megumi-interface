@@ -52,7 +52,7 @@ export const formatClaimedAccounts = (
 };
 
 export const formatAmount = (
-  amount: bigint | `0x${string}`,
+  amount: bigint | `0x${string}` | string,
   decimals: number = 18,
   precision: number = 3,
 ) => {

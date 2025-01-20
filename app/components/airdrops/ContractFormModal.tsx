@@ -42,7 +42,7 @@ import { on } from "events";
 type ContractFormModalProps = {
   chainId: number;
   airdropId: string;
-  totalAirdropAmount: bigint | null;
+  totalAirdropAmount: string | null;
   ownerAddress: `0x${string}`;
   isOpen: boolean;
   onOpen: () => void;

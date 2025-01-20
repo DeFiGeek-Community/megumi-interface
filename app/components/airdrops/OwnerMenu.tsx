@@ -38,7 +38,7 @@ export default function OwnerMenu({
   airdropId: string;
   ownerAddress: `0x${string}`;
   contractAddress: `0x${string}` | null;
-  totalAirdropAmount: bigint | null;
+  totalAirdropAmount: string | null;
   merkleTreeRegisteredAt: Date | null;
   contractRegisteredAt: Date | null;
   balanceOnContract:
