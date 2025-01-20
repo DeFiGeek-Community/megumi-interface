@@ -1,4 +1,5 @@
-import { Image } from "@chakra-ui/react";
+import { useState } from "react";
+import { Avatar, Image } from "@chakra-ui/react";
 import type { ImageProps } from "@chakra-ui/react";
 
 export function TokenLogo({
@@ -13,10 +14,16 @@ export function TokenLogo({
   const height = props.h ?? defaultHeight;
   const width = props.w ?? defaultWidth;
   const title = tokenName ? tokenName : airdropTitle;
-  return (
+  const [valid, setValid] = useState(true);
+
+  const handleError = () => {
+    setValid(false);
+  };
+  return tokenLogo && valid ? (
     <Image
+      onError={handleError}
       alt={tokenName ? tokenName : airdropTitle}
-      src={tokenLogo ? tokenLogo : ""}
+      src={tokenLogo}
       h={defaultHeight}
       w={defaultWidth}
       borderRadius={defaultBorderRadius}
@@ -24,6 +31,14 @@ export function TokenLogo({
         String(height),
       )}?text=${title}`}
       {...props}
+    />
+  ) : (
+    <Avatar
+      w={width}
+      h={height}
+      // size={{ base: "md", md: "lg" }}
+      name={tokenName || airdropTitle}
+      bg="gray.500"
     />
   );
 }
