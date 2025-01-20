@@ -19,10 +19,10 @@ interface ClaimProps {
   address: `0x${string}`;
   airdropId: string;
   contractAddress: `0x${string}`;
-  tokenAddress: `0x${string}`;
-  tokenName: string;
-  tokenSymbol: string;
-  tokenDecimals: number;
+  tokenAddress: `0x${string}` | null;
+  tokenName: string | null;
+  tokenSymbol: string | null;
+  tokenDecimals: number | null;
   templateName: TemplateNamesType;
   vestingEndsAt: Date | null;
   balanceOnContract:
@@ -120,7 +120,7 @@ export default function Claim({
                 <Spinner />
               ) : (
                 <Text fontSize="3xl" fontWeight="medium">
-                  {`${formatAmount(BigInt(claimParams.amount), tokenDecimals)}`}
+                  {`${formatAmount(BigInt(claimParams.amount), tokenDecimals || undefined)}`}
                 </Text>
               )}
 

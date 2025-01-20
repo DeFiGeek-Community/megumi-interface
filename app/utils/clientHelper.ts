@@ -6,9 +6,10 @@ import { TemplateNamesType } from "@/app/lib/constants/templates";
 
 export const getEtherscanLink = (
   chainId: number | string,
-  hash: string,
+  hash: string | null,
   type: "tx" | "token" | "address" | "block",
 ): string => {
+  if (!hash) return "";
   const chain = getChainById(chainId);
   if (typeof chain === "undefined" || typeof chain.blockExplorers === "undefined") return "";
 
@@ -19,9 +20,10 @@ export const getEllipsizedAddress = ({
   address,
   ensName,
 }: {
-  address?: `0x${string}`;
+  address?: `0x${string}` | null;
   ensName?: GetEnsNameReturnType;
 }): string => {
+  if (!address) return "";
   return ensName ? `${ensName}` : `${address?.slice(0, 5)}...${address?.slice(-4)}`;
 };
 

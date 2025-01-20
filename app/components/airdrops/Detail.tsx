@@ -120,7 +120,10 @@ export default function AirdropDetail({
                   <Flex alignItems="baseline" direction="row">
                     <Text fontSize="md" fontWeight="bold" mr={4}>
                       {airdrop.totalAirdropAmount
-                        ? formatAmount(BigInt(airdrop.totalAirdropAmount), airdrop.tokenDecimals)
+                        ? formatAmount(
+                            BigInt(airdrop.totalAirdropAmount),
+                            airdrop.tokenDecimals || undefined,
+                          )
                         : "-"}{" "}
                       {airdrop.tokenSymbol}
                     </Text>

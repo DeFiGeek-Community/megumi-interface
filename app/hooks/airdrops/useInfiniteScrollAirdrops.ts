@@ -31,6 +31,7 @@ export const useInfiniteScrollAirdrops = ({
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
 
   const fetchAirdrops = useCallback(async () => {
     if (!chainId || loading || !hasMore) return;
@@ -72,6 +73,7 @@ export const useInfiniteScrollAirdrops = ({
         return [..._prevData, ...newData];
       });
       setTotalPages(responseData.totalPages);
+      setTotalCount(responseData.totalCount);
       setHasMore(responseData.page < responseData.totalPages);
     } catch (err: any) {
       setError(err.message);
@@ -84,9 +86,26 @@ export const useInfiniteScrollAirdrops = ({
     if (hasMore) setPage((prevPage) => prevPage + 1);
   };
 
+  const unshiftAirdrop = (airdrop: AirdropHex) => {
+    setData((prevData) => {
+      const _prevData = prevData || [];
+      return [airdrop, ..._prevData];
+    });
+  };
+
   useEffect(() => {
     fetchAirdrops();
   }, [page]);
 
-  return { data, loading, error, fetchNextPage, hasMore, page, totalPages };
+  return {
+    data,
+    loading,
+    error,
+    fetchNextPage,
+    hasMore,
+    page,
+    totalPages,
+    totalCount,
+    unshiftAirdrop,
+  };
 };

@@ -26,13 +26,17 @@ export async function POST(request: NextRequest, { params }: { params: { chainId
 
   try {
     const body = await request.json();
-    const { chainId, title, templateName, tokenAddress, tokenLogo } = body;
+    const { chainId, title, templateName, tokenLogo, owner } = body;
     const contractAddress = null; // Always null for the creation
     // TODO Take Safe into account
     // ↓ From Yamawake
     // (!session.user.siwe.resources && contractOwner === session.siwe.address) ||
     // (session.siwe.resources && contractOwner === session.siwe.resources[0])
-    const owner = session.user.address;
+    const _owner = session.user.address;
+
+    if (_owner.toLowerCase() !== owner.toLowerCase()) {
+      return respondError(new InvalidParameterError("Owner address is invalid"));
+    }
     const provider = getViemProvider(parseInt(params.chainId)) as PublicClient;
 
     const { isValid, errors } = await AirdropUtils.validateParams(
@@ -42,7 +46,6 @@ export async function POST(request: NextRequest, { params }: { params: { chainId
         contractAddress,
         templateName,
         owner,
-        tokenAddress,
         tokenLogo,
       },
       provider,
@@ -52,20 +55,6 @@ export async function POST(request: NextRequest, { params }: { params: { chainId
       return respondError(new InvalidParameterError(objectToKeyValueString(errors)));
     }
 
-    // Fetch token information from the contract address
-    let tokenName;
-    let tokenSymbol;
-    let tokenDecimals;
-
-    try {
-      const token = await getTokenInfo(tokenAddress, provider);
-      tokenName = token.tokenName;
-      tokenSymbol = token.tokenSymbol;
-      tokenDecimals = token.tokenDecimals;
-    } catch (error: unknown) {
-      return respondError(error, 422);
-    }
-
     const airdrop = await prisma.airdrop.create({
       data: {
         chainId,
@@ -73,15 +62,11 @@ export async function POST(request: NextRequest, { params }: { params: { chainId
         contractAddress, // Always null for the creation
         templateName: hexStringToUint8Array(templateName),
         owner: hexStringToUint8Array(owner),
-        tokenAddress: hexStringToUint8Array(tokenAddress),
-        tokenName,
-        tokenSymbol,
-        tokenDecimals,
         tokenLogo,
       },
     });
 
-    return NextResponse.json(airdrop, { status: 201 });
+    return NextResponse.json(AirdropUtils.toHexString(airdrop), { status: 201 });
   } catch (error) {
     console.error("Error creating airdrop:", error);
     return NextResponse.json({ error: "Failed to create airdrop" }, { status: 500 });
@@ -126,7 +111,28 @@ export async function GET(req: NextRequest, { params }: { params: { chainId: str
       });
     }
 
-    const totalCount = await prisma.airdrop.count();
+    const totalCountResult = await prisma.$queryRaw<{ count: bigint }[]>`
+      SELECT COUNT(DISTINCT "Airdrop"."id") as count
+      FROM "Airdrop"
+      LEFT JOIN "AirdropClaimerMap" ON "Airdrop"."id" = "AirdropClaimerMap"."airdropId"
+      LEFT JOIN "Claimer" ON "AirdropClaimerMap"."claimerId" = "Claimer"."id"
+      ${
+        session && mine && !eligible
+          ? Prisma.sql`WHERE "Airdrop"."owner" = ${hexStringToUint8Array(session.user.address)}`
+          : Prisma.empty
+      }
+      ${
+        eligible && isAddress(eligible)
+          ? session && mine && !eligible
+            ? Prisma.sql`AND "Claimer"."address" = ${hexStringToUint8Array(eligible)}`
+            : Prisma.sql`WHERE "Claimer"."address" = ${hexStringToUint8Array(eligible)}`
+          : Prisma.empty
+      }
+    `;
+
+    const totalCount = totalCountResult[0]?.count ? Number(totalCountResult[0].count) : 0;
+
+    // const totalCount = await prisma.airdrop.count();
     // Hope this feature will be added to Prisma soon
     // https://github.com/prisma/prisma/issues/15423
     const airdrops = await prisma.$queryRaw<Airdrop[]>`
@@ -134,12 +140,12 @@ export async function GET(req: NextRequest, { params }: { params: { chainId: str
             "Airdrop".*,
             (
                     SELECT
-                        COUNT(*) 
+                        COUNT(*)
                     FROM
-                        "AirdropClaimerMap" 
-                    WHERE 
-                        "AirdropClaimerMap"."airdropId"="Airdrop"."id" 
-                        AND 
+                        "AirdropClaimerMap"
+                    WHERE
+                        "AirdropClaimerMap"."airdropId"="Airdrop"."id"
+                        AND
                         "AirdropClaimerMap"."isClaimed" = true
             ) AS "claimedUsersNum",
             (
@@ -147,7 +153,7 @@ export async function GET(req: NextRequest, { params }: { params: { chainId: str
                       COUNT(*)
                   FROM
                       "AirdropClaimerMap"
-                  WHERE 
+                  WHERE
                       "AirdropClaimerMap"."airdropId"="Airdrop"."id"
             ) AS "eligibleUsersNum"
         FROM
@@ -156,44 +162,12 @@ export async function GET(req: NextRequest, { params }: { params: { chainId: str
         LEFT JOIN "Claimer" ON "AirdropClaimerMap"."claimerId" = "Claimer"."id"
         ${session && mine && !eligible ? Prisma.sql`WHERE "Airdrop"."owner" = ${hexStringToUint8Array(session.user.address)}` : Prisma.empty}
         ${eligible && isAddress(eligible) ? Prisma.sql`WHERE "Claimer"."address" = ${hexStringToUint8Array(eligible)}` : Prisma.empty}
+        ORDER BY "Airdrop"."createdAt" DESC
+        LIMIT ${limit}
+        OFFSET ${skip}
+
     `;
-    // console.log(airdrops, session?.user.address, mine, eligible);
-    // const a = await prisma.$queryRaw`
-    //   SELECT
-    //     a.id AS airdropId,
-    //     COUNT(acm.claimerId) AS eligibleUsersNum,
-    //     COUNT(CASE WHEN acm.isClaimed THEN 1 END) AS claimedUsersNum
-    //   FROM
-    //     Airdrop a
-    //   LEFT JOIN
-    //     AirdropClaimerMap acm ON a.id = acm.airdropId
-    //   GROUP BY a.id;
-    // `;
-    // console.log(a);
-    // const airdrops = await prisma.airdrop.findMany({
-    //   skip,
-    //   take: limit,
-    //   where: whereClause,
-    //   orderBy: {
-    //     createdAt: "desc",
-    //   },
-    //   include: {
-    //     _count: {
-    //       select: {
-    //         AirdropClaimerMap: { where: { isClaimed: true } },
-    //       },
-    //     },
-    //     AirdropClaimerMap: {
-    //       select: {
-    //         claimer: {
-    //           select: {
-    //             address: true,
-    //           },
-    //         },
-    //       },
-    //     },
-    //   },
-    // });
+
     const formattedAirdrops = airdrops.map((airdrop: Airdrop) => AirdropUtils.toHexString(airdrop));
 
     return NextResponse.json({

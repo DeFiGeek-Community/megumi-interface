@@ -96,7 +96,7 @@ export const toHexString = (airdrop: AirdropWithClaimMap): AirdropHex => {
     contractAddress: airdrop.contractAddress && uint8ObjectToHexString(airdrop.contractAddress),
     templateName: uint8ObjectToHexString(airdrop.templateName) as TemplateNamesType,
     owner: uint8ObjectToHexString(airdrop.owner)!,
-    tokenAddress: uint8ObjectToHexString(airdrop.tokenAddress)!,
+    tokenAddress: uint8ObjectToHexString(airdrop.tokenAddress),
     claimedUsersNum: Number(airdrop.claimedUsersNum),
     eligibleUsersNum: Number(airdrop.eligibleUsersNum),
     totalAirdropAmount:
@@ -138,13 +138,15 @@ export const validateParams = async (
   }
 
   // Validates owner if contractAddress is set
-  // Basically contractAddress is supposed not to be set on creation
+  // Basically contractAddress is supposed NOT to be set on creation
   if (airdrop.contractAddress && !isAddress(airdrop.contractAddress)) {
     errors["contractAddress"] = "Contract address is invalid";
   }
 
-  // Validates token
-  if (!isAddress(airdrop.tokenAddress)) {
+  // Validates token if passed
+  // Basically tokenAddress is supposed NOT to be set on creation
+  // It is set when contractAddress is registered
+  if (airdrop.tokenAddress && !isAddress(airdrop.tokenAddress)) {
     errors["tokenAddress"] = "Token address is invalid";
   }
 

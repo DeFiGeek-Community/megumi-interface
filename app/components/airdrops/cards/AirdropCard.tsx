@@ -1,7 +1,7 @@
 "use client";
 import { Card, CardBody, Link } from "@chakra-ui/react";
 import React from "react";
-import { Box, Avatar, Flex } from "@chakra-ui/react";
+import { Box, Flex } from "@chakra-ui/react";
 import { Row } from "@/app/lib/chakra/chakraUtils";
 import Status from "@/app/components/airdrops/cards/Status";
 import DateContent from "@/app/components/airdrops/cards/DateContent";
@@ -15,6 +15,7 @@ import {
 } from "@/app/utils/clientHelper";
 import { TemplateNames } from "@/app/lib/constants/templates";
 import type { AirdropHex } from "@/app/types/airdrop";
+import { TokenLogo } from "@/app/components/common/TokenLogo";
 
 export default function AirdropCard({
   airdrop,
@@ -102,7 +103,11 @@ export default function AirdropCard({
                   marginTop={{ base: "2", md: "0" }}
                   paddingX={{ base: "1", md: "0" }}
                 >
-                  <Avatar size={{ base: "md", md: "lg" }} name="YMT" bg="gray.500" />
+                  <TokenLogo
+                    tokenName={airdrop.tokenName}
+                    tokenLogo={airdrop.tokenLogo}
+                    airdropTitle={airdrop.title}
+                  />
                   <Box flex="1">
                     <Row
                       mainAxisAlignment="flex-start"

@@ -1,37 +1,20 @@
 import { useState } from "react";
 import { API_BASE_URL } from "@/app/lib/constants";
+import { AirdropHex } from "@/app/types/airdrop";
 
-// TODO --->
 interface CreateAirdropParams {
   chainId: number;
   title: string;
+  owner: `0x${string}`;
   templateName: string;
-  tokenAddress: string;
   tokenLogo?: string;
 }
-
-interface CreateAirdropResponse {
-  id: string;
-  chainId: number;
-  title: string;
-  contractAddress: string | null;
-  templateName: string;
-  owner: string;
-  tokenAddress: string;
-  tokenName: string;
-  tokenSymbol: string;
-  tokenDecimals: number;
-  tokenLogo: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-//<---
 
 const API_URL = `${API_BASE_URL}/airdrops`;
 export const useCreateAirdrop = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [data, setData] = useState<CreateAirdropResponse | null>(null);
+  const [data, setData] = useState<AirdropHex | null>(null);
 
   const createAirdrop = async ({
     params,
@@ -39,7 +22,7 @@ export const useCreateAirdrop = () => {
     onError,
   }: {
     params: CreateAirdropParams;
-    onSuccess?: (data: CreateAirdropResponse) => void;
+    onSuccess?: (data: AirdropHex) => void;
     onError?: (error: unknown) => void;
   }) => {
     setLoading(true);
@@ -59,7 +42,7 @@ export const useCreateAirdrop = () => {
         throw new Error(errorData.error || "Failed to create airdrop");
       }
 
-      const responseData: CreateAirdropResponse = await response.json();
+      const responseData: AirdropHex = await response.json();
       setData(responseData);
       onSuccess?.(responseData);
     } catch (err: any) {

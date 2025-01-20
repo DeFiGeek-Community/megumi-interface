@@ -9,7 +9,7 @@ export type AirdropFormType = {
   contractAddress: `0x${string}` | null;
   templateName: `0x${string}`;
   owner: `0x${string}`;
-  tokenAddress: `0x${string}`;
+  tokenAddress?: `0x${string}`;
   tokenLogo: string;
 };
 

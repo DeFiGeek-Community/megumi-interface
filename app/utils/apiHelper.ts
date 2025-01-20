@@ -7,7 +7,7 @@ import { getErrorMessage } from "@/app/utils/shared";
 import { InvalidOwnerError, NetworkAccessError } from "@/app/types/errors";
 
 export const uint8ObjectToHexString = (
-  object: { [key: string]: number } | Uint8Array,
+  object: { [key: string]: number } | Uint8Array | null,
 ): `0x${string}` | null => {
   if (!object) {
     return null;

@@ -10,9 +10,9 @@ export interface DetailedInfoProps {
   claimedUsersNum: number | undefined;
   templateName: TemplateNamesType;
   vestingEndsAt: Date | null;
-  tokenName: string;
-  tokenSymbol: string;
-  tokenDecimals: number;
+  tokenName: string | null;
+  tokenSymbol: string | null;
+  tokenDecimals: number | null;
 }
 
 export default function DetailedInfo({
@@ -39,7 +39,9 @@ export default function DetailedInfo({
           {t("dashboard.totalAmount")}
         </Text>
         <Text flex="1" textAlign="right" fontSize="lg" fontWeight="medium">
-          {totalAirdropAmount ? formatAmount(BigInt(totalAirdropAmount), tokenDecimals) : "-"}{" "}
+          {totalAirdropAmount
+            ? formatAmount(BigInt(totalAirdropAmount), tokenDecimals || undefined)
+            : "-"}{" "}
           {tokenSymbol}
         </Text>
       </Row>
