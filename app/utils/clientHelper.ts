@@ -71,3 +71,25 @@ export const formatAmount = (
     return Number(formatted).toFixed(precision);
   }
 };
+
+export const toMinUnit = (value: bigint | string, decimals: number) => {
+  const str = value.toString();
+  const decimalPos = str.indexOf(".");
+
+  let fractionDigits = 0;
+  let integerPart = str;
+  if (decimalPos >= 0) {
+    fractionDigits = str.length - 1 - decimalPos;
+    integerPart = str.slice(0, decimalPos) + str.slice(decimalPos + 1);
+  }
+  let big = BigInt(integerPart);
+
+  const totalShift = decimals - fractionDigits;
+  if (totalShift > 0) {
+    big *= 10n ** BigInt(totalShift);
+  } else if (totalShift < 0) {
+    const diff = BigInt(-totalShift);
+    big = big / 10n ** diff;
+  }
+  return big;
+};

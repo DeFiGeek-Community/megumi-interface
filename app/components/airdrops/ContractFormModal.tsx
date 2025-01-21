@@ -32,12 +32,11 @@ import { useRequireAccount } from "@/app/hooks/common/useRequireAccount";
 import useApprove from "@/app/hooks/common/useApprove";
 import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
 import useToken from "@/app/hooks/common/useToken";
-import { formatAmount } from "@/app/utils/clientHelper";
+import { formatAmount, toMinUnit } from "@/app/utils/clientHelper";
 import { uuidToHex } from "@/app/utils/shared";
 import { TemplateType } from "@/app/lib/constants/templates";
 import useDeployAirdrop from "@/app/hooks/airdrops/useDeployAirdrop";
 import { useFetchMerkleRoot } from "@/app/hooks/airdrops/useFetchMerkleRoot";
-import { on } from "events";
 
 type ContractFormModalProps = {
   chainId: number;
@@ -123,9 +122,7 @@ export default function ContractFormModal({
     targetAddress: formikProps.values.tokenAddress as `0x${string}`,
     owner: session?.user.address,
     spender: CONTRACT_ADDRESSES[chainId].FACTORY,
-    amount: BigInt(
-      parseInt(formikProps.values.amount) * 10 ** (token?.decimals ? token?.decimals : 18),
-    ),
+    amount: toMinUnit(formikProps.values.amount, token?.decimals ? token?.decimals : 18),
     enabled: isAddress(formikProps.values.tokenAddress),
   });
 
@@ -146,13 +143,13 @@ export default function ContractFormModal({
       ownerAddress,
       merkleRoot || "0x",
       formikProps.values.tokenAddress,
-      token ? BigInt(parseInt(formikProps.values.amount) * 10 ** token.decimals) : 0n,
+      token ? toMinUnit(formikProps.values.amount, token.decimals) : 0n,
     ],
     uuid: uuidToHex(airdropId),
     enabled:
       isAddress(ownerAddress) &&
       token &&
-      approvals.allowance >= BigInt(parseInt(formikProps.values.amount) * 10 ** token.decimals),
+      approvals.allowance >= toMinUnit(formikProps.values.amount, token.decimals),
   });
 
   useEffect(() => {
@@ -222,7 +219,8 @@ export default function ContractFormModal({
                         flex="1"
                         name="value"
                         value={formikProps.values.amount}
-                        min={0}
+                        min={0.01}
+                        step={0.01}
                         max={Number.MAX_SAFE_INTEGER}
                         onBlur={formikProps.handleBlur}
                         onChange={(strVal: string, val: number) =>
@@ -244,7 +242,7 @@ export default function ContractFormModal({
                     </Flex>
                     <chakra.p color={"gray.400"} fontSize={"sm"}>
                       {t("airdrop.contractForm.balance")}:{" "}
-                      {balance ? formatAmount(balance, token?.decimals, 4) : "0"} {token?.symbol}
+                      {balance ? formatAmount(balance, token?.decimals, 2) : "0"} {token?.symbol}
                       <chakra.span
                         color={"gray.400"}
                         ml={4}
@@ -253,13 +251,13 @@ export default function ContractFormModal({
                           if (!totalAirdropAmount || !token) return;
                           formikProps.setFieldValue(
                             "amount",
-                            formatAmount(totalAirdropAmount, token.decimals),
+                            formatAmount(totalAirdropAmount, token.decimals, 2),
                           );
                         }}
                       >
                         (エアドロップ総額:
                         {totalAirdropAmount && token
-                          ? formatAmount(totalAirdropAmount, token?.decimals)
+                          ? formatAmount(totalAirdropAmount, token?.decimals, 2)
                           : "0"}{" "}
                         {token?.symbol})
                       </chakra.span>
@@ -301,8 +299,7 @@ export default function ContractFormModal({
 
               <>
                 {token &&
-                approvals.allowance >=
-                  BigInt(parseInt(formikProps.values.amount) * 10 ** token.decimals) ? (
+                approvals.allowance >= toMinUnit(formikProps.values.amount, token.decimals) ? (
                   <Button
                     mt={4}
                     w={"full"}
@@ -312,7 +309,7 @@ export default function ContractFormModal({
                     isLoading={writeFn.status === "pending" || waitResult?.isLoading}
                     disabled={
                       !token ||
-                      !parseInt(formikProps.values.amount) ||
+                      !Number(formikProps.values.amount) ||
                       !writeFn.writeContract ||
                       !formikProps.isValid ||
                       prepareFn.isPending
@@ -332,7 +329,7 @@ export default function ContractFormModal({
                     }
                     disabled={
                       !token ||
-                      !parseInt(formikProps.values.amount) ||
+                      !Number(formikProps.values.amount) ||
                       !approvals.writeFn.writeContract ||
                       !formikProps.isValid
                     }
