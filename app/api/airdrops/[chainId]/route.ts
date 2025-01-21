@@ -86,30 +86,6 @@ export async function GET(req: NextRequest, { params }: { params: { chainId: str
     const mine = searchParams.get("mine") === "true";
     const eligible = searchParams.get("eligible");
 
-    // TODO
-    // mine以外は公開日でフィルター airdrop.contractDeployedAt
-    const whereClause: any = {
-      OR: [],
-    };
-
-    if (session && mine) {
-      whereClause.OR.push({
-        owner: hexStringToUint8Array(session.user.address),
-      });
-    }
-
-    if (eligible && isAddress(eligible)) {
-      whereClause.OR.push({
-        AirdropClaimerMap: {
-          some: {
-            claimer: {
-              address: hexStringToUint8Array(eligible),
-            },
-          },
-        },
-      });
-    }
-
     const totalCountResult = await prisma.$queryRaw<{ count: bigint }[]>`
       SELECT COUNT(DISTINCT "Airdrop"."id") as count
       FROM "Airdrop"

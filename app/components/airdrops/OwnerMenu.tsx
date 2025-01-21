@@ -147,7 +147,6 @@ export default function OwnerMenu({
                 airdropId={airdropId}
                 ownerAddress={ownerAddress}
                 isOpen={merkletreeModalDisclosure.isOpen}
-                onOpen={merkletreeModalDisclosure.onOpen}
                 onClose={merkletreeModalDisclosure.onClose}
                 refetchAirdrop={refetchAirdrop}
               />
