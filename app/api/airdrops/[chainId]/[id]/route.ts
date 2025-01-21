@@ -95,9 +95,18 @@ export async function POST(req: Request, { params }: { params: { chainId: string
 
 // Get an airdrop by ID
 export async function GET(req: Request, { params }: { params: { chainId: string; id: string } }) {
+  const session = await getServerSession(authOptions);
   try {
     const airdrop = await AirdropUtils.getAirdropById(params.id);
-    if (!airdrop) {
+
+    // If airdrop is not found,
+    // or the contract is not registered yet AND the user is NOT the owner, return 404
+    // TODO Should be handled in the prisma query
+    if (
+      !airdrop ||
+      (!airdrop.contractRegisteredAt &&
+        session?.user.address.toLowerCase() !== uint8ArrayToHexString(airdrop.owner).toLowerCase())
+    ) {
       return respondError(new AirdropNotFoundError());
     }
     const formattedAirdrop = AirdropUtils.toHexString(airdrop);
