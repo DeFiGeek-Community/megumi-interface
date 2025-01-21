@@ -67,7 +67,7 @@ export async function POST(
   }
 
   const body = await req.json();
-  const { snapshotTokenAddress, untilBlock, totalAirdropAmount, ignoreAddresses } = body;
+  const { snapshotTokenAddress, untilBlock, totalAirdropAmount, ignoreAddresses, minAmount } = body;
 
   const merkleTree = await generateMerkleTreeFromSnapshot(
     parseInt(params.chainId),
@@ -75,6 +75,7 @@ export async function POST(
     parseInt(untilBlock),
     BigInt(totalAirdropAmount),
     ignoreAddresses,
+    minAmount ? BigInt(minAmount) : BigInt(0),
   );
 
   return NextResponse.json(merkleTree);

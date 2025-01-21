@@ -14,6 +14,7 @@ type Payload = {
   untilBlock: number;
   totalAirdropAmount: string;
   ignoreAddresses: `0x${string}`[];
+  minAmount?: string;
 };
 
 export function useGenerateMerkleTree(chainId: number, airdropId: string) {

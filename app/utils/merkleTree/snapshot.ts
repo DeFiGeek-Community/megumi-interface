@@ -9,12 +9,14 @@ export const generateMerkleTreeFromSnapshot = async (
   untilBlock: number,
   totalAirdropAmount: bigint,
   ignoreAddresses: `0x${string}`[] = [],
+  minAmount: bigint = 0n,
 ) => {
   const balanceData: { [key: `0x${string}`]: string } = await extractTokenBalance(
     chainId,
     snapshotTokenAddress,
     untilBlock,
     ignoreAddresses,
+    minAmount,
   );
   const sum = Object.values(balanceData).reduce((acc, string) => acc + BigInt(string), 0n);
 
@@ -39,13 +41,17 @@ const extractTokenBalance = async (
   snapshotTokenAddress: `0x${string}`,
   untilBlock: number,
   ignoreAddresses: `0x${string}`[] = [],
+  minAmount: bigint = 0n,
 ): Promise<{ [address: `0x${string}`]: string }> => {
   const responseJson = await fetchHolders(chainId, snapshotTokenAddress, untilBlock);
   const _ignoreAddresses = ignoreAddresses.map((addr) => addr.toLowerCase());
 
   return responseJson.items.reduce(
     (acc: { [key: string]: string }, data: { address: `0x${string}`; balance: string }) => {
-      if (!_ignoreAddresses.includes(data.address.toLowerCase())) {
+      if (
+        !_ignoreAddresses.includes(data.address.toLowerCase()) &&
+        BigInt(data.balance) >= minAmount
+      ) {
         acc[getAddress(data.address)] = data.balance.toString();
       }
       return acc;

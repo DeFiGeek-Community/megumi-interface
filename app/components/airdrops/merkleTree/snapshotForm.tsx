@@ -48,6 +48,7 @@ type FormValues = {
   snapshotBlockNumber: string;
   snapshotTokenAddress: string;
   ignoreList?: string;
+  minAmount?: string;
 };
 
 export default function SnapshotForm({
@@ -93,6 +94,7 @@ export default function SnapshotForm({
       ignoreAddresses: data.ignoreList
         ? (data.ignoreList.trim().split(/\r?\n/) as `0x${string}`[])
         : [],
+      minAmount: data.minAmount,
     });
     if (generateError) {
       toast({ title: generateError, status: "error" });
@@ -121,6 +123,13 @@ export default function SnapshotForm({
     if (value.snapshotTokenAddress && !isAddress(value.snapshotTokenAddress)) {
       errors["snapshotTokenAddress"] = "snapshotTokenAddress is invalid";
     }
+    if (value.minAmount) {
+      try {
+        BigInt(value.minAmount);
+      } catch (e) {
+        errors["minAmount"] = "minAmount is invalid";
+      }
+    }
 
     if (value.ignoreList) {
       let spl = value.ignoreList.trim().split(/\r?\n/);
@@ -137,6 +146,7 @@ export default function SnapshotForm({
     snapshotBlockNumber: "",
     snapshotTokenAddress: "",
     ignoreList: "",
+    minAmount: "",
   };
   const formikProps = useFormik<FormValues>({
     enableReinitialize: true,
@@ -210,6 +220,33 @@ export default function SnapshotForm({
                 <NumberDecrementStepper />
               </NumberInputStepper>
             </NumberInput>
+          </FormControl>
+
+          <FormControl
+            mt={4}
+            isInvalid={!!formikProps.errors.minAmount && !!formikProps.touched.minAmount}
+          >
+            <FormLabel htmlFor="minAmount" alignItems={"baseline"}>
+              {t("airdrop.snapshotForm.minAmount")}
+            </FormLabel>
+            <Input
+              id="minAmount"
+              name="minAmount"
+              onBlur={formikProps.handleBlur}
+              type="number"
+              onChange={(e) => {
+                try {
+                  const val =
+                    e.target.value === "" ? e.target.value : BigInt(e.target.value).toString();
+                  formikProps.setFieldValue("minAmount", val);
+                } catch (e) {
+                  formikProps.setFieldValue("minAmount", "");
+                }
+              }}
+              value={formikProps.values.minAmount}
+              placeholder="Input minimum threthold amount for the airdrop eligibility"
+            />
+            <FormErrorMessage>{formikProps.errors.minAmount}</FormErrorMessage>
           </FormControl>
 
           <FormControl
