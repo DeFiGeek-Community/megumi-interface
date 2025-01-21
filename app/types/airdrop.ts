@@ -71,3 +71,15 @@ export type MerkleTreeData = {
     [address: `0x${string}`]: MerkleTreeClaim;
   };
 };
+
+export type MerkleDistributorInfo = {
+  airdropAmount: string;
+  merkleRoot: string;
+  claims: {
+    [account: `0x${string}`]: {
+      index: number;
+      amount: string;
+      proof: string[];
+    };
+  };
+};

@@ -80,6 +80,7 @@
       "balance": "残高"
     },
     "merkletreeForm": {
+      "generate": "生成する",
       "register": "登録する",
       "uploadListFile" :"リストファイルをアップロード",
       "manual" :"マニュアル入力",
@@ -91,6 +92,24 @@
       "withdraw": "引き出す",
       "tokenBalance": "トークン残高",
       "ethBalance": "手数料残高"
+    },
+    "merkleTreePreview": {
+      "heading": "対象者プレビュー",
+      "totalAmount": "合計額",
+      "eligibleUsersNum" :"対象者人数",
+      "address" :"アドレス",
+      "amount" :"対象額",
+      "uploadListFileHint" :"リストファイルをアップロードしてください"
+    },
+    "snapshotForm": {
+      "tokenAmount": "総エアドロップ額",
+      "snapshotBlockNumber": "スナップショットブロック高",
+      "snapshotTokenAddress": "スナップショットを取るトークンアドレス",
+      "ignoreList": "除外アドレスリスト（改行区切り）",
+      "generate": "マークルツリーを作成する"
+    },
+    "manualForm": {
+      "text": "1行ずつ対象アドレスと配布額をカンマ区切りで入力してください"
     }
   }
 }

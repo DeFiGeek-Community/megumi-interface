@@ -25,6 +25,7 @@
     "@web3modal/wagmi": "^4.2.3",
     "cookies-next": "^4.2.1",
     "date-fns": "^4.1.0",
+    "ethereumjs-util": "^7.1.5",
     "ethers": "^6.13.2",
     "formik": "^2.4.6",
     "framer-motion": "^11.3.24",
@@ -71,20 +72,13 @@
     "tsx": "^4.19.2",
     "typescript": "^5.5.4"
   },
-  "browserslist": {
-    "production": [
-      "chrome >= 67",
-      "edge >= 79",
-      "firefox >= 68",
-      "opera >= 54",
-      "safari >= 14"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
+  "browserslist": [
+    ">0.2%",
+    "not ie <= 99",
+    "not android <= 4.4.4",
+    "not dead",
+    "not op_mini all"
+  ],
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   }

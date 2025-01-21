@@ -13,7 +13,7 @@ export const useUploadMerkletree = (chainId: number, airdropId: string) => {
   const [error, setError] = useState<string | null>(null);
 
   const upload = useCallback(
-    async (file: File, { onSuccess, onError }: UploadCallbacks) => {
+    async (file: File, { onSuccess, onError }: UploadCallbacks = {}) => {
       const formData = new FormData();
       formData.append("file", file);
 

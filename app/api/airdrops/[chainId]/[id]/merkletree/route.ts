@@ -1,8 +1,14 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { getErrorMessage } from "@/app/utils/shared";
 import { s3Client, GetObjectCommand, GetObjectCommandOutput } from "@/app/lib/aws";
+import { generateMerkleTreeFromSnapshot } from "@/app/utils/merkleTree/snapshot";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/authOptions";
+import { AirdropNotFoundError } from "@/app/types/errors";
+import { requireOwner, respondError } from "@/app/utils/apiHelper";
+import * as AirdropUtils from "@/app/utils/airdrop";
 
-// Get an airdrop by ID
+// Get an merkle tree by ID
 export async function GET(req: Request, { params }: { params: { chainId: string; id: string } }) {
   // Get merkletree file
   const command = new GetObjectCommand({
@@ -38,4 +44,38 @@ export async function GET(req: Request, { params }: { params: { chainId: string;
     const error = getErrorMessage(e);
     return NextResponse.json({ error }, { status: 422 });
   }
+}
+
+// Generate a merkle tree
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { chainId: string; id: string } },
+) {
+  const session = await getServerSession(authOptions);
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  const airdrop = await AirdropUtils.getAirdropById(params.id);
+  if (!airdrop) {
+    return respondError(new AirdropNotFoundError());
+  }
+  const { error } = await requireOwner(airdrop, session.user.address);
+
+  if (error) {
+    return respondError(error);
+  }
+
+  const body = await req.json();
+  const { snapshotTokenAddress, untilBlock, totalAirdropAmount, ignoreAddresses } = body;
+
+  const merkleTree = await generateMerkleTreeFromSnapshot(
+    parseInt(params.chainId),
+    snapshotTokenAddress,
+    parseInt(untilBlock),
+    BigInt(totalAirdropAmount),
+    ignoreAddresses,
+  );
+
+  return NextResponse.json(merkleTree);
 }
