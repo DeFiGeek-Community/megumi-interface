@@ -60,7 +60,14 @@ export const formatAmount = (
   decimals: number = 18,
   precision: number = 3,
 ) => {
-  const amountStr = typeof amount === "bigint" ? amount.toString() : amount;
-  const amountNum = Number(amountStr) / 10 ** decimals;
-  return amountNum.toFixed(precision);
+  if (precision > decimals) {
+    precision = decimals;
+  }
+  const bigIntAmount = typeof amount === "bigint" ? amount : BigInt(amount);
+  const formatted = BigInt(bigIntAmount) / BigInt(10) ** BigInt(decimals);
+  if (formatted > Number.MAX_SAFE_INTEGER) {
+    return formatted.toString();
+  } else {
+    return Number(formatted).toFixed(precision);
+  }
 };
