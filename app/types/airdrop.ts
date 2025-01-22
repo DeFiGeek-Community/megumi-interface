@@ -9,7 +9,7 @@ export type AirdropFormType = {
   contractAddress: `0x${string}` | null;
   templateName: `0x${string}`;
   owner: `0x${string}`;
-  tokenAddress?: `0x${string}`;
+  tokenAddress: `0x${string}`;
   tokenLogo: string;
 };
 
@@ -52,7 +52,7 @@ export type AirdropHex = Omit<
   contractAddress: `0x${string}` | null;
   templateName: TemplateNamesType;
   owner: `0x${string}`;
-  tokenAddress: `0x${string}` | null;
+  tokenAddress: `0x${string}`;
   totalAirdropAmount: string | null;
 } & AirdropAggregationData & { AirdropClaimerMap?: AirdropClaimerMapHex[] };
 export type AirdropWithClaimMap = AirdropM &

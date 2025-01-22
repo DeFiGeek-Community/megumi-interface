@@ -192,9 +192,6 @@ describe("POST /api/airdrops/:id/syncMerkletree", () => {
           method: "POST",
         });
 
-        if (res.status !== 200) {
-          console.log(await res.json());
-        }
         expect(res.status).toStrictEqual(200);
 
         const airdropWithClaimerMap = await jestPrisma.client.airdrop.findUnique({

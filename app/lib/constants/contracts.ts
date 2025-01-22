@@ -9,9 +9,6 @@ export const CONTRACT_ADDRESSES: ContractAddresses = {
     FACTORY: "0xFIXME",
     STANDARD: "0xFIXME",
     LINEAR_VESTING: "0xFIXME",
-    // TODO
-    // This settings are just for PND Airdrops
-    PND_AIRDROP: "0xFIXME",
   },
   [sepolia.id]: {
     FACTORY: "0xD2D897F22C8B21B154ecBF713550B0f2064Ef638",

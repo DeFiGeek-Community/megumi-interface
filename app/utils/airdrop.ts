@@ -1,4 +1,12 @@
-import { concat, getContract, getContractAddress, isAddress, keccak256, PublicClient } from "viem";
+import {
+  concat,
+  getContract,
+  getContractAddress,
+  isAddress,
+  keccak256,
+  PublicClient,
+  zeroAddress,
+} from "viem";
 import { Prisma, prisma, PrismaClient, type Airdrop, type AirdropClaimerMap } from "@/prisma";
 import { hexStringToUint8Array, uint8ObjectToHexString } from "@/app/utils/apiHelper";
 import {
@@ -132,6 +140,14 @@ export const validateParams = async (
 
   if (airdrop.title.length > 200) {
     errors["title"] = "Max length is 200";
+  }
+
+  if (!isAddress(airdrop.tokenAddress)) {
+    errors["tokenAddress"] = "Token address is invalid";
+  }
+
+  if (airdrop.tokenAddress === zeroAddress) {
+    errors["tokenAddress"] = "Token address should not be zero";
   }
 
   // Validate Token logo URL

@@ -7,6 +7,8 @@ import {
   s3Client,
 } from "@/app/lib/aws";
 
+export const TEST_TOKEN_ADDRESS = "0xba975e839f9d044fa589b5d4bdd9cc646eb1840a"; // Sepolia sample token
+
 export const uploadMerkleTree = async (filePath: string, itemKey: string) => {
   const buffer = fs.readFileSync(filePath);
   //   const json = JSON.parse(buffer.toString("utf-8"));

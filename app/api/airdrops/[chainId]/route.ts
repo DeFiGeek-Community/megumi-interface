@@ -43,6 +43,7 @@ export async function POST(request: NextRequest, { params }: { params: { chainId
         chainId,
         title,
         contractAddress,
+        tokenAddress,
         templateName,
         owner,
         tokenLogo,
@@ -99,31 +100,26 @@ export async function GET(req: NextRequest, { params }: { params: { chainId: str
     const mine = searchParams.get("mine") === "true";
     const eligible = searchParams.get("eligible");
 
-    const totalCountResult = await prisma.$queryRaw<{ count: bigint }[]>`
+    const totalCountQuery = Prisma.sql`
       SELECT COUNT(DISTINCT "Airdrop"."id") as count
       FROM "Airdrop"
       LEFT JOIN "AirdropClaimerMap" ON "Airdrop"."id" = "AirdropClaimerMap"."airdropId"
       LEFT JOIN "Claimer" ON "AirdropClaimerMap"."claimerId" = "Claimer"."id"
       ${
         // Owner can see all airdrops, others can see only registered airdrops
-        session && mine && !eligible
-          ? Prisma.sql`WHERE "Airdrop"."owner" = ${hexStringToUint8Array(session.user.address)}`
-          : Prisma.sql`WHERE "Airdrop"."contractRegisteredAt" IS NOT NULL`
+        !!session && mine && !eligible
+          ? Prisma.sql` WHERE "Airdrop"."owner" = ${hexStringToUint8Array(session.user.address)}`
+          : Prisma.sql` WHERE "Airdrop"."contractRegisteredAt" IS NOT NULL`
       }
       ${
-        eligible && isAddress(eligible)
-          ? Prisma.sql`AND "Claimer"."address" = ${hexStringToUint8Array(eligible)}`
+        !!eligible && isAddress(eligible)
+          ? Prisma.sql` AND "Claimer"."address" = ${hexStringToUint8Array(eligible)}`
           : Prisma.empty
       }
     `;
 
-    const totalCount = totalCountResult[0]?.count ? Number(totalCountResult[0].count) : 0;
-
-    // const totalCount = await prisma.airdrop.count();
-    // Hope this feature will be added to Prisma soon
-    // https://github.com/prisma/prisma/issues/15423
-    const airdrops = await prisma.$queryRaw<Airdrop[]>`
-        SELECT DISTINCT
+    const airdropQuery = Prisma.sql`
+    SELECT DISTINCT
             "Airdrop".*,
             (
                     SELECT
@@ -149,21 +145,26 @@ export async function GET(req: NextRequest, { params }: { params: { chainId: str
         LEFT JOIN "Claimer" ON "AirdropClaimerMap"."claimerId" = "Claimer"."id"
         ${
           // Owner can see all airdrops, others can see only registered airdrops
-          session && mine && !eligible
-            ? Prisma.sql`WHERE "Airdrop"."owner" = ${hexStringToUint8Array(session.user.address)}`
-            : Prisma.sql`WHERE "Airdrop"."contractRegisteredAt" IS NOT NULL`
+          !!session && mine && !eligible
+            ? Prisma.sql` WHERE "Airdrop"."owner" = ${hexStringToUint8Array(session.user.address)}`
+            : Prisma.sql` WHERE "Airdrop"."contractRegisteredAt" IS NOT NULL`
         }
         ${
-          eligible && isAddress(eligible)
-            ? Prisma.sql`AND "Claimer"."address" = ${hexStringToUint8Array(eligible)}`
+          !!eligible && isAddress(eligible)
+            ? Prisma.sql` AND "Claimer"."address" = ${hexStringToUint8Array(eligible)}`
             : Prisma.empty
         }
         ORDER BY "Airdrop"."createdAt" DESC
         LIMIT ${limit}
         OFFSET ${skip}
-
     `;
 
+    const totalCountResult = await prisma.$queryRaw<{ count: bigint }[]>(totalCountQuery);
+    const totalCount = totalCountResult[0]?.count ? Number(totalCountResult[0].count) : 0;
+
+    // Hope this feature will be added to Prisma soon
+    // https://github.com/prisma/prisma/issues/15423
+    const airdrops = await prisma.$queryRaw<Airdrop[]>(airdropQuery);
     const formattedAirdrops = airdrops.map((airdrop: Airdrop) => AirdropUtils.toHexString(airdrop));
 
     return NextResponse.json({

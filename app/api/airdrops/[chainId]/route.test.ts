@@ -2,7 +2,6 @@ import { describe } from "node:test";
 import { testApiHandler } from "next-test-api-route-handler";
 import type { Session } from "next-auth";
 import { zeroAddress } from "viem";
-import { uint8ObjectToHexString } from "@/app/utils/apiHelper";
 import { TemplateNames } from "@/app/lib/constants/templates";
 import * as appHandler from "./route";
 
@@ -101,10 +100,10 @@ describe("POST /api/airdrops Create a new airdrop", () => {
           const resData = {
             chainId,
             title,
-            contractAddress: contractAddress,
-            templateName: uint8ObjectToHexString(templateName),
-            owner: uint8ObjectToHexString(owner),
-            tokenAddress: uint8ObjectToHexString(tokenAddress),
+            contractAddress,
+            templateName,
+            owner,
+            tokenAddress,
             tokenName,
             tokenSymbol,
             tokenDecimals,
@@ -116,7 +115,7 @@ describe("POST /api/airdrops Create a new airdrop", () => {
     });
 
     // Airdrop should be created regardless of the contract address since it is not used in the creation
-    test("should success the creation with invalid contract", async () => {
+    test("should success the creation regardless of invalid contract address is given", async () => {
       const expectedData = {
         ...basicMockData,
         ...YMWK_INFO,
@@ -155,10 +154,10 @@ describe("POST /api/airdrops Create a new airdrop", () => {
           const resData = {
             chainId,
             title,
-            contractAddress: contractAddress,
-            templateName: uint8ObjectToHexString(templateName),
-            owner: uint8ObjectToHexString(owner),
-            tokenAddress: uint8ObjectToHexString(tokenAddress),
+            contractAddress,
+            templateName,
+            owner,
+            tokenAddress,
             tokenName,
             tokenSymbol,
             tokenDecimals,
@@ -222,7 +221,7 @@ describe("POST /api/airdrops Create a new airdrop", () => {
           });
           expect(res.status).toStrictEqual(422);
           const { error } = await res.json();
-          expect(error).toContain(`The contract function "name" returned no data ("0x")`);
+          expect(error).toContain(`Token address should not be zero`);
         },
       });
     });
@@ -296,7 +295,7 @@ describe("POST /api/airdrops Create a new airdrop", () => {
     test("should return the list of airdrops if page and limit are specified", async () => {
       const expectedData = {
         chainId: 11155111,
-        title: `YMWK Airdrop 24`,
+        title: `Merkle, contract registered YMWK Airdrop 24`,
         contractAddress: null,
         templateName: TemplateNames.Standard,
         owner: "0xabcd",

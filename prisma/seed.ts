@@ -41,6 +41,25 @@ async function main() {
           },
         });
       }
+
+      for (let i = 0; i < 30; i++) {
+        await prisma.airdrop.create({
+          data: {
+            chainId: 11155111,
+            title: `Merkle, contract registered YMWK Airdrop ${i}`,
+            contractAddress: null,
+            templateName: Uint8Array.from(Buffer.from(TemplateNames.Standard.slice(2), "hex")),
+            owner: Uint8Array.from(Buffer.from("0xabcd".slice(2), "hex")),
+            tokenAddress: Uint8Array.from(Buffer.from(YMWK.slice(2), "hex")),
+            tokenName: `Yamawake DAO Token${i}`,
+            tokenSymbol: "YMWK",
+            tokenDecimals: 18,
+            tokenLogo: "https://example.com/logo.png",
+            merkleTreeRegisteredAt: new Date(),
+            contractRegisteredAt: new Date(),
+          },
+        });
+      }
       break;
     default:
       break;
