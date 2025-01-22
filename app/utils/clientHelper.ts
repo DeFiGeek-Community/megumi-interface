@@ -1,4 +1,4 @@
-import { fromHex } from "viem";
+import { formatUnits, fromHex } from "viem";
 import type { GetEnsNameReturnType } from "viem/ens";
 import { DateArg, format, FormatOptions } from "date-fns";
 import { getChainById } from "@/app/utils/chain";
@@ -64,12 +64,7 @@ export const formatAmount = (
     precision = decimals;
   }
   const bigIntAmount = typeof amount === "bigint" ? amount : BigInt(amount);
-  const formatted = BigInt(bigIntAmount) / BigInt(10) ** BigInt(decimals);
-  if (formatted > Number.MAX_SAFE_INTEGER) {
-    return formatted.toString();
-  } else {
-    return Number(formatted).toFixed(precision);
-  }
+  return parseFloat(formatUnits(bigIntAmount, decimals)).toFixed(precision);
 };
 
 export const toMinUnit = (value: bigint | string, decimals: number) => {
