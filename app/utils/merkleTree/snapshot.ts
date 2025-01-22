@@ -10,6 +10,7 @@ export const generateMerkleTreeFromSnapshot = async (
   totalAirdropAmount: bigint,
   ignoreAddresses: `0x${string}`[] = [],
   minAmount: bigint = 0n,
+  maxEntries: number = 10000,
 ) => {
   const balanceData: { [key: `0x${string}`]: string } = await extractTokenBalance(
     chainId,
@@ -17,6 +18,7 @@ export const generateMerkleTreeFromSnapshot = async (
     untilBlock,
     ignoreAddresses,
     minAmount,
+    maxEntries,
   );
   const sum = Object.values(balanceData).reduce((acc, string) => acc + BigInt(string), 0n);
 
@@ -42,8 +44,9 @@ const extractTokenBalance = async (
   untilBlock: number,
   ignoreAddresses: `0x${string}`[] = [],
   minAmount: bigint = 0n,
+  maxEntries: number = 10000,
 ): Promise<{ [address: `0x${string}`]: string }> => {
-  const responseJson = await fetchHolders(chainId, snapshotTokenAddress, untilBlock);
+  const responseJson = await fetchHolders(chainId, snapshotTokenAddress, untilBlock, maxEntries);
   const _ignoreAddresses = ignoreAddresses.map((addr) => addr.toLowerCase());
 
   return responseJson.items.reduce(
@@ -64,6 +67,7 @@ async function fetchHolders(
   chainId: number,
   tokenAddress: `0x${string}`,
   snapshotBlockNumber: number,
+  maxEntries: number = 10000,
 ) {
   const BASE_URL = `https://api.covalenthq.com/v1/${chainId}/tokens/`;
   const TOKEN_HOLDERS_URL = "/token_holders/?";
@@ -75,6 +79,7 @@ async function fetchHolders(
   let response: holdersResponseData = [];
   let covRes;
   let pageNumber = 0;
+  let count = 0;
   while (true) {
     param.set("page-number", pageNumber.toString());
     covRes = await fetch(BASE_URL + tokenAddress + TOKEN_HOLDERS_URL + param.toString());
@@ -84,6 +89,8 @@ async function fetchHolders(
       covRes.items.map((data: { address: `0x${string}`; balance: string }) => {
         response.push({ address: data.address, balance: data.balance });
       });
+      count += covRes.items.length;
+      if (count >= maxEntries) throw new Error(`Maximum number of entries is ${maxEntries}`);
       if (covRes.pagination.has_more) {
         pageNumber += 1;
         // To handle Covalent API rate limit

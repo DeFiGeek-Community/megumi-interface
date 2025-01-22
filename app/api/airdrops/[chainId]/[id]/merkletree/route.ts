@@ -68,14 +68,18 @@ export async function POST(
   const body = await req.json();
   const { snapshotTokenAddress, untilBlock, totalAirdropAmount, ignoreAddresses, minAmount } = body;
 
-  const merkleTree = await generateMerkleTreeFromSnapshot(
-    parseInt(params.chainId),
-    snapshotTokenAddress,
-    parseInt(untilBlock),
-    BigInt(totalAirdropAmount),
-    ignoreAddresses,
-    minAmount ? BigInt(minAmount) : BigInt(0),
-  );
-
-  return NextResponse.json(merkleTree);
+  try {
+    const merkleTree = await generateMerkleTreeFromSnapshot(
+      parseInt(params.chainId),
+      snapshotTokenAddress,
+      parseInt(untilBlock),
+      BigInt(totalAirdropAmount),
+      ignoreAddresses,
+      minAmount ? BigInt(minAmount) : BigInt(0),
+    );
+    return NextResponse.json(merkleTree);
+  } catch (e: unknown) {
+    const error = getErrorMessage(e);
+    return NextResponse.json({ error }, { status: 422 });
+  }
 }

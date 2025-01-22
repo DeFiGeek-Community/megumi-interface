@@ -3,57 +3,67 @@
 import { isAddress } from "viem";
 import { parseBalanceMap } from "./shared";
 
-export const validate = (text: string): { valid: boolean; error: string } => {
+export const validate = (text: string, maxEntries = 10000): { valid: boolean; error: string } => {
   let valid = true;
   let error = "";
 
   if (text !== "") {
     let spl = text.split(/\r?\n/);
-    for (let i = 0; i < spl.length; i++) {
-      valid &&= spl[i].includes(",");
-      if (valid) {
-        let result: string[] = spl[i].split(",");
-        valid &&= result.length === 2;
-        if (!valid) {
-          error = "each line must contain two elements";
+    if (spl.length > maxEntries) {
+      error = `Maximum number of entries is ${maxEntries}`;
+      valid = false;
+    } else {
+      for (let i = 0; i < spl.length; i++) {
+        valid &&= spl[i].includes(",");
+        if (valid) {
+          let result: string[] = spl[i].split(",");
+          valid &&= result.length === 2;
+          if (!valid) {
+            error = "each line must contain two elements";
+            break;
+          }
+          valid &&= result[0] !== "" && result[1] !== "";
+          if (!valid) {
+            error = "address and/or amount is a blank character";
+            break;
+          }
+          valid &&= isAddress(result[0]);
+          if (!valid) {
+            error = "address is not valid";
+            break;
+          }
+          valid &&= !Number.isNaN(result[1]);
+          if (!valid) {
+            error = "amount is only number";
+            break;
+          }
+          valid &&= Number.isInteger(Number(result[1]));
+          if (!valid) {
+            error = "amount is only integer";
+            break;
+          }
+        } else {
+          error = "string does not contain a comma";
           break;
         }
-        valid &&= result[0] !== "" && result[1] !== "";
-        if (!valid) {
-          error = "address and/or amount is a blank character";
-          break;
-        }
-        valid &&= isAddress(result[0]);
-        if (!valid) {
-          error = "address is not valid";
-          break;
-        }
-        valid &&= !Number.isNaN(result[1]);
-        if (!valid) {
-          error = "amount is only number";
-          break;
-        }
-        valid &&= Number.isInteger(Number(result[1]));
-        if (!valid) {
-          error = "amount is only integer";
-          break;
-        }
-      } else {
-        error = "string does not contain a comma";
-        break;
       }
     }
+  } else {
+    error = "text is empty";
+    valid = false;
   }
   return { valid, error };
 };
 
-export const generateAirdropListFromText = (text: string) => {
+export const generateAirdropListFromText = (text: string, maxEntries = 10000) => {
   let snapshotAmountDict: { [address: `0x${string}`]: bigint } = {};
   let airdropAmountList: { address: `0x${string}`; amount: bigint }[] = [];
   let ttlAirdropAmount = BigInt(0);
 
   if (text !== "") {
     let spl = text.split(/\r?\n/);
+    if (spl.length > maxEntries) throw new Error(`Maximum number of entries is ${maxEntries}`);
+
     spl.forEach(function (elm) {
       let result: string[] = elm.split(",");
       snapshotAmountDict[result[0] as `0x${string}`] = BigInt(result[1]);

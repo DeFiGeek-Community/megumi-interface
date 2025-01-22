@@ -93,21 +93,22 @@ export default function SnapshotForm({
   };
 
   const handleSubmit = async (data: FormValues) => {
-    await generateMerkleTree({
-      snapshotTokenAddress: data.snapshotTokenAddress as `0x${string}`,
-      untilBlock: parseInt(data.snapshotBlockNumber),
-      totalAirdropAmount: toMinUnit(data.tokenAmount, airdropTokenDecimals).toString(),
-      ignoreAddresses: data.ignoreList
-        ? (data.ignoreList.trim().split(/\r?\n/) as `0x${string}`[])
-        : [],
-      minAmount:
-        snapshotToken.data && data.minAmount
-          ? toMinUnit(data.minAmount, snapshotToken.data.decimals).toString()
-          : undefined,
-    });
-    if (generateError) {
-      toast({ title: generateError, status: "error" });
-    } else if (merkleTree) {
+    await generateMerkleTree(
+      {
+        snapshotTokenAddress: data.snapshotTokenAddress as `0x${string}`,
+        untilBlock: parseInt(data.snapshotBlockNumber),
+        totalAirdropAmount: toMinUnit(data.tokenAmount, airdropTokenDecimals).toString(),
+        ignoreAddresses: data.ignoreList
+          ? (data.ignoreList.trim().split(/\r?\n/) as `0x${string}`[])
+          : [],
+        minAmount:
+          snapshotToken.data && data.minAmount
+            ? toMinUnit(data.minAmount, snapshotToken.data.decimals).toString()
+            : undefined,
+      },
+      { onError: callbacks?.onError },
+    );
+    if (merkleTree) {
       onOpen();
     }
   };
@@ -360,7 +361,12 @@ export default function SnapshotForm({
             <ModalHeader>{t("airdrop.merkleTreePreview.heading")}</ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={6}>
-              <PreviewList chainId={chainId} data={merkleTree} decimals={airdropTokenDecimals} />
+              <PreviewList
+                chainId={chainId}
+                data={merkleTree}
+                decimals={airdropTokenDecimals}
+                symbol={airdropTokenSymbol}
+              />
             </ModalBody>
             <ModalFooter>
               <Button
