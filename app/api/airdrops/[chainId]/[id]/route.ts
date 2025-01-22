@@ -136,7 +136,7 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
 
   try {
     const body = await req.json();
-    const { title, contractAddress, templateName, tokenLogo } = body;
+    const { title, contractAddress, templateName, tokenAddress, tokenLogo } = body;
 
     const provider = getViemProvider(parseInt(params.chainId)) as PublicClient;
 
@@ -223,23 +223,34 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
       // 7. Fetch token address from the airdrop contract address
       const tokenAddress = await AirdropUtils.getTokenAddress(contractAddress, provider);
 
-      // 8. Fetch token information from the token contract address
-      let tokenName;
-      let tokenSymbol;
-      let tokenDecimals;
-      const token = await getTokenInfo(tokenAddress, provider);
-      tokenName = token.tokenName;
-      tokenSymbol = token.tokenSymbol;
-      tokenDecimals = token.tokenDecimals;
+      // 8. Check if the token address is consistent with the airdrop information
+      if (
+        tokenAddress.toLowerCase() !== uint8ArrayToHexString(airdrop.tokenAddress).toLowerCase()
+      ) {
+        return NextResponse.json(
+          { error: "Contract's token address is not consistent with the airdrop information" },
+          { status: 422 },
+        );
+      }
 
-      // When contract is given, update params related to the contract
+      // Update only contract address when contract address is given
       updateParams = {
         contractAddress: hexStringToUint8Array(contractAddress),
-        tokenName,
-        tokenSymbol,
-        tokenDecimals,
       };
     } else {
+      if (airdrop.contractAddress && tokenAddress) {
+        // When tokenAddress is given, check if the token address is consistent with the contract
+        const tokenAddressInContract = await AirdropUtils.getTokenAddress(
+          contractAddress,
+          provider,
+        );
+        if (tokenAddressInContract.toLowerCase() !== tokenAddress.toLowerCase()) {
+          return NextResponse.json(
+            { error: "Token address is not consistent with the contract" },
+            { status: 422 },
+          );
+        }
+      }
       updateParams = {
         title,
         tokenLogo,

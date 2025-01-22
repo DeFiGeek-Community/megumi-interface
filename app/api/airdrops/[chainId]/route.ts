@@ -2,7 +2,7 @@ import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { isAddress, type PublicClient } from "viem";
 import { Prisma, prisma, type Airdrop } from "@/prisma";
-import { getViemProvider, respondError } from "@/app/utils/apiHelper";
+import { getTokenInfo, getViemProvider, respondError } from "@/app/utils/apiHelper";
 import { isSupportedChain } from "@/app/utils/chain";
 import { authOptions } from "@/app/api/auth/authOptions";
 import { hexStringToUint8Array } from "@/app/utils/apiHelper";
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest, { params }: { params: { chainId
 
   try {
     const body = await request.json();
-    const { chainId, title, templateName, tokenLogo, owner } = body;
+    const { chainId, title, templateName, tokenAddress, tokenLogo, owner } = body;
     const contractAddress = null; // Always null for the creation
     // TODO Take Safe into account
     // ↓ From Yamawake
@@ -54,6 +54,15 @@ export async function POST(request: NextRequest, { params }: { params: { chainId
       return respondError(new InvalidParameterError(objectToKeyValueString(errors)));
     }
 
+    // Fetch token information from the token contract address
+    let tokenName;
+    let tokenSymbol;
+    let tokenDecimals;
+    const token = await getTokenInfo(tokenAddress, provider);
+    tokenName = token.tokenName;
+    tokenSymbol = token.tokenSymbol;
+    tokenDecimals = token.tokenDecimals;
+
     const airdrop = await prisma.airdrop.create({
       data: {
         chainId,
@@ -61,6 +70,10 @@ export async function POST(request: NextRequest, { params }: { params: { chainId
         contractAddress, // Always null for the creation
         templateName: hexStringToUint8Array(templateName),
         owner: hexStringToUint8Array(owner),
+        tokenAddress: hexStringToUint8Array(tokenAddress),
+        tokenName,
+        tokenSymbol,
+        tokenDecimals,
         tokenLogo,
       },
     });

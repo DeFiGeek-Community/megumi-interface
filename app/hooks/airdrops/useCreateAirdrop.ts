@@ -6,6 +6,7 @@ import { getErrorMessage } from "@/app/utils/shared";
 interface AirdropParams {
   chainId: number;
   airdropId?: string;
+  tokenAddress: string;
   title: string;
   owner: `0x${string}`;
   templateName: string;
