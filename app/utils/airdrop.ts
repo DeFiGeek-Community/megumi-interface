@@ -279,11 +279,11 @@ export const getTemplateNameFromAirdropAddress = async (
 
   const templateKey = Object.keys(CONTRACT_ADDRESSES[chainId]).find(
     (key) =>
-      Object.keys(TemplateNames).includes(key) &&
+      Object.keys(TemplateType).includes(key) &&
       CONTRACT_ADDRESSES[chainId][key].toLowerCase() === implementationAddress,
-  ) as keyof typeof TemplateNames | undefined;
+  ) as keyof typeof TemplateType | undefined;
 
-  return templateKey && TemplateNames[templateKey];
+  return templateKey && TemplateNames[TemplateType[templateKey]];
 };
 
 export const getABIFromAirdropAddress = async (
