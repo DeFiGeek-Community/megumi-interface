@@ -22,7 +22,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { CheckCircleIcon, DownloadIcon, WarningTwoIcon } from "@chakra-ui/icons";
+import { CheckCircleIcon, DownloadIcon, WarningIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import ContractFormModal from "./ContractFormModal";
 import MerkletreeFormModal from "./merkleTree/MerkletreeFormModal";
 import { formatAmount, formatDate } from "@/app/utils/clientHelper";
@@ -291,7 +291,10 @@ export default function OwnerMenu({
         <Divider />
         <HStack justify="space-between" py={2}>
           <Stack>
-            <Text fontWeight="medium"> {t("airdrop.ownerMenu.deleteAirdropHeading")}</Text>
+            <Text fontWeight="medium" color={"red"}>
+              {" "}
+              {t("airdrop.ownerMenu.deleteAirdropHeading")}
+            </Text>
           </Stack>
           <>
             <Button
@@ -310,6 +313,7 @@ export default function OwnerMenu({
               <AlertDialogOverlay>
                 <AlertDialogContent>
                   <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                    <WarningIcon color={"red.400"} mr={1} />
                     {t("airdrop.ownerMenu.deleteAirdropHeading")}
                   </AlertDialogHeader>
 
