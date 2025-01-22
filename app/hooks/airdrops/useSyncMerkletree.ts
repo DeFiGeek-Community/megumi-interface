@@ -7,6 +7,7 @@ export const useSyncMerkletree = (
   chainId: number,
   id: string,
   contractAddress: `0x${string}` | null,
+  enabled: boolean = true,
 ) => {
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -42,9 +43,9 @@ export const useSyncMerkletree = (
 
   useEffect(() => {
     // Not need to sync if contract address is already set
-    if (contractAddress) return;
+    if (!enabled || contractAddress) return;
     checkContractDeploymentAndSync();
-  }, [chainId, id, contractAddress]);
+  }, [chainId, id, contractAddress, enabled]);
 
   return { checkContractDeploymentAndSync, status, loading, error };
 };
