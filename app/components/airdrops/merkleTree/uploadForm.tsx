@@ -32,6 +32,8 @@ import { validateMerkleTree } from "@/app/utils/airdrop";
 type UploadFormProps = {
   chainId: number;
   airdropId: string;
+  airdropTokenDecimals: number;
+  airdropTokenSymbol: string;
   callbacks?: {
     onSuccess?: () => void;
     onError?: (error: string) => void;
@@ -41,7 +43,13 @@ type UploadFormProps = {
 type MerkletreeFileFormValues = {
   fileinput?: string;
 };
-export default function UploadForm({ chainId, airdropId, callbacks }: UploadFormProps) {
+export default function UploadForm({
+  chainId,
+  airdropId,
+  airdropTokenDecimals,
+  airdropTokenSymbol,
+  callbacks,
+}: UploadFormProps) {
   const { t } = useTranslation();
   const toast = useToast({ position: "top-right", isClosable: true });
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -180,7 +188,12 @@ export default function UploadForm({ chainId, airdropId, callbacks }: UploadForm
             <ModalHeader>{t("airdrop.merkleTreePreview.heading")}</ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={6}>
-              <PreviewList data={merkleTree} decimals={0} />
+              <PreviewList
+                chainId={chainId}
+                data={merkleTree}
+                decimals={airdropTokenDecimals}
+                symbol={airdropTokenSymbol}
+              />
             </ModalBody>
             <ModalFooter>
               <Button

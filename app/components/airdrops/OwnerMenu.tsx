@@ -45,6 +45,9 @@ export default function OwnerMenu({
   contractRegisteredAt,
   balanceOnContract,
   title,
+  tokenAddress,
+  tokenSymbol,
+  tokenDecimals,
   templateName,
   tokenLogo,
   refetchAirdrop,
@@ -65,6 +68,9 @@ export default function OwnerMenu({
       }
     | undefined;
   title: string;
+  tokenAddress: `0x${string}`;
+  tokenSymbol: string;
+  tokenDecimals: number;
   templateName: TemplateNamesType;
   tokenLogo: string | null;
   refetchAirdrop: () => Promise<void>;
@@ -75,7 +81,7 @@ export default function OwnerMenu({
   const airdropModalDisclosure = useDisclosure();
   const merkletreeModalDisclosure = useDisclosure();
   const contractModalDisclosure = useDisclosure();
-  const sync = useSyncMerkletree(chainId, airdropId, contractAddress);
+  const sync = useSyncMerkletree(chainId, airdropId, contractAddress, !!merkleTreeRegisteredAt);
   const withdrawToken = useWithdrawToken({ chainId, contractAddress });
   const withdrawClaimFee = useWithdrawClaimFee({ chainId, contractAddress });
   const feeBalance = useBalance({
@@ -120,8 +126,10 @@ export default function OwnerMenu({
               initialData={{
                 title,
                 templateName,
+                tokenAddress,
                 tokenLogo,
               }}
+              contractAddress={contractAddress}
             />
           )}
         </HStack>
@@ -171,6 +179,8 @@ export default function OwnerMenu({
                 chainId={chainId}
                 airdropId={airdropId}
                 ownerAddress={ownerAddress}
+                tokenSymbol={tokenSymbol}
+                tokenDecimals={tokenDecimals}
                 isOpen={merkletreeModalDisclosure.isOpen}
                 onClose={merkletreeModalDisclosure.onClose}
                 refetchAirdrop={refetchAirdrop}
@@ -255,6 +265,7 @@ export default function OwnerMenu({
                 variant={"solid"}
                 colorScheme="blue"
                 size={"sm"}
+                isLoading={sync.loading}
                 disabled={!merkleTreeRegisteredAt}
                 onClick={contractModalDisclosure.onOpen}
               >
@@ -265,6 +276,7 @@ export default function OwnerMenu({
                   chainId={chainId}
                   airdropId={airdropId}
                   ownerAddress={ownerAddress}
+                  tokenAddress={tokenAddress}
                   totalAirdropAmount={totalAirdropAmount}
                   isOpen={contractModalDisclosure.isOpen}
                   onOpen={contractModalDisclosure.onOpen}

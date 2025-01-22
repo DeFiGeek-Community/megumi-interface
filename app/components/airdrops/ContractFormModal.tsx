@@ -27,8 +27,9 @@ import {
   useToast,
   Input,
   Spinner,
+  Box,
+  Text,
 } from "@chakra-ui/react";
-import { useRequireAccount } from "@/app/hooks/common/useRequireAccount";
 import useApprove from "@/app/hooks/common/useApprove";
 import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
 import useToken from "@/app/hooks/common/useToken";
@@ -43,6 +44,7 @@ type ContractFormModalProps = {
   airdropId: string;
   totalAirdropAmount: string | null;
   ownerAddress: `0x${string}`;
+  tokenAddress: `0x${string}`;
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
@@ -63,18 +65,13 @@ export default function ContractFormModal({
   airdropId,
   totalAirdropAmount,
   ownerAddress,
+  tokenAddress,
   isOpen,
   onOpen,
   onClose,
   checkContractDeployment,
   refetchAirdrop,
 }: ContractFormModalProps) {
-  const {
-    address,
-    isConnecting,
-    isReconnecting,
-    isConnected: isConnectedRaw,
-  } = useRequireAccount();
   const { data: session } = useSession();
   const { t } = useTranslation();
   const toast = useToast({ position: "top-right", isClosable: true });
@@ -97,13 +94,16 @@ export default function ContractFormModal({
     if (!value.amount) {
       errors.amount = "Amount is required";
     }
+    if (balance && token && toMinUnit(value.amount, token.decimals) > balance) {
+      errors.amount = "Amount exceeds balance";
+    }
     if (merkleRoot === null) {
       errors.merkleRoot = "MerkleRoot is required";
     }
     return errors;
   };
   const initialValues: ContractFormValues = {
-    tokenAddress: "",
+    tokenAddress,
     amount: "0",
     merkleRoot: null,
   };
@@ -115,7 +115,7 @@ export default function ContractFormModal({
     validate: (value: ContractFormValues) => validate(value),
   });
 
-  const { data: token } = useToken(formikProps.values.tokenAddress);
+  const { data: token, isLoading: tokenLoading } = useToken(formikProps.values.tokenAddress);
 
   const approvals = useApprove({
     chainId,
@@ -163,7 +163,6 @@ export default function ContractFormModal({
         onClose={onClose}
         closeOnOverlayClick={false}
         blockScrollOnMount={false}
-        isCentered={true}
         size={"xl"}
       >
         <ModalOverlay />
@@ -192,16 +191,19 @@ export default function ContractFormModal({
                     <Input
                       id="tokenAddress"
                       name="tokenAddress"
-                      onBlur={formikProps.handleBlur}
-                      onChange={(event: React.ChangeEvent<any>) => {
-                        formikProps.setFieldTouched("amount");
-                        formikProps.handleChange(event);
-                        // console.log(formikProps.values);
-                      }}
-                      value={formikProps.values.tokenAddress ? formikProps.values.tokenAddress : ""}
-                      placeholder="e.g. 0x0123456789012345678901234567890123456789"
+                      readOnly={true}
+                      disabled={true}
+                      value={tokenAddress}
                     />
                     <FormErrorMessage>{formikProps.errors.tokenAddress}</FormErrorMessage>
+                    <Box>
+                      {tokenLoading && <Spinner />}
+                      {token && (
+                        <Text textAlign={"right"} fontSize={"sm"} mt={1} color={"gray.400"}>
+                          {token.name} ({token.symbol})
+                        </Text>
+                      )}
+                    </Box>
                   </FormControl>
 
                   <FormControl
@@ -217,7 +219,8 @@ export default function ContractFormModal({
                     <Flex alignItems={"center"}>
                       <NumberInput
                         flex="1"
-                        name="value"
+                        id="amount"
+                        name="amount"
                         value={formikProps.values.amount}
                         min={0.01}
                         step={0.01}
@@ -240,7 +243,7 @@ export default function ContractFormModal({
                         {token?.symbol}
                       </chakra.div>
                     </Flex>
-                    <chakra.p color={"gray.400"} fontSize={"sm"}>
+                    <chakra.p textAlign={"right"} mt={1} color={"gray.400"} fontSize={"sm"}>
                       {t("airdrop.contractForm.balance")}:{" "}
                       {balance ? formatAmount(balance, token?.decimals, 2) : "0"} {token?.symbol}
                       <chakra.span

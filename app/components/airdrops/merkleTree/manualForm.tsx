@@ -32,6 +32,8 @@ import { getErrorMessage } from "@/app/utils/shared";
 type ManualFormProps = {
   chainId: number;
   airdropId: string;
+  airdropTokenDecimals: number;
+  airdropTokenSymbol: string;
   callbacks?: {
     onSuccess?: () => void;
     onError?: (error: string) => void;
@@ -42,7 +44,13 @@ type FormValues = {
   text: string;
 };
 
-export default function ManualForm({ chainId, airdropId, callbacks }: ManualFormProps) {
+export default function ManualForm({
+  chainId,
+  airdropId,
+  airdropTokenDecimals,
+  airdropTokenSymbol,
+  callbacks,
+}: ManualFormProps) {
   const { t } = useTranslation();
   const toast = useToast({ position: "top-right", isClosable: true });
   const [merkleTree, setMerkleTree] = useState<MerkleDistributorInfo | null>(null);
@@ -154,7 +162,12 @@ export default function ManualForm({ chainId, airdropId, callbacks }: ManualForm
             <ModalHeader>{t("airdrop.merkleTreePreview.heading")}</ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={6}>
-              <PreviewList data={merkleTree} decimals={0} />
+              <PreviewList
+                chainId={chainId}
+                data={merkleTree}
+                decimals={airdropTokenDecimals}
+                symbol={airdropTokenSymbol}
+              />
             </ModalBody>
             <ModalFooter>
               <Button

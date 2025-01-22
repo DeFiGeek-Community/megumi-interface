@@ -1,8 +1,6 @@
 "use client";
-import { useRef, useState } from "react";
-import { useFormik } from "formik";
-import { useSession } from "next-auth/react";
 import { useTranslation } from "react-i18next";
+import { isAddress } from "viem";
 import {
   Button,
   HStack,
@@ -19,12 +17,16 @@ import {
   Input,
   FormLabel,
   Select,
+  Text,
+  Spinner,
+  Box,
 } from "@chakra-ui/react";
-import { useRequireAccount } from "@/app/hooks/common/useRequireAccount";
+import { useFormik } from "formik";
 import { URL_REGEX } from "@/app/lib/constants";
 import { useCreateAirdrop } from "@/app/hooks/airdrops/useCreateAirdrop";
 import { TemplateNames, TemplateNamesType } from "@/app/lib/constants/templates";
 import { AirdropHex } from "@/app/types/airdrop";
+import useToken from "@/app/hooks/common/useToken";
 
 type AirdropFormModalProps = {
   chainId: number;
@@ -35,10 +37,12 @@ type AirdropFormModalProps = {
   onClose: () => void;
   callback?: (airdrop: AirdropHex) => void;
   initialData?: Omit<AirdropFormValues, "tokenLogo"> & { tokenLogo: string | null };
+  contractAddress: `0x${string}` | null;
 };
 
 type AirdropFormValues = {
   title: string;
+  tokenAddress: string;
   templateName: TemplateNamesType;
   tokenLogo: string;
 };
@@ -51,14 +55,8 @@ export default function AirdropFormModal({
   onClose,
   callback,
   initialData,
+  contractAddress,
 }: AirdropFormModalProps) {
-  const {
-    address,
-    isConnecting,
-    isReconnecting,
-    isConnected: isConnectedRaw,
-  } = useRequireAccount();
-  const { data: session } = useSession();
   const { t } = useTranslation();
   const toast = useToast({ position: "top-right", isClosable: true });
   const { updateOrCreateAirdrop, loading } = useCreateAirdrop();
@@ -71,6 +69,7 @@ export default function AirdropFormModal({
         airdropId,
         owner: ownerAddress,
         title: data.title,
+        tokenAddress: data.tokenAddress,
         templateName: data.templateName,
         tokenLogo: data.tokenLogo ? data.tokenLogo : undefined,
       },
@@ -95,10 +94,10 @@ export default function AirdropFormModal({
     const errors: any = {};
 
     if (!value.title) {
-      errors["title"] = "Title is required";
+      errors.title = "Title is required";
     }
     if (value.title && value.title.length > 200) {
-      errors["title"] = "Max length is 200";
+      errors.title = "Max length is 200";
     }
     if (value.tokenLogo && !URL_REGEX.test(value.tokenLogo)) {
       errors.tokenLogo = "Invalid URL format";
@@ -106,16 +105,26 @@ export default function AirdropFormModal({
     if (value.tokenLogo && value.tokenLogo.length > 200) {
       errors.tokenLogo = "Max length is 200";
     }
+    if (!value.tokenAddress) {
+      errors.tokenAddress = "Token address is required";
+    } else if (value.tokenAddress && (!isAddress(value.tokenAddress) || !token)) {
+      errors.tokenAddress = "Token address is invalid";
+    } else if (token.isError) {
+      errors.tokenAddress = token.error.message;
+    }
     return errors;
   };
+
   const initialValues: AirdropFormValues =
     airdropId && initialData
       ? { ...initialData, tokenLogo: initialData.tokenLogo || "" }
       : {
           title: "",
+          tokenAddress: "",
           templateName: TemplateNames.Standard,
           tokenLogo: "",
         };
+
   const formikProps = useFormik<AirdropFormValues>({
     enableReinitialize: true,
     validateOnChange: true,
@@ -124,6 +133,8 @@ export default function AirdropFormModal({
     validate: (value: AirdropFormValues) => validate(value),
   });
 
+  const token = useToken(formikProps.values.tokenAddress);
+
   return (
     <>
       <Modal
@@ -131,7 +142,6 @@ export default function AirdropFormModal({
         onClose={onClose}
         closeOnOverlayClick={false}
         blockScrollOnMount={false}
-        isCentered={true}
         size={"xl"}
       >
         <ModalOverlay />
@@ -163,6 +173,46 @@ export default function AirdropFormModal({
                       placeholder={"Airdrop title"}
                     />
                     <FormErrorMessage>{formikProps.errors.title}</FormErrorMessage>
+                  </FormControl>
+
+                  <FormControl
+                    mt={4}
+                    isInvalid={
+                      !!formikProps.errors.tokenAddress && !!formikProps.touched.tokenAddress
+                    }
+                  >
+                    <FormLabel htmlFor="tokenAddress" alignItems={"baseline"}>
+                      {t("airdrop.airdropForm.tokenAddress")}
+                      {/* <Tooltip
+                        hasArrow
+                        label={""}
+                      >
+                        <QuestionIcon mb={1} ml={1} />
+                      </Tooltip> */}
+                    </FormLabel>
+                    <Input
+                      id="tokenAddress"
+                      name="tokenAddress"
+                      readOnly={!!contractAddress}
+                      disabled={!!contractAddress}
+                      onBlur={formikProps.handleBlur}
+                      onChange={(event: React.ChangeEvent<any>) => {
+                        formikProps.setFieldTouched("amount");
+                        formikProps.handleChange(event);
+                        // console.log(formikProps.values);
+                      }}
+                      value={formikProps.values.tokenAddress ? formikProps.values.tokenAddress : ""}
+                      placeholder="e.g. 0x0123456789012345678901234567890123456789"
+                    />
+                    <FormErrorMessage>{formikProps.errors.tokenAddress}</FormErrorMessage>
+                    <Box>
+                      {token.isLoading && <Spinner />}
+                      {token.data && (
+                        <Text textAlign={"right"} fontSize={"sm"} mt={1} color={"gray.400"}>
+                          {token.data.name} ({token.data.symbol})
+                        </Text>
+                      )}
+                    </Box>
                   </FormControl>
 
                   <FormControl

@@ -61,6 +61,7 @@
       "headerCreation": "エアドロップの作成",
       "headerUpdate": "エアドロップの更新",
       "title": "エアドロップタイトル",
+      "tokenAddress": "エアドロップするトークンのアドレス",
       "templateName": "エアドロップの形式",
       "tokenLogo": "トークンのロゴURL",
       "register" :"作成する",
@@ -100,16 +101,17 @@
     "merkleTreePreview": {
       "heading": "対象者プレビュー",
       "totalAmount": "合計額",
-      "eligibleUsersNum" :"対象者人数",
+      "eligibleUsersNum" :"対象アドレス数",
       "address" :"アドレス",
       "amount" :"対象額",
-      "uploadListFileHint" :"リストファイルをアップロードしてください"
+      "uploadListFileHint" :"リストファイルをアップロードしてください",
+      "displayInMinUnit": "最小単位表記"
     },
     "snapshotForm": {
       "tokenAmount": "総エアドロップ額",
       "snapshotBlockNumber": "スナップショットブロック高",
       "minAmount": "受取権利に必要な最小保有額",
-      "snapshotTokenAddress": "スナップショットを取るトークンアドレス",
+      "snapshotTokenAddress": "スナップショットを取得するトークンアドレス",
       "ignoreList": "除外アドレスリスト（改行区切り）",
       "generate": "マークルツリーを作成する"
     },

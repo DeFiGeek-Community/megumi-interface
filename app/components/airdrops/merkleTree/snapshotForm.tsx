@@ -25,18 +25,24 @@ import {
   useDisclosure,
   useToast,
   ModalFooter,
+  Box,
+  Spinner,
+  Text,
+  Flex,
 } from "@chakra-ui/react";
 import { useUploadMerkletree } from "@/app/hooks/airdrops/useUploadMerkletree";
 import { isAddress } from "viem";
 import { useGenerateMerkleTree } from "@/app/hooks/airdrops/useGenerateMerkleTree";
 import PreviewList from "./PreviewList";
 import { MerkleDistributorInfo } from "@/app/types/airdrop";
+import useToken from "@/app/hooks/common/useToken";
+import { toMinUnit } from "@/app/utils/clientHelper";
 
 type SnapshotFormProps = {
   chainId: number;
   airdropId: string;
-  airdropTokenDecimals?: number;
-  airdropTokenSymbol?: string;
+  airdropTokenDecimals: number;
+  airdropTokenSymbol: string;
   callbacks?: {
     onSuccess?: () => void;
     onError?: (error: string) => void;
@@ -54,7 +60,7 @@ type FormValues = {
 export default function SnapshotForm({
   chainId,
   airdropId,
-  airdropTokenDecimals, // TODO
+  airdropTokenDecimals,
   airdropTokenSymbol,
   callbacks,
 }: SnapshotFormProps) {
@@ -90,11 +96,14 @@ export default function SnapshotForm({
     await generateMerkleTree({
       snapshotTokenAddress: data.snapshotTokenAddress as `0x${string}`,
       untilBlock: parseInt(data.snapshotBlockNumber),
-      totalAirdropAmount: data.tokenAmount,
+      totalAirdropAmount: toMinUnit(data.tokenAmount, airdropTokenDecimals).toString(),
       ignoreAddresses: data.ignoreList
         ? (data.ignoreList.trim().split(/\r?\n/) as `0x${string}`[])
         : [],
-      minAmount: data.minAmount,
+      minAmount:
+        snapshotToken.data && data.minAmount
+          ? toMinUnit(data.minAmount, snapshotToken.data.decimals).toString()
+          : undefined,
     });
     if (generateError) {
       toast({ title: generateError, status: "error" });
@@ -112,30 +121,35 @@ export default function SnapshotForm({
     try {
       BigInt(value.tokenAmount);
     } catch (e) {
-      errors["tokenAmount"] = "tokenAmount is invalid";
+      errors.tokenAmount = "tokenAmount is invalid";
     }
     if (!value.snapshotBlockNumber) {
-      errors["snapshotBlockNumber"] = "snapshotBlockNumber is required";
+      errors.snapshotBlockNumber = "snapshotBlockNumber is required";
     }
+
     if (!value.snapshotTokenAddress) {
-      errors["snapshotTokenAddress"] = "snapshotTokenAddress is required";
+      errors.snapshotTokenAddress = "snapshotTokenAddress address is required";
+    } else if (
+      value.snapshotTokenAddress &&
+      (!isAddress(value.snapshotTokenAddress) || !snapshotToken)
+    ) {
+      errors.snapshotTokenAddress = "snapshotTokenAddress address is invalid";
+    } else if (snapshotToken.isError) {
+      errors.snapshotTokenAddress = snapshotToken.error.message;
     }
-    if (value.snapshotTokenAddress && !isAddress(value.snapshotTokenAddress)) {
-      errors["snapshotTokenAddress"] = "snapshotTokenAddress is invalid";
-    }
-    if (value.minAmount) {
-      try {
-        BigInt(value.minAmount);
-      } catch (e) {
-        errors["minAmount"] = "minAmount is invalid";
-      }
+    if (
+      value.minAmount &&
+      snapshotToken.data &&
+      toMinUnit(value.minAmount, snapshotToken.data.decimals) === 0n
+    ) {
+      errors.minAmount = "minAmount is too small";
     }
 
     if (value.ignoreList) {
       let spl = value.ignoreList.trim().split(/\r?\n/);
       spl.forEach(function (elm) {
         if (!isAddress(elm)) {
-          errors["ignoreList"] = "ignoreList is invalid";
+          errors.ignoreList = "ignoreList is invalid";
         }
       });
     }
@@ -160,6 +174,8 @@ export default function SnapshotForm({
     merkleTree && onOpen();
   }, [merkleTree]);
 
+  const snapshotToken = useToken(formikProps.values.snapshotTokenAddress);
+
   return (
     <form onSubmit={formikProps.handleSubmit}>
       <HStack spacing={8} alignItems={"start"}>
@@ -171,29 +187,38 @@ export default function SnapshotForm({
             <FormLabel htmlFor="tokenAmount" alignItems={"baseline"}>
               {t("airdrop.snapshotForm.tokenAmount")}
             </FormLabel>
-            <Input
-              id="tokenAmount"
-              name="tokenAmount"
-              onBlur={formikProps.handleBlur}
-              type="number"
-              onChange={(e) => {
-                try {
-                  const val =
-                    e.target.value === "" ? e.target.value : BigInt(e.target.value).toString();
-                  formikProps.setFieldValue("tokenAmount", val);
-                } catch (e) {
-                  formikProps.setFieldValue("tokenAmount", "");
+            <Flex>
+              <NumberInput
+                flex="1"
+                id="tokenAmount"
+                name="tokenAmount"
+                onBlur={formikProps.handleBlur}
+                value={formikProps.values.tokenAmount}
+                onChange={(strVal: string, val: number) =>
+                  formikProps.setFieldValue(
+                    "tokenAmount",
+                    strVal && Number(strVal) === val ? strVal : isNaN(val) ? 0 : val,
+                  )
                 }
-              }}
-              value={formikProps.values.tokenAmount}
-              placeholder="Input the amount of token"
-            />
+              >
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+              <chakra.div px={2} minW={"4rem"} whiteSpace={"nowrap"}>
+                {airdropTokenSymbol}
+              </chakra.div>
+            </Flex>
             <FormErrorMessage>{formikProps.errors.tokenAmount}</FormErrorMessage>
           </FormControl>
 
           <FormControl
             mt={4}
-            isInvalid={!!formikProps.errors.tokenAmount && !!formikProps.touched.tokenAmount}
+            isInvalid={
+              !!formikProps.errors.snapshotBlockNumber && !!formikProps.touched.snapshotBlockNumber
+            }
           >
             <FormLabel alignItems={"baseline"}>
               {t("airdrop.snapshotForm.snapshotBlockNumber")}
@@ -201,7 +226,7 @@ export default function SnapshotForm({
 
             <NumberInput
               flex="1"
-              id={"snapshotBlockNumber"}
+              id="snapshotBlockNumber"
               name="snapshotBlockNumber"
               value={formikProps.values.snapshotBlockNumber}
               min={0}
@@ -224,33 +249,6 @@ export default function SnapshotForm({
 
           <FormControl
             mt={4}
-            isInvalid={!!formikProps.errors.minAmount && !!formikProps.touched.minAmount}
-          >
-            <FormLabel htmlFor="minAmount" alignItems={"baseline"}>
-              {t("airdrop.snapshotForm.minAmount")}
-            </FormLabel>
-            <Input
-              id="minAmount"
-              name="minAmount"
-              onBlur={formikProps.handleBlur}
-              type="number"
-              onChange={(e) => {
-                try {
-                  const val =
-                    e.target.value === "" ? e.target.value : BigInt(e.target.value).toString();
-                  formikProps.setFieldValue("minAmount", val);
-                } catch (e) {
-                  formikProps.setFieldValue("minAmount", "");
-                }
-              }}
-              value={formikProps.values.minAmount}
-              placeholder="Input minimum threthold amount for the airdrop eligibility"
-            />
-            <FormErrorMessage>{formikProps.errors.minAmount}</FormErrorMessage>
-          </FormControl>
-
-          <FormControl
-            mt={4}
             isInvalid={
               !!formikProps.errors.snapshotTokenAddress &&
               !!formikProps.touched.snapshotTokenAddress
@@ -268,6 +266,50 @@ export default function SnapshotForm({
               placeholder="e.g. 0x0123456789012345678901234567890123456789"
             />
             <FormErrorMessage>{formikProps.errors.snapshotTokenAddress}</FormErrorMessage>
+            <Box>
+              {snapshotToken.isLoading && <Spinner mt={1} textAlign={"right"} />}
+              {snapshotToken.data && (
+                <Text textAlign={"right"} fontSize={"sm"} mt={1} color={"gray.400"}>
+                  {snapshotToken.data.name} ({snapshotToken.data.symbol})
+                </Text>
+              )}
+            </Box>
+          </FormControl>
+
+          <FormControl
+            mt={4}
+            isInvalid={!!formikProps.errors.minAmount && !!formikProps.touched.minAmount}
+          >
+            <FormLabel htmlFor="minAmount" alignItems={"baseline"}>
+              {t("airdrop.snapshotForm.minAmount")}
+            </FormLabel>
+            <Flex alignItems={"baseline"}>
+              <NumberInput
+                flex="1"
+                id="minAmount"
+                name="minAmount"
+                onBlur={formikProps.handleBlur}
+                min={0}
+                step={0.001}
+                onChange={(strVal: string, val: number) =>
+                  formikProps.setFieldValue(
+                    "minAmount",
+                    strVal && Number(strVal) === val ? strVal : isNaN(val) ? 0 : val,
+                  )
+                }
+                value={formikProps.values.minAmount}
+              >
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+              <chakra.div px={2} minW={"4rem"} whiteSpace={"nowrap"}>
+                {snapshotToken.data && snapshotToken.data.symbol}
+              </chakra.div>
+            </Flex>
+            <FormErrorMessage>{formikProps.errors.minAmount}</FormErrorMessage>
           </FormControl>
 
           <FormControl
@@ -318,8 +360,7 @@ export default function SnapshotForm({
             <ModalHeader>{t("airdrop.merkleTreePreview.heading")}</ModalHeader>
             <ModalCloseButton />
             <ModalBody pb={6}>
-              {/* <PreviewList data={merkleTree} decimals={airdropTokenDecimals} /> */}
-              <PreviewList data={merkleTree} decimals={0} />
+              <PreviewList chainId={chainId} data={merkleTree} decimals={airdropTokenDecimals} />
             </ModalBody>
             <ModalFooter>
               <Button

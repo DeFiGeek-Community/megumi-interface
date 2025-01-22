@@ -22,6 +22,8 @@ type MerkletreeFormModalProps = {
   chainId: number;
   airdropId: string;
   ownerAddress: `0x${string}`;
+  tokenDecimals: number;
+  tokenSymbol: string;
   isOpen: boolean;
   onClose: () => void;
   refetchAirdrop: () => Promise<void>;
@@ -34,6 +36,8 @@ export default function MerkletreeFormModal({
   chainId,
   airdropId,
   ownerAddress,
+  tokenDecimals,
+  tokenSymbol,
   isOpen,
   onClose,
   refetchAirdrop,
@@ -59,7 +63,6 @@ export default function MerkletreeFormModal({
         onClose={onClose}
         closeOnOverlayClick={false}
         blockScrollOnMount={false}
-        isCentered={true}
         size={"2xl"}
       >
         <ModalOverlay />
@@ -75,13 +78,31 @@ export default function MerkletreeFormModal({
               </TabList>
               <TabPanels>
                 <TabPanel>
-                  <SnapshotForm chainId={chainId} airdropId={airdropId} callbacks={callbacks} />
+                  <SnapshotForm
+                    chainId={chainId}
+                    airdropId={airdropId}
+                    airdropTokenDecimals={tokenDecimals}
+                    airdropTokenSymbol={tokenSymbol}
+                    callbacks={callbacks}
+                  />
                 </TabPanel>
                 <TabPanel>
-                  <ManualForm chainId={chainId} airdropId={airdropId} callbacks={callbacks} />
+                  <ManualForm
+                    chainId={chainId}
+                    airdropId={airdropId}
+                    airdropTokenDecimals={tokenDecimals}
+                    airdropTokenSymbol={tokenSymbol}
+                    callbacks={callbacks}
+                  />
                 </TabPanel>
                 <TabPanel>
-                  <UploadForm chainId={chainId} airdropId={airdropId} callbacks={callbacks} />
+                  <UploadForm
+                    chainId={chainId}
+                    airdropId={airdropId}
+                    airdropTokenDecimals={tokenDecimals}
+                    airdropTokenSymbol={tokenSymbol}
+                    callbacks={callbacks}
+                  />
                 </TabPanel>
               </TabPanels>
             </Tabs>

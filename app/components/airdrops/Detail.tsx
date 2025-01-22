@@ -234,6 +234,9 @@ export default function AirdropDetail({
               contractRegisteredAt={airdrop.contractRegisteredAt}
               balanceOnContract={balanceOnContract}
               title={airdrop.title}
+              tokenAddress={airdrop.tokenAddress}
+              tokenSymbol={airdrop.tokenSymbol}
+              tokenDecimals={airdrop.tokenDecimals}
               templateName={airdrop.templateName}
               tokenLogo={airdrop.tokenLogo}
               refetchAirdrop={refetchAirdrop}
