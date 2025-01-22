@@ -1,8 +1,10 @@
 import type { Circus } from "@jest/types";
 import type { JestEnvironmentConfig, EnvironmentContext } from "@jest/environment";
 
-import { PrismaEnvironmentDelegate } from "@quramy/jest-prisma-core";
+import { JestPrisma, PrismaEnvironmentDelegate } from "@quramy/jest-prisma-core";
 import Environment from "jest-environment-node-single-context";
+import { PrismaClient } from "@prisma/client";
+import { DefaultArgs } from "@prisma/client/runtime/library";
 
 export default class PrismaEnvironment extends Environment {
   private readonly delegate: PrismaEnvironmentDelegate;
@@ -15,7 +17,9 @@ export default class PrismaEnvironment extends Environment {
   async setup() {
     const jestPrisma = await this.delegate.preSetup();
     await super.setup();
-    this.global.jestPrisma = jestPrisma;
+    this.global.jestPrisma = jestPrisma as unknown as JestPrisma<
+      PrismaClient<any, never, DefaultArgs>
+    >;
     this.global.TextEncoder = TextEncoder;
     this.global.TextDecoder = TextDecoder;
     this.global.Response = Response;

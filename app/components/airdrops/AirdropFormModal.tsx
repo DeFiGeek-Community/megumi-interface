@@ -37,7 +37,7 @@ type AirdropFormModalProps = {
   onClose: () => void;
   callback?: (airdrop: AirdropHex) => void;
   initialData?: Omit<AirdropFormValues, "tokenLogo"> & { tokenLogo: string | null };
-  contractAddress: `0x${string}` | null;
+  hasContract?: boolean;
 };
 
 type AirdropFormValues = {
@@ -55,7 +55,7 @@ export default function AirdropFormModal({
   onClose,
   callback,
   initialData,
-  contractAddress,
+  hasContract = false,
 }: AirdropFormModalProps) {
   const { t } = useTranslation();
   const toast = useToast({ position: "top-right", isClosable: true });
@@ -193,8 +193,8 @@ export default function AirdropFormModal({
                     <Input
                       id="tokenAddress"
                       name="tokenAddress"
-                      readOnly={!!contractAddress}
-                      disabled={!!contractAddress}
+                      readOnly={hasContract}
+                      disabled={hasContract}
                       onBlur={formikProps.handleBlur}
                       onChange={(event: React.ChangeEvent<any>) => {
                         formikProps.setFieldTouched("amount");

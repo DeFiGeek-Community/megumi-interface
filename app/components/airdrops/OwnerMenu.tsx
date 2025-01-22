@@ -129,7 +129,7 @@ export default function OwnerMenu({
                 tokenAddress,
                 tokenLogo,
               }}
-              contractAddress={contractAddress}
+              hasContract={!!contractAddress}
             />
           )}
         </HStack>
