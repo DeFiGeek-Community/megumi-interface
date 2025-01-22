@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import type { PublicClient } from "viem";
 import { prisma } from "@/prisma";
 import { authOptions } from "@/app/api/auth/authOptions";
-import { s3Client, PutObjectCommand } from "@/app/lib/aws";
+import { s3Client, PutObjectCommand, DeleteObjectCommand } from "@/app/lib/aws";
 import {
   AirdropNotFoundError,
   ContractAlreadyRegisteredError,
@@ -64,7 +64,7 @@ export async function POST(req: Request, { params }: { params: { chainId: string
     // }
   }
 
-  const itemKey = `${params.chainId}/${params.id}-merkletree.json`;
+  const itemKey = AirdropUtils.getMerkleTreeKey(params.chainId, params.id);
   const command = new PutObjectCommand({
     Body: buffer,
     Bucket: process.env.AWS_S3_BUCKET_NAME,
@@ -188,10 +188,22 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
         return NextResponse.json({ error: "Template type does not match" }, { status: 422 });
       }
 
+      // 5. Check if contract address is already registered on Megumi
+      // If true(registered), return 422
+      const tempAirdrop = await prisma.airdrop.findFirst({
+        where: { contractAddress: hexStringToUint8Array(contractAddress) },
+      });
+      if (tempAirdrop) {
+        return NextResponse.json(
+          { error: "This contract address is already registered on Megumi" },
+          { status: 422 },
+        );
+      }
+
       // TODO
       // Consider if contract address can be registered without merkle tree file
       // Currently, it throws an error if merkle tree file is not uploaded
-      // 5. Check if merkle tree is registered
+      // 6. Check if merkle tree is registered
       const merkletree = await AirdropUtils.getMerkleTreeFile(params.chainId, params.id);
       const isCorrectMerkleRoot = await AirdropUtils.validateMerkleRoot(
         merkletree,
@@ -208,10 +220,10 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
         );
       }
 
-      // 6. Fetch token address from the airdrop contract address
+      // 7. Fetch token address from the airdrop contract address
       const tokenAddress = await AirdropUtils.getTokenAddress(contractAddress, provider);
 
-      // 7. Fetch token information from the token contract address
+      // 8. Fetch token information from the token contract address
       let tokenName;
       let tokenSymbol;
       let tokenDecimals;
@@ -270,6 +282,13 @@ export async function DELETE(
     await prisma.airdrop.delete({
       where: { id: params.id },
     });
+
+    const deleteCommand = new DeleteObjectCommand({
+      Bucket: process.env.AWS_S3_BUCKET_NAME,
+      Key: AirdropUtils.getMerkleTreeKey(params.chainId, params.id),
+    });
+    const deleteResponse = await s3Client.send(deleteCommand);
+
     return NextResponse.json({ message: "Airdrop deleted successfully" }, { status: 200 });
   } catch (error: unknown) {
     return respondError(error);
