@@ -224,7 +224,7 @@ export const validateMerkleRoot = async (
 export const getMerkleTreeFile = async (chainId: string, airdropId: string) => {
   const command = new GetObjectCommand({
     Bucket: process.env.AWS_S3_BUCKET_NAME,
-    Key: `${chainId}/${airdropId}-merkletree.json`,
+    Key: getMerkleTreeKey(chainId, airdropId),
   });
 
   const response = await s3Client.send(command);
@@ -487,3 +487,6 @@ export async function processMerkleTree(
   });
   console.log(`[INFO] Finished merkle tree for airdrop ${airdropUUID}`);
 }
+
+export const getMerkleTreeKey = (chainId: number | string, airdropId: string) =>
+  `${chainId}/${airdropId}-merkletree.json`;

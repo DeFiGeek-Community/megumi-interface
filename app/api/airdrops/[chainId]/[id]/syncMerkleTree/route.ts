@@ -120,8 +120,7 @@ export async function POST(req: Request, { params }: { params: { chainId: string
   // Get merkletree file
   const command = new GetObjectCommand({
     Bucket: process.env.AWS_S3_BUCKET_NAME,
-    // TODO getMerkletreeKey(chainId, uuid)
-    Key: `${params.chainId}/${params.id}-merkletree.json`,
+    Key: AirdropUtils.getMerkleTreeKey(params.chainId, params.id),
   });
 
   let response: GetObjectCommandOutput | null;
