@@ -279,15 +279,14 @@ export async function DELETE(
   }
 
   try {
-    await prisma.airdrop.delete({
-      where: { id: params.id },
-    });
-
     const deleteCommand = new DeleteObjectCommand({
       Bucket: process.env.AWS_S3_BUCKET_NAME,
       Key: AirdropUtils.getMerkleTreeKey(params.chainId, params.id),
     });
     const deleteResponse = await s3Client.send(deleteCommand);
+    await prisma.airdrop.delete({
+      where: { id: params.id },
+    });
 
     return NextResponse.json({ message: "Airdrop deleted successfully" }, { status: 200 });
   } catch (error: unknown) {

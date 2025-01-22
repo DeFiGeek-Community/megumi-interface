@@ -69,19 +69,19 @@ export default function MerkletreeFormModal({
           <ModalBody pb={6}>
             <Tabs isFitted>
               <TabList>
-                <Tab fontSize={"xs"}>{t("airdrop.merkletreeForm.uploadListFile")}</Tab>
                 <Tab fontSize={"xs"}>{t("airdrop.merkletreeForm.snapshot")}</Tab>
                 <Tab fontSize={"xs"}>{t("airdrop.merkletreeForm.manual")}</Tab>
+                <Tab fontSize={"xs"}>{t("airdrop.merkletreeForm.uploadListFile")}</Tab>
               </TabList>
               <TabPanels>
-                <TabPanel>
-                  <UploadForm chainId={chainId} airdropId={airdropId} callbacks={callbacks} />
-                </TabPanel>
                 <TabPanel>
                   <SnapshotForm chainId={chainId} airdropId={airdropId} callbacks={callbacks} />
                 </TabPanel>
                 <TabPanel>
                   <ManualForm chainId={chainId} airdropId={airdropId} callbacks={callbacks} />
+                </TabPanel>
+                <TabPanel>
+                  <UploadForm chainId={chainId} airdropId={airdropId} callbacks={callbacks} />
                 </TabPanel>
               </TabPanels>
             </Tabs>

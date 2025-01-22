@@ -18,7 +18,6 @@ import { MerkleTreeData } from "@/app/types/airdrop";
 import * as AirdropUtils from "@/app/utils/airdrop";
 import { uuidToHex } from "@/app/utils/shared";
 
-// TODO
 // 1. Check if contrcat is deployed
 // 2. If deployed, get merkletree file
 // 3. Validate merkletree file

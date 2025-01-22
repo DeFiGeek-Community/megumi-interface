@@ -13,7 +13,15 @@ import {
   chakra,
   Link,
   Tooltip,
+  AlertDialog,
+  AlertDialogBody,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogContent,
+  AlertDialogOverlay,
+  useToast,
 } from "@chakra-ui/react";
+import { useRouter } from "next/navigation";
 import { CheckCircleIcon, DownloadIcon, WarningTwoIcon } from "@chakra-ui/icons";
 import ContractFormModal from "./ContractFormModal";
 import MerkletreeFormModal from "./merkleTree/MerkletreeFormModal";
@@ -24,6 +32,8 @@ import useWithdrawClaimFee from "@/app/hooks/airdrops/useWithdrawClaimFee";
 import { useBalance } from "wagmi";
 import AirdropFormModal from "./AirdropFormModal";
 import { TemplateNamesType } from "@/app/lib/constants/templates";
+import { useDeleteAirdrop } from "@/app/hooks/airdrops/useDeleteAirdrop";
+import { useRef } from "react";
 
 export default function OwnerMenu({
   chainId,
@@ -59,7 +69,9 @@ export default function OwnerMenu({
   tokenLogo: string | null;
   refetchAirdrop: () => Promise<void>;
 }) {
+  const router = useRouter();
   const { t } = useTranslation();
+  const toast = useToast({ position: "top-right", isClosable: true });
   const airdropModalDisclosure = useDisclosure();
   const merkletreeModalDisclosure = useDisclosure();
   const contractModalDisclosure = useDisclosure();
@@ -70,6 +82,19 @@ export default function OwnerMenu({
     chainId,
     address: contractAddress ? contractAddress : undefined,
   });
+  const { deleteAirdrop, loading: deleting } = useDeleteAirdrop(chainId, airdropId);
+  const deleteConfirmationDisclosure = useDisclosure();
+  const cancelRef = useRef<HTMLButtonElement | null>(null);
+  const callbacks = {
+    onSuccess: () => {
+      toast({ title: "Successfully deleted", status: "success" });
+      deleteConfirmationDisclosure.onClose();
+      router.push("/dashboard");
+    },
+    onError: (error: string) => {
+      toast({ title: error, status: "error" });
+    },
+  };
   return (
     <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4}>
       <VStack spacing={2} align="stretch">
@@ -250,6 +275,51 @@ export default function OwnerMenu({
               )}
             </>
           )}
+        </HStack>
+        <Divider />
+        <HStack justify="space-between" py={2}>
+          <Stack>
+            <Text fontWeight="medium"> {t("airdrop.ownerMenu.deleteAirdropHeading")}</Text>
+          </Stack>
+          <>
+            <Button
+              colorScheme="red"
+              isLoading={deleting}
+              onClick={deleteConfirmationDisclosure.onOpen}
+              py={2}
+            >
+              {t("airdrop.ownerMenu.deleteAirdrop")}
+            </Button>
+            <AlertDialog
+              isOpen={deleteConfirmationDisclosure.isOpen}
+              leastDestructiveRef={cancelRef}
+              onClose={deleteConfirmationDisclosure.onClose}
+            >
+              <AlertDialogOverlay>
+                <AlertDialogContent>
+                  <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                    {t("airdrop.ownerMenu.deleteAirdropHeading")}
+                  </AlertDialogHeader>
+
+                  <AlertDialogBody>{t("airdrop.ownerMenu.deleteAirdropHint")}</AlertDialogBody>
+
+                  <AlertDialogFooter>
+                    <Button ref={cancelRef} onClick={deleteConfirmationDisclosure.onClose}>
+                      {t("common.cancel")}
+                    </Button>
+                    <Button
+                      colorScheme="red"
+                      isLoading={deleting}
+                      onClick={() => deleteAirdrop(callbacks)}
+                      ml={3}
+                    >
+                      {t("airdrop.ownerMenu.deleteAirdrop")}
+                    </Button>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialogOverlay>
+            </AlertDialog>
+          </>
         </HStack>
       </VStack>
     </Box>

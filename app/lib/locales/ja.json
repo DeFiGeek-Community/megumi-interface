@@ -14,7 +14,8 @@
     "templateExplanation": {
       "LinearVesting": "請求可能額が時間経過と共に線形に増加し、べスティング終了日時に全額が請求できるようになります",
       "Standard": "いつでも全額の請求が可能です"
-    }
+    },
+    "cancel": "キャンセル"
   },
   "airdrops": {
     "title": "エアドロップ一覧"
@@ -91,7 +92,10 @@
       "title": "オーナーメニュー",
       "withdraw": "引き出す",
       "tokenBalance": "トークン残高",
-      "ethBalance": "手数料残高"
+      "ethBalance": "手数料残高",
+      "deleteAirdropHeading": "エアドロップの削除",
+      "deleteAirdrop": "エアドロップを削除する",
+      "deleteAirdropHint": "Megumiからエアドロップ情報が削除されます。削除後に再度Megumiに掲載する場合はコントラクトアドレスとエアドロップリストファイルを控えておき、既存コントラクトを紐づけてください。"
     },
     "merkleTreePreview": {
       "heading": "対象者プレビュー",
@@ -104,6 +108,7 @@
     "snapshotForm": {
       "tokenAmount": "総エアドロップ額",
       "snapshotBlockNumber": "スナップショットブロック高",
+      "minAmount": "受取権利に必要な最小保有額",
       "snapshotTokenAddress": "スナップショットを取るトークンアドレス",
       "ignoreList": "除外アドレスリスト（改行区切り）",
       "generate": "マークルツリーを作成する"
