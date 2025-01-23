@@ -40,7 +40,7 @@ export default class BalanceTree {
   }
 
   // returns the hex bytes32 values of the proof
-  public getProof(index: number | bigint, account: `0x${string}`, amount: bigint): string[] {
-    return this.tree.getHexProof(BalanceTree.toNode(index, account, amount));
+  public getProof(index: number | bigint, account: `0x${string}`, amount: bigint): `0x${string}`[] {
+    return this.tree.getHexProof(BalanceTree.toNode(index, account, amount)) as `0x${string}`[];
   }
 }
