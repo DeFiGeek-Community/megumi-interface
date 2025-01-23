@@ -37,7 +37,6 @@ type NewContractFormProps = {
   totalAirdropAmount: string | null;
   ownerAddress: `0x${string}`;
   tokenAddress: `0x${string}`;
-  merkleTreeRegisteredAt: Date | null;
   onClose: () => void;
   checkContractDeployment: (options?: {
     maxRetry?: number;
