@@ -9,7 +9,6 @@ export const useSyncMerkletree = (
   contractAddress: `0x${string}` | null,
   enabled: boolean = true,
 ) => {
-  const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,11 +17,14 @@ export const useSyncMerkletree = (
       maxRetry?: number;
       callbacks?: { onSuccess?: () => void; onError?: (error: string) => void };
     }) => {
+      // Not need to sync if already synced
+      if (!enabled) return;
+
       setLoading(true);
       setError(null);
 
       try {
-        const response = await fetch(`${API_URL}/${chainId}/${id}/syncMerkletree`, {
+        const response = await fetch(`${API_URL}/${chainId}/${id}/syncMerkleTree`, {
           method: "POST",
           body: JSON.stringify({ maxRetry: options?.maxRetry }),
         });
@@ -33,7 +35,6 @@ export const useSyncMerkletree = (
 
         const responseData = await response.json();
         options?.callbacks?.onSuccess?.();
-        // setStatus(responseData);
       } catch (err: unknown) {
         const message = getErrorMessage(error);
         setError(message);
@@ -46,10 +47,8 @@ export const useSyncMerkletree = (
   );
 
   useEffect(() => {
-    // Not need to sync if contract address is already set
-    if (!enabled || contractAddress) return;
     checkContractDeploymentAndSync();
   }, [chainId, id, contractAddress, enabled]);
 
-  return { checkContractDeploymentAndSync, status, loading, error };
+  return { checkContractDeploymentAndSync, loading, error };
 };

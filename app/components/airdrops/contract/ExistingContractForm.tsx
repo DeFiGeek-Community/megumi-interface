@@ -28,6 +28,7 @@ type NewContractFormProps = {
   templateName: TemplateNamesType;
   ownerAddress: `0x${string}`;
   tokenAddress: `0x${string}`;
+  merkleTreeRegisteredAt: Date | null;
   onClose: () => void;
   checkContractDeployment: (options?: {
     maxRetry?: number;
@@ -50,7 +51,10 @@ export default function ExistingContractForm({
 }: NewContractFormProps) {
   const { t } = useTranslation();
   const toast = useToast({ position: "top-right", isClosable: true });
-  const { merkleRoot } = useFetchMerkleTree(chainId, airdropId);
+  const { merkleRoot } = useFetchMerkleTree({
+    chainId,
+    airdropId,
+  });
   const { update, loading: updating, error: updateError } = useUpdateContractAddress();
   const handleSubmit = () => {
     update({

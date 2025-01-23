@@ -10,7 +10,17 @@ type Callbacks = {
   onError?: (error: string) => void;
 };
 // If store is true, the merkle tree will be stored in the state (For the memory efficiency)
-export const useFetchMerkleTree = (chainId: number, airdropId: string, store: boolean = false) => {
+export const useFetchMerkleTree = ({
+  chainId,
+  airdropId,
+  store = false,
+  enabled = true,
+}: {
+  chainId: number;
+  airdropId: string;
+  store?: boolean;
+  enabled?: boolean;
+}) => {
   const [merkleRoot, setMerkleRoot] = useState<`0x${string}` | null>(null);
   const [merkleTree, setMerkleTree] = useState<MerkleDistributorInfo | null>(null);
   const [loading, setLoading] = useState(false);
@@ -18,6 +28,8 @@ export const useFetchMerkleTree = (chainId: number, airdropId: string, store: bo
 
   const fetchMerkleTree = useCallback(
     async (callbacks?: Callbacks) => {
+      if (!enabled) return;
+
       setLoading(true);
       try {
         const res = await fetch(`${API_URL}/${chainId}/${airdropId}/merkletree`);
@@ -25,12 +37,10 @@ export const useFetchMerkleTree = (chainId: number, airdropId: string, store: bo
         const data = await res.json();
 
         if (data.error) {
-          setError(data.error);
-          callbacks?.onError?.(data.error);
-        } else {
-          callbacks?.onSuccess?.();
+          throw new Error(data.error);
         }
         store && setMerkleTree(data);
+        callbacks?.onSuccess?.();
         setMerkleRoot(data.merkleRoot);
         setLoading(false);
       } catch (error: unknown) {
