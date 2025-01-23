@@ -19,10 +19,22 @@ import {
   AlertDialogHeader,
   AlertDialogContent,
   AlertDialogOverlay,
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalCloseButton,
   useToast,
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
-import { CheckCircleIcon, DownloadIcon, WarningIcon, WarningTwoIcon } from "@chakra-ui/icons";
+import {
+  CheckCircleIcon,
+  DownloadIcon,
+  Search2Icon,
+  WarningIcon,
+  WarningTwoIcon,
+} from "@chakra-ui/icons";
 import ContractFormModal from "./contract/ContractFormModal";
 import MerkletreeFormModal from "./merkleTree/MerkletreeFormModal";
 import { formatAmount, formatDate } from "@/app/utils/clientHelper";
@@ -34,6 +46,8 @@ import AirdropFormModal from "./AirdropFormModal";
 import { TemplateNamesType } from "@/app/lib/constants/templates";
 import { useDeleteAirdrop } from "@/app/hooks/airdrops/useDeleteAirdrop";
 import { useRef } from "react";
+import PreviewList from "./merkleTree/PreviewList";
+import { useFetchMerkleTree } from "@/app/hooks/airdrops/useFetchMerkleTree";
 
 export default function OwnerMenu({
   chainId,
@@ -80,6 +94,7 @@ export default function OwnerMenu({
   const toast = useToast({ position: "top-right", isClosable: true });
   const airdropModalDisclosure = useDisclosure();
   const merkletreeModalDisclosure = useDisclosure();
+  const merkletreePreviewDisclosure = useDisclosure();
   const contractModalDisclosure = useDisclosure();
   const sync = useSyncMerkletree(chainId, airdropId, contractAddress, !!merkleTreeRegisteredAt);
   const withdrawToken = useWithdrawToken({ chainId, contractAddress });
@@ -101,6 +116,8 @@ export default function OwnerMenu({
       toast({ title: error, status: "error" });
     },
   };
+
+  const { merkleTree, loading, error } = useFetchMerkleTree(chainId, airdropId, true);
   return (
     <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4}>
       <VStack spacing={2} align="stretch">
@@ -120,7 +137,6 @@ export default function OwnerMenu({
               airdropId={airdropId}
               ownerAddress={ownerAddress}
               isOpen={airdropModalDisclosure.isOpen}
-              onOpen={airdropModalDisclosure.onOpen}
               onClose={airdropModalDisclosure.onClose}
               callback={refetchAirdrop}
               initialData={{
@@ -152,7 +168,38 @@ export default function OwnerMenu({
                       <Icon as={DownloadIcon} mr={1} mb={1} />
                     </Link>
                   </Tooltip>
+                  <Tooltip label={t("airdrop.preview")}>
+                    <Link onClick={merkletreePreviewDisclosure.onOpen} ml={2}>
+                      <Icon as={Search2Icon} mr={1} mb={1} />
+                    </Link>
+                  </Tooltip>
                 </Text>
+
+                {merkleTree && merkletreePreviewDisclosure.isOpen && (
+                  <Modal
+                    isOpen={merkletreePreviewDisclosure.isOpen}
+                    onClose={merkletreePreviewDisclosure.onClose}
+                    closeOnOverlayClick={false}
+                    blockScrollOnMount={false}
+                    isCentered={true}
+                    size={"2xl"}
+                    scrollBehavior={"inside"}
+                  >
+                    <ModalOverlay />
+                    <ModalContent>
+                      <ModalHeader>{t("airdrop.merkleTreePreview.heading")}</ModalHeader>
+                      <ModalCloseButton />
+                      <ModalBody pb={6}>
+                        <PreviewList
+                          chainId={chainId}
+                          data={merkleTree}
+                          decimals={tokenDecimals}
+                          symbol={tokenSymbol}
+                        />
+                      </ModalBody>
+                    </ModalContent>
+                  </Modal>
+                )}
                 <chakra.span fontSize={"xs"} ml={2} color={"gray.400"}>
                   {formatDate(merkleTreeRegisteredAt)}
                 </chakra.span>
@@ -266,7 +313,7 @@ export default function OwnerMenu({
                 colorScheme="blue"
                 size={"sm"}
                 isLoading={sync.loading}
-                disabled={!merkleTreeRegisteredAt}
+                disabled={!merkleTreeRegisteredAt || sync.loading}
                 onClick={contractModalDisclosure.onOpen}
               >
                 {t("airdrop.register")}
@@ -278,6 +325,7 @@ export default function OwnerMenu({
                   ownerAddress={ownerAddress}
                   tokenAddress={tokenAddress}
                   totalAirdropAmount={totalAirdropAmount}
+                  templateName={templateName}
                   isOpen={contractModalDisclosure.isOpen}
                   onOpen={contractModalDisclosure.onOpen}
                   onClose={contractModalDisclosure.onClose}
@@ -300,6 +348,7 @@ export default function OwnerMenu({
             <Button
               colorScheme="red"
               isLoading={deleting}
+              disabled={deleting}
               onClick={deleteConfirmationDisclosure.onOpen}
               py={2}
             >
@@ -326,6 +375,7 @@ export default function OwnerMenu({
                     <Button
                       colorScheme="red"
                       isLoading={deleting}
+                      disabled={deleting}
                       onClick={() => deleteAirdrop(callbacks)}
                       ml={3}
                     >

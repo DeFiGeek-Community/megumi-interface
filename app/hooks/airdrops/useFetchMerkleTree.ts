@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { API_BASE_URL } from "@/app/lib/constants";
 import { getErrorMessage } from "@/app/utils/shared";
+import { MerkleDistributorInfo } from "@/app/types/airdrop";
 
 const API_URL = `${API_BASE_URL}/airdrops`;
 
@@ -8,12 +9,14 @@ type Callbacks = {
   onSuccess?: () => void;
   onError?: (error: string) => void;
 };
-export const useFetchMerkleRoot = (chainId: number, airdropId: string) => {
+// If store is true, the merkle tree will be stored in the state (For the memory efficiency)
+export const useFetchMerkleTree = (chainId: number, airdropId: string, store: boolean = false) => {
   const [merkleRoot, setMerkleRoot] = useState<`0x${string}` | null>(null);
+  const [merkleTree, setMerkleTree] = useState<MerkleDistributorInfo | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchMerklrRoot = useCallback(
+  const fetchMerkleTree = useCallback(
     async (callbacks?: Callbacks) => {
       setLoading(true);
       try {
@@ -27,6 +30,7 @@ export const useFetchMerkleRoot = (chainId: number, airdropId: string) => {
         } else {
           callbacks?.onSuccess?.();
         }
+        store && setMerkleTree(data);
         setMerkleRoot(data.merkleRoot);
         setLoading(false);
       } catch (error: unknown) {
@@ -40,8 +44,8 @@ export const useFetchMerkleRoot = (chainId: number, airdropId: string) => {
   );
 
   useEffect(() => {
-    fetchMerklrRoot();
+    fetchMerkleTree();
   }, []);
 
-  return { fetchMerklrRoot, merkleRoot, loading, error };
+  return { fetchMerkleTree, merkleTree, merkleRoot, loading, error };
 };
