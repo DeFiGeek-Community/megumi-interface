@@ -237,6 +237,7 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
       // Update only contract address when contract address is given
       updateParams = {
         contractAddress: hexStringToUint8Array(contractAddress),
+        contractRegisteredAt: new Date(),
       };
     } else {
       // Pattern B: Update airdrop information
