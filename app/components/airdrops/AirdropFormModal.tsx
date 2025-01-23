@@ -197,7 +197,6 @@ export default function AirdropFormModal({
                       onChange={(event: React.ChangeEvent<any>) => {
                         formikProps.setFieldTouched("amount");
                         formikProps.handleChange(event);
-                        // console.log(formikProps.values);
                       }}
                       value={formikProps.values.tokenAddress ? formikProps.values.tokenAddress : ""}
                       placeholder="e.g. 0x0123456789012345678901234567890123456789"
