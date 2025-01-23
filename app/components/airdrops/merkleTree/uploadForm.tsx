@@ -73,30 +73,24 @@ export default function UploadForm({
     await upload(payload, { ...callbacks, onSuccess });
   };
   const handleSubmit = async (data: MerkletreeFileFormValues) => {
-    // formikProps.validateForm();
-    if (!file) return;
+    await formikProps.validateForm();
+    if (!file || !formikProps.isValid) return;
+
     setMerkleTreeLoading(true);
     const reader = new FileReader();
     reader.onload = (evt) => {
-      const text = evt.target?.result;
-      if (typeof text === "string") {
-        try {
-          const data = JSON.parse(text);
-          const { valid, error } = validateMerkleTree(data);
-          if (!valid) {
-            formikProps.setErrors({ fileinput: error?.message });
-            return;
-          }
-          formikProps.setErrors({});
-          setMerkleTree(data);
-          onOpen();
-        } catch (error: unknown) {
-          toast({ title: getErrorMessage(error), status: "error" });
-        }
-      } else {
-        formikProps.setErrors({ fileinput: "Invalid format" });
+      try {
+        const text = evt.target?.result;
+        const data = JSON.parse(text as string);
+        const { error } = validateMerkleTree(data);
+        if (error) throw error;
+        setMerkleTree(data);
+        onOpen();
+      } catch (error: unknown) {
+        toast({ title: getErrorMessage(error), status: "error" });
+      } finally {
+        setMerkleTreeLoading(false);
       }
-      setMerkleTreeLoading(false);
     };
     reader.readAsText(file);
   };
@@ -105,7 +99,7 @@ export default function UploadForm({
     const errors: any = {};
 
     if (!file) {
-      errors["file"] = "File is required";
+      errors.file = "File is required";
     }
 
     return errors;
@@ -201,8 +195,8 @@ export default function UploadForm({
                 w={"full"}
                 variant="solid"
                 colorScheme="green"
-                isLoading={uploading}
-                disabled={!formikProps.isValid}
+                isLoading={uploading || merkleTreeLoading}
+                disabled={!formikProps.isValid || uploading || merkleTreeLoading}
                 onClick={() => uploadGeneratedMerkleTree(merkleTree)}
               >
                 {t("airdrop.merkletreeForm.register")}

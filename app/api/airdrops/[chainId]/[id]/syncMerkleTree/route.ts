@@ -146,9 +146,9 @@ export async function POST(req: Request, { params }: { params: { chainId: string
     const error = getErrorMessage(e);
     return NextResponse.json({ error }, { status: 422 });
   }
-  const { valid, error: invalidError } = AirdropUtils.validateMerkleTree(merkletree);
+  const { error: invalidError } = AirdropUtils.validateMerkleTree(merkletree);
 
-  if (!valid) {
+  if (!invalidError) {
     return respondError(invalidError);
   }
 

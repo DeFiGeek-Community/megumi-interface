@@ -358,16 +358,13 @@ export function getAirdropAddressFromUUID({
   });
 }
 
-export const validateMerkleTree = (
-  data: any,
-): { valid: boolean; error?: InvalidMerkletreeError } => {
+export const validateMerkleTree = (data: any): { error?: InvalidMerkletreeError } => {
   const hashRegex = /^0x[a-fA-F0-9]{64}$/;
   const hexRegex = /^0x[a-fA-F0-9]+$/;
   const maxEntries = 10000;
   const isHashString = (str: string) => hashRegex.test(str);
   const isHexString = (str: string) => hexRegex.test(str);
-  let valid = false;
-  let errors = [];
+  let error;
 
   // Check if root object has the required keys
   if (
@@ -376,43 +373,42 @@ export const validateMerkleTree = (
     !("merkleRoot" in data) ||
     !("claims" in data)
   ) {
-    errors.push("Missing required root keys.");
+    return { error: new InvalidMerkletreeError("Missing required root keys.") };
   }
 
   // Validate airdropAmount
   if (typeof data.airdropAmount !== "string") {
-    errors.push("airdropAmount must be a numeric string.");
+    return { error: new InvalidMerkletreeError("airdropAmount must be a numeric string.") };
   }
   try {
     BigInt(data.airdropAmount);
   } catch (e) {
-    errors.push("airdropAmount must be a numeric string.");
+    return { error: new InvalidMerkletreeError("airdropAmount must be a numeric string.") };
   }
 
   // Validate merkleRoot
   if (typeof data.merkleRoot !== "string" || !isHashString(data.merkleRoot)) {
-    errors.push("merkleRoot must be a valid hex string.");
+    return { error: new InvalidMerkletreeError("merkleRoot must be a valid hex string.") };
   }
 
   // Validate claims
   if (typeof data.claims !== "object") {
-    errors.push("claims must be an object.");
+    return { error: new InvalidMerkletreeError("claims must be an object.") };
   }
 
   if (Object.entries(data.claims).length === 0) {
-    errors.push("claims must not be empty.");
+    return { error: new InvalidMerkletreeError("claims must not be empty.") };
   }
 
   if (Object.entries(data.claims).length > maxEntries) {
     // If the claims exceed 10,000 entries, return an error immediately
-    errors.push("claims must not exceed 10,000 entries.");
-    return { valid, error: new InvalidMerkletreeError(errors.join(" ")) };
+    return { error: new InvalidMerkletreeError("claims must not exceed 10,000 entries.") };
   }
 
   for (const [address, claim] of Object.entries(data.claims)) {
     // Check if the address is a valid address
     if (!isAddress(address)) {
-      errors.push(`Claim address '${address}' is not a valid address.`);
+      error = new InvalidMerkletreeError(`Claim address '${address}' is not a valid address.`);
       break;
     }
 
@@ -424,19 +420,25 @@ export const validateMerkleTree = (
       !("amount" in claim) ||
       !("proof" in claim)
     ) {
-      errors.push(`Claim for address '${address}' is missing required keys.`);
+      error = new InvalidMerkletreeError(
+        `Claim for address '${address}' is missing required keys.`,
+      );
       break;
     }
 
     // Validate index
     if (typeof claim.index !== "number" || claim.index < 0) {
-      errors.push(`Claim index for address '${address}' must be a non-negative number.`);
+      error = new InvalidMerkletreeError(
+        `Claim index for address '${address}' must be a non-negative number.`,
+      );
       break;
     }
 
     // Validate amount
     if (typeof claim.amount !== "string" || !isHexString(claim.amount)) {
-      errors.push(`Claim amount for address '${address}' must be a valid hex string.`);
+      error = new InvalidMerkletreeError(
+        `Claim amount for address '${address}' must be a valid hex string.`,
+      );
       break;
     }
 
@@ -445,16 +447,18 @@ export const validateMerkleTree = (
       !Array.isArray(claim.proof) ||
       !claim.proof.every((item) => typeof item === "string" && isHashString(item))
     ) {
-      errors.push(`Claim proof for address '${address}' must be an array of valid hex strings.`);
+      error = new InvalidMerkletreeError(
+        `Claim proof for address '${address}' must be an array of valid hex strings.`,
+      );
       break;
     }
   }
 
-  if (errors.length > 0) {
-    return { valid, error: new InvalidMerkletreeError(errors.join(" ")) };
+  if (error) {
+    return { error: new InvalidMerkletreeError(error) };
   }
 
-  return { valid: true };
+  return {};
 };
 
 export async function processMerkleTree(

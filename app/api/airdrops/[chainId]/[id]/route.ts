@@ -45,8 +45,8 @@ export async function POST(req: Request, { params }: { params: { chainId: string
   const json = JSON.parse(buffer.toString("utf-8"));
 
   // Validate merkle tree format
-  const { valid, error: formatError } = AirdropUtils.validateMerkleTree(json);
-  if (!valid) {
+  const { error: formatError } = AirdropUtils.validateMerkleTree(json);
+  if (formatError) {
     return respondError(formatError);
   }
 
