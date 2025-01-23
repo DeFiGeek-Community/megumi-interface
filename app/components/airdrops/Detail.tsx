@@ -227,7 +227,7 @@ export default function AirdropDetail({
             <OwnerMenu
               chainId={parseInt(chainId)}
               airdropId={airdrop.id}
-              ownerAddress={address}
+              ownerAddress={session.user.address}
               contractAddress={airdrop.contractAddress}
               totalAirdropAmount={airdrop.totalAirdropAmount}
               merkleTreeRegisteredAt={airdrop.merkleTreeRegisteredAt}
