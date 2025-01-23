@@ -37,7 +37,6 @@ export default function MyAirdrops({
             chainId={chainId}
             ownerAddress={signedInUser}
             isOpen={isOpen}
-            onOpen={onOpen}
             onClose={onClose}
             callback={myAirdrops.unshiftAirdrop}
           />
