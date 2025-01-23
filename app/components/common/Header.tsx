@@ -1,4 +1,10 @@
 "use client";
+import { useEffect, useState } from "react";
+import NextLink from "next/link";
+import { useSession } from "next-auth/react";
+import { useTranslation } from "react-i18next";
+import { normalize } from "viem/ens";
+import { useAccount, useEnsAvatar, useEnsName, useDisconnect } from "wagmi";
 import {
   chakra,
   Tag,
@@ -18,15 +24,9 @@ import {
   MenuItem,
   Button,
 } from "@chakra-ui/react";
-import NextLink from "next/link";
-import { useTranslation } from "react-i18next";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { useAccount, useEnsAvatar, useEnsName, useDisconnect } from "wagmi";
-import { normalize } from "viem/ens";
-import { useSession } from "next-auth/react";
-import ConnectButton from "./ConnectButton";
-import { getEllipsizedAddress } from "@/app/lib/utils";
-import { useEffect, useState } from "react";
+import ConnectButton from "@/app/components/common/ConnectButton";
+import { getEllipsizedAddress } from "@/app/utils/clientHelper";
 
 type HeaderProps = {
   title?: string;

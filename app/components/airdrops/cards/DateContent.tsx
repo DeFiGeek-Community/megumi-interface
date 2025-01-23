@@ -1,9 +1,14 @@
 import { Text } from "@chakra-ui/react";
 import { Row } from "@/app/lib/chakra/chakraUtils";
-import { DateContentProps } from "@/app/interfaces/dashboard";
 import { useTranslation } from "react-i18next";
+import { formatDate } from "@/app/utils/clientHelper";
 
-export default function DateContent({ creationDate, publicationDate }: DateContentProps) {
+export interface DateContentProps {
+  createdAt: Date;
+  contractRegisteredAt: Date | null;
+}
+
+export default function DateContent({ createdAt, contractRegisteredAt }: DateContentProps) {
   const { t } = useTranslation();
   return (
     <Row
@@ -13,10 +18,10 @@ export default function DateContent({ creationDate, publicationDate }: DateConte
       paddingX={{ base: "1", sm: "1.5" }}
     >
       <Text fontSize="sm" textAlign="right" flex="1" paddingRight={4}>
-        {t("dashboard.creationDate")} {creationDate}
+        {t("dashboard.creationDate")} {formatDate(createdAt, "yyyy/MM/dd")}
       </Text>
       <Text fontSize="sm" textAlign="right">
-        {t("dashboard.publicationDate")} {publicationDate}
+        {t("dashboard.publicationDate")} {formatDate(contractRegisteredAt, "yyyy/MM/dd")}
       </Text>
     </Row>
   );

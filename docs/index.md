@@ -6,7 +6,9 @@
 erDiagram
     airdrops {
         UUID id PK "default uuid_generate_v4()"
-        bytea contract_address "UNIQUE"
+        VARCHAR title "NOT NULL"
+        INT chainId "NOT NULL"
+        bytea contract_address "UNIQUE with chainId"
         bytea template_name "NOT NULL"
         bytea owner "NOT NULL"
         bytea token_address "NOT NULL"
@@ -151,11 +153,12 @@ sequenceDiagram
 - 自エアドロ編集
   - オフチェーンデータ編集
     - タイトル
-    - マークルツリーの変更（コントラクトの登録前のみ）
+    - マークルツリーの変更（コントラクト登録後はmerkle rootが一致する場合のみ）
     - テンプレート（コントラクトの登録前のみ）
   - コントラクトの編集
     - トークンのデポジット
     - トークンの引き出し
+- 自エアドロ削除（megumi上から消える）
 
 ※3) オフチェーンデータ登録時に uuid 発行し、それを salt として create2 でコントラクトアドレス事前決定し紐づけておく。コントラクトのデプロイ時に salt を引数で渡す
 

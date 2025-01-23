@@ -1,41 +1,30 @@
-import { Box, Text } from "@chakra-ui/react";
-import { AirdropInfoProps } from "@/app/interfaces/dashboard";
+import { Box, Tag, Text, Tooltip } from "@chakra-ui/react";
 import { useTranslation } from "react-i18next";
-import { formatTemplateType } from "@/app/lib/airdrop/airdropUtils";
+import { ellipsisText, formatTemplateType } from "@/app/utils/clientHelper";
+import { TemplateNamesType } from "@/app/lib/constants/templates";
+import { QuestionIcon } from "@chakra-ui/icons";
 
-export default function AirdropInfo({ airdropTitle, templateType }: AirdropInfoProps) {
+export interface AirdropInfoProps {
+  airdropTitle: string;
+  templateNamesType: TemplateNamesType;
+}
+
+export default function AirdropInfo({ airdropTitle, templateNamesType }: AirdropInfoProps) {
   const { t } = useTranslation();
   return (
     <>
       <Text fontSize={{ base: "25px", sm: "30px" }} fontWeight={{ base: "600", sm: "400" }}>
-        {airdropTitle}
+        {ellipsisText(airdropTitle)}
       </Text>
-      <Box
-        bg="gray.500"
-        borderRadius="md"
-        px={{ base: "1", sm: "3" }}
-        py={{ base: "0.5", sm: "1" }}
-        mt="1.5"
-        display="inline-flex"
-        alignItems="center"
-      >
-        <Text fontSize={{ base: "sm", sm: "md" }} marginRight="1">
-          {t(`dashboard.${formatTemplateType(templateType)}`)}
-        </Text>
-        <Box
-          bg="white"
-          borderRadius="full"
-          width={{ base: "4", sm: "5" }}
-          height={{ base: "4", sm: "5" }}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
+      <Tag>
+        {t(`dashboard.${formatTemplateType(templateNamesType)}`)}
+        <Tooltip
+          hasArrow
+          label={t(`common.templateExplanation.${formatTemplateType(templateNamesType)}`)}
         >
-          <Text fontSize="sm" fontWeight="bold" color="black">
-            ?
-          </Text>
-        </Box>
-      </Box>
+          <QuestionIcon ml={1} />
+        </Tooltip>
+      </Tag>
     </>
   );
 }

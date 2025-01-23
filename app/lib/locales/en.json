@@ -10,7 +10,12 @@
     "manageAirdrop": "Manage Airdrop",
     "viewAllAirdrops": "View All Airdrops",
     "transactionSent": "Transaction sent!",
-    "transactionConfirmed": "Transaction confirmed!"
+    "transactionConfirmed": "Transaction confirmed!",
+    "templateExplanation": {
+      "LinearVesting": "請求可能額が時間経過と共に線形に増加し、べスティング終了日時に全額が請求できるようになります",
+      "Standard": "いつでも全額の請求が可能です"
+    },
+    "cancel": "キャンセル"
   },
   "airdrops": {
     "title": "Airdrops"
@@ -33,7 +38,7 @@
     "yourAirdrops": "あなたのエアドロップ"
   },
   "airdrop": {
-    "airdropContract": "エアドロップコントラクト",
+    "airdropContract": "コントラクト",
     "airdropList": "エアドロップリスト",
     "basicInformation": "基本情報",
     "edit": "編集する",
@@ -43,12 +48,80 @@
     "claimable": "請求可能額",
     "claimed": "請求済み",
     "contract": "コントラクト",
-    "feeNotice": "A claim fee of 0.0001 ETH and a platform fee of 0.0001 ETH, totaling 0.0002 ETH, will be required in addition to the transaction fee.",
-    "ownerMenu": "オーナーメニュー",
+    "feeNotice": "請求時にクレーム手数料0.0001ETH、プラットフォーム手数料0.0001ETH、合計0.0002ETHがトランザクション手数料の他に必要です",
     "register": "登録する",
-    "tokenAddress": "トークンアドレス",
+    "tokenAddress": "トークン",
     "totalAmount": "合計",
     "unregistered": "未登録",
-    "yourAllocatedAmount": "あなたの割り当て額"
+    "registered": "登録済み",
+    "download": "ダウンロード",
+    "preview": "プレビュー",
+    "yourAllocatedAmount": "あなたの割り当て額",
+    "contractBalance": "コントラクト残高",
+    "airdropForm": {
+      "headerCreation": "エアドロップの作成",
+      "headerUpdate": "エアドロップの更新",
+      "title": "エアドロップタイトル",
+      "tokenAddress": "エアドロップするトークンのアドレス",
+      "templateName": "エアドロップの形式",
+      "tokenLogo": "トークンのロゴURL",
+      "register" :"作成する",
+      "update" :"更新する"
+    },
+    "contractForm": {
+      "registerContract": "コントラクト登録",
+      "newContract": "新規コントラクトのデプロイ",
+      "existingContract": "既存コントラクトを紐付け",
+      "tokenAddress": "エアドロップするトークンのアドレス",
+      "depositAmount": "デポジットするトークン額",
+      "type": "エアドロップの形式",
+      "vestingDeadline": "べスティング期間終了日時",
+      "merkleroot": "マークルルート",
+      "approve": "トークンを承認する",
+      "confirm": "入力内容の確認",
+      "deploy": "コントラクトをデプロイする",
+      "balance": "残高",
+      "new": "新規コントラクトのデプロイ",
+      "existing": "既存コントラクトを紐付け",
+      "existingContractAddress": "紐づける既存コントラクトアドレス",
+      "attach": "コントラクトをエアドロップに紐づける"
+    },
+    "merkletreeForm": {
+      "generate": "生成する",
+      "register": "登録する",
+      "uploadListFile" :"リストファイルをアップロード",
+      "manual" :"マニュアル入力",
+      "snapshot" :"スナップショットから作成",
+      "uploadListFileHint" :"リストファイルをアップロードしてください"
+    },
+    "ownerMenu": {
+      "title": "オーナーメニュー",
+      "withdraw": "引き出す",
+      "tokenBalance": "トークン残高",
+      "ethBalance": "手数料残高",
+      "deleteAirdropHeading": "エアドロップの削除",
+      "deleteAirdrop": "エアドロップを削除する",
+      "deleteAirdropHint": "Megumiからエアドロップ情報が削除されます。削除後に再度Megumiに掲載する場合はコントラクトアドレスとエアドロップリストファイルを控えておき、既存コントラクトを紐づけてください。"
+    },
+    "merkleTreePreview": {
+      "heading": "対象者プレビュー",
+      "totalAmount": "合計額",
+      "eligibleUsersNum" :"対象アドレス数",
+      "address" :"アドレス",
+      "amount" :"対象額",
+      "uploadListFileHint" :"リストファイルをアップロードしてください",
+      "displayInMinUnit": "最小単位表記"
+    },
+    "snapshotForm": {
+      "tokenAmount": "総エアドロップ額",
+      "snapshotBlockNumber": "スナップショットブロック高",
+      "minAmount": "受取権利に必要な最小保有額",
+      "snapshotTokenAddress": "スナップショットを取得するトークンアドレス",
+      "ignoreList": "除外アドレスリスト（改行区切り）",
+      "generate": "マークルツリーを作成する"
+    },
+    "manualForm": {
+      "text": "1行ずつ対象アドレスと配布額をカンマ区切りで入力してください"
+    }
   }
 }
