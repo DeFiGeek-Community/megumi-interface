@@ -14,13 +14,17 @@ export const useSyncMerkletree = (
   const [error, setError] = useState<string | null>(null);
 
   const checkContractDeploymentAndSync = useCallback(
-    async (callbacks?: { onSuccess?: () => void; onError?: (error: string) => void }) => {
+    async (options?: {
+      maxRetry?: number;
+      callbacks?: { onSuccess?: () => void; onError?: (error: string) => void };
+    }) => {
       setLoading(true);
       setError(null);
 
       try {
         const response = await fetch(`${API_URL}/${chainId}/${id}/syncMerkletree`, {
           method: "POST",
+          body: JSON.stringify({ maxRetry: options?.maxRetry }),
         });
         if (!response.ok) {
           const errorData = await response.json();
@@ -28,12 +32,12 @@ export const useSyncMerkletree = (
         }
 
         const responseData = await response.json();
-        callbacks?.onSuccess?.();
+        options?.callbacks?.onSuccess?.();
         // setStatus(responseData);
       } catch (err: unknown) {
         const message = getErrorMessage(error);
         setError(message);
-        callbacks?.onError?.(message);
+        options?.callbacks?.onError?.(message);
       } finally {
         setLoading(false);
       }

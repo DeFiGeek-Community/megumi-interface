@@ -326,7 +326,8 @@ export default function SnapshotForm({
               onBlur={formikProps.handleBlur}
               onChange={formikProps.handleChange}
               value={formikProps.values.ignoreList}
-              placeholder="0x0123456789012345678901234567890123456789"
+              placeholder="0x0123456789012345678901234567890123456789
+              0x0123456789012345678901234567890123456789"
             />
             <FormErrorMessage>{formikProps.errors.ignoreList}</FormErrorMessage>
           </FormControl>

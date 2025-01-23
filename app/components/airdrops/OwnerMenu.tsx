@@ -23,7 +23,7 @@ import {
 } from "@chakra-ui/react";
 import { useRouter } from "next/navigation";
 import { CheckCircleIcon, DownloadIcon, WarningIcon, WarningTwoIcon } from "@chakra-ui/icons";
-import ContractFormModal from "./ContractFormModal";
+import ContractFormModal from "./contract/ContractFormModal";
 import MerkletreeFormModal from "./merkleTree/MerkletreeFormModal";
 import { formatAmount, formatDate } from "@/app/utils/clientHelper";
 import { useSyncMerkletree } from "@/app/hooks/airdrops/useSyncMerkletree";

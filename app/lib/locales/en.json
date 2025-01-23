@@ -79,7 +79,9 @@
       "approve": "トークンを承認する",
       "confirm": "入力内容の確認",
       "deploy": "コントラクトをデプロイする",
-      "balance": "残高"
+      "balance": "残高",
+      "new": "新規コントラクトのデプロイ",
+      "existing": "既存コントラクトを紐付け"
     },
     "merkletreeForm": {
       "generate": "生成する",

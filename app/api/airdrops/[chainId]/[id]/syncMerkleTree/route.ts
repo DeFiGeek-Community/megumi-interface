@@ -60,7 +60,11 @@ export async function POST(req: Request, { params }: { params: { chainId: string
     // TODO
     // Extract to util
     // loop X times and wait for the contract to be deployed
-    const MAX_RETRY = 10;
+    const body = await req.json();
+    const { maxRetry } = body;
+    const maxRetryInt = parseInt(maxRetry);
+    const LIMIT = 10;
+    const MAX_RETRY = isNaN(maxRetryInt) || maxRetryInt > LIMIT ? 1 : maxRetryInt;
     const INTERVAL = 1000;
     let bytecode: GetCodeReturnType | null;
     for (let i = 0; i < MAX_RETRY; i++) {
