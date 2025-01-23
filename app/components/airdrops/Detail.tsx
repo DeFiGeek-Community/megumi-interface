@@ -240,6 +240,7 @@ export default function AirdropDetail({
               totalAirdropAmount={airdrop.totalAirdropAmount}
               merkleTreeRegisteredAt={airdrop.merkleTreeRegisteredAt}
               contractRegisteredAt={airdrop.contractRegisteredAt}
+              lastSyncedAt={airdrop.lastSyncedAt}
               balanceOnContract={balanceOnContract}
               title={airdrop.title}
               tokenAddress={airdrop.tokenAddress}

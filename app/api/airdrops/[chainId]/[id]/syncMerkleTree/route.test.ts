@@ -39,7 +39,7 @@ afterEach(async () => {
   await new Promise((resolve) => setTimeout(resolve, 500));
 });
 
-describe("POST /api/airdrops/:id/syncMerkletree", () => {
+describe("POST /api/airdrops/:id/syncMerkleTree", () => {
   test("No session Sync merkle tree file", async () => {
     const airdrop = await jestPrisma.client.airdrop.create({
       data: {

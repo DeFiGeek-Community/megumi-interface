@@ -57,6 +57,7 @@ export default function OwnerMenu({
   totalAirdropAmount,
   merkleTreeRegisteredAt,
   contractRegisteredAt,
+  lastSyncedAt,
   balanceOnContract,
   title,
   tokenAddress,
@@ -73,6 +74,7 @@ export default function OwnerMenu({
   totalAirdropAmount: string | null;
   merkleTreeRegisteredAt: Date | null;
   contractRegisteredAt: Date | null;
+  lastSyncedAt: Date | null;
   balanceOnContract:
     | {
         decimals: number;
@@ -96,7 +98,8 @@ export default function OwnerMenu({
   const merkletreeModalDisclosure = useDisclosure();
   const merkletreePreviewDisclosure = useDisclosure();
   const contractModalDisclosure = useDisclosure();
-  const sync = useSyncMerkletree(chainId, airdropId, contractAddress, !!merkleTreeRegisteredAt);
+  const shouldSync = !!merkleTreeRegisteredAt && !lastSyncedAt; //  merkle tree is registered and not synced
+  const sync = useSyncMerkletree(chainId, airdropId, contractAddress, shouldSync);
   const withdrawToken = useWithdrawToken({ chainId, contractAddress });
   const withdrawClaimFee = useWithdrawClaimFee({ chainId, contractAddress });
   const feeBalance = useBalance({
@@ -117,11 +120,12 @@ export default function OwnerMenu({
     },
   };
 
-  const { merkleTree, fetchMerkleTree, loading, error } = useFetchMerkleTree(
+  const { merkleTree, fetchMerkleTree, loading, error } = useFetchMerkleTree({
     chainId,
     airdropId,
-    true,
-  );
+    store: true,
+    enabled: !!merkleTreeRegisteredAt,
+  });
   return (
     <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4}>
       <VStack spacing={2} align="stretch">
@@ -271,7 +275,9 @@ export default function OwnerMenu({
           {contractAddress ? (
             <>
               {/* <Button
-                onClick={() => sync.checkContractDeploymentAndSync({ onSuccess: refetchAirdrop })}
+                onClick={() =>
+                  sync.checkContractDeploymentAndSync({ callbacks: { onSuccess: refetchAirdrop } })
+                }
               >
                 Manual sync
               </Button> */}
