@@ -33,7 +33,6 @@ type AirdropFormModalProps = {
   airdropId?: string; // Edit mode if airdropId is provided
   ownerAddress: `0x${string}`;
   isOpen: boolean;
-  onOpen: () => void;
   onClose: () => void;
   callback?: (airdrop: AirdropHex) => void;
   initialData?: Omit<AirdropFormValues, "tokenLogo"> & { tokenLogo: string | null };
@@ -51,7 +50,6 @@ export default function AirdropFormModal({
   airdropId,
   ownerAddress,
   isOpen,
-  onOpen,
   onClose,
   callback,
   initialData,
