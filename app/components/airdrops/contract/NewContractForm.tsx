@@ -150,7 +150,7 @@ export default function NewContractForm({
             mt={4}
             isInvalid={!!formikProps.errors.tokenAddress && !!formikProps.touched.tokenAddress}
           >
-            <FormLabel htmlFor="token" alignItems={"baseline"}>
+            <FormLabel fontSize={"xs"} htmlFor="token" alignItems={"baseline"}>
               {t("airdrop.contractForm.tokenAddress")}
               {/* <Tooltip
                         hasArrow
@@ -182,7 +182,7 @@ export default function NewContractForm({
             isInvalid={!!formikProps.errors.amount && !!formikProps.touched.amount}
           >
             <Flex justifyContent={"space-between"}>
-              <FormLabel alignItems={"baseline"}>
+              <FormLabel fontSize={"xs"} alignItems={"baseline"}>
                 {t("airdrop.contractForm.depositAmount")}
               </FormLabel>
             </Flex>
@@ -243,7 +243,7 @@ export default function NewContractForm({
             mt={4}
             isInvalid={!!formikProps.errors.tokenAddress && !!formikProps.touched.tokenAddress}
           >
-            <FormLabel htmlFor="merkleroot" alignItems={"baseline"}>
+            <FormLabel fontSize={"xs"} htmlFor="merkleroot" alignItems={"baseline"}>
               {t("airdrop.contractForm.merkleroot")}
               {/* <Tooltip
                         hasArrow

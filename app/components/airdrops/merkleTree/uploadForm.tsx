@@ -21,6 +21,7 @@ import {
   useDisclosure,
   useToast,
   ModalFooter,
+  Text,
 } from "@chakra-ui/react";
 import { FiFile } from "react-icons/fi";
 import { useUploadMerkletree } from "@/app/hooks/airdrops/useUploadMerkletree";
@@ -124,9 +125,9 @@ export default function UploadForm({
     <form onSubmit={formikProps.handleSubmit}>
       <HStack spacing={8} alignItems={"start"}>
         <chakra.div w={"full"}>
-          <FormControl isInvalid={!file && formikProps.submitCount > 0}>
-            <p>{t("airdrop.merkletreeForm.uploadListFileHint")}</p>
-            <InputGroup>
+          <FormControl mt={4} isInvalid={!file && formikProps.submitCount > 0}>
+            <Text fontSize={"xs"}>{t("airdrop.merkletreeForm.uploadListFileHint")}</Text>
+            <InputGroup mt={2}>
               <InputLeftElement pointerEvents="none" children={<Icon as={FiFile} />} />
               <input
                 type="file"

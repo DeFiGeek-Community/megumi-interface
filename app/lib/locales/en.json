@@ -87,6 +87,7 @@
       "attach": "コントラクトをエアドロップに紐づける"
     },
     "merkletreeForm": {
+      "heading": "エアドロップ対象者リストの作成",
       "generate": "生成する",
       "register": "登録する",
       "uploadListFile" :"リストファイルをアップロード",

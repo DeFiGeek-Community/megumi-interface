@@ -1,5 +1,6 @@
 "use client";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { isAddress } from "viem";
 import { useFormik } from "formik";
 import { useTranslation } from "react-i18next";
 import {
@@ -29,14 +30,15 @@ import {
   Spinner,
   Text,
   Flex,
+  Switch,
 } from "@chakra-ui/react";
 import { useUploadMerkletree } from "@/app/hooks/airdrops/useUploadMerkletree";
-import { isAddress } from "viem";
 import { useGenerateMerkleTree } from "@/app/hooks/airdrops/useGenerateMerkleTree";
-import PreviewList from "./PreviewList";
 import { MerkleDistributorInfo } from "@/app/types/airdrop";
-import useToken from "@/app/hooks/common/useToken";
 import { toMinUnit } from "@/app/utils/clientHelper";
+import { useBlockNumber } from "@/app/hooks/common/useBlockNumber";
+import useToken from "@/app/hooks/common/useToken";
+import PreviewList from "./PreviewList";
 
 type SnapshotFormProps = {
   chainId: number;
@@ -65,7 +67,6 @@ export default function SnapshotForm({
   callbacks,
 }: SnapshotFormProps) {
   const { t } = useTranslation();
-  const toast = useToast({ position: "top-right", isClosable: true });
   const {
     generateMerkleTree,
     merkleTree,
@@ -77,8 +78,10 @@ export default function SnapshotForm({
     loading: uploading,
     error: uploadError,
   } = useUploadMerkletree(chainId, airdropId);
-
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { fetchBlockNumber, data: blockData, loading: blockDataLoading } = useBlockNumber(chainId);
+  const [dateInput, setDateInput] = useState<boolean>(false);
+  const [date, setDate] = useState<string>("");
 
   const onSuccess = () => {
     callbacks?.onSuccess?.();
@@ -93,6 +96,7 @@ export default function SnapshotForm({
   };
 
   const handleSubmit = async (data: FormValues) => {
+    if (generating || uploading || blockDataLoading) return;
     await generateMerkleTree(
       {
         snapshotTokenAddress: data.snapshotTokenAddress as `0x${string}`,
@@ -117,7 +121,7 @@ export default function SnapshotForm({
     const errors: any = {};
 
     if (!value.tokenAmount) {
-      errors["tokenAmount"] = "tokenAmount is required";
+      errors.tokenAmount = "tokenAmount is required";
     }
     try {
       BigInt(value.tokenAmount);
@@ -175,6 +179,23 @@ export default function SnapshotForm({
     merkleTree && onOpen();
   }, [merkleTree]);
 
+  useEffect(() => {
+    if (!blockData?.block) return;
+    formikProps.setFieldValue("snapshotBlockNumber", blockData.block.toString());
+  }, [blockData]);
+
+  useEffect(() => {
+    if (!dateInput) {
+      setDate("");
+    }
+  }, [dateInput]);
+
+  useEffect(() => {
+    if (date) {
+      fetchBlockNumber(date);
+    }
+  }, [date]);
+
   const snapshotToken = useToken(formikProps.values.snapshotTokenAddress);
 
   return (
@@ -185,7 +206,7 @@ export default function SnapshotForm({
             mt={4}
             isInvalid={!!formikProps.errors.tokenAmount && !!formikProps.touched.tokenAmount}
           >
-            <FormLabel htmlFor="tokenAmount" alignItems={"baseline"}>
+            <FormLabel fontSize={"xs"} htmlFor="tokenAmount" alignItems={"baseline"}>
               {t("airdrop.snapshotForm.tokenAmount")}
             </FormLabel>
             <Flex>
@@ -221,31 +242,63 @@ export default function SnapshotForm({
               !!formikProps.errors.snapshotBlockNumber && !!formikProps.touched.snapshotBlockNumber
             }
           >
-            <FormLabel alignItems={"baseline"}>
-              {t("airdrop.snapshotForm.snapshotBlockNumber")}
-            </FormLabel>
+            <Flex w={"full"} justifyContent={"space-between"}>
+              <FormLabel fontSize={"xs"} alignItems={"baseline"}>
+                {t("airdrop.snapshotForm.snapshotBlockNumber")}
+              </FormLabel>
 
-            <NumberInput
-              flex="1"
-              id="snapshotBlockNumber"
-              name="snapshotBlockNumber"
-              value={formikProps.values.snapshotBlockNumber}
-              min={0}
-              max={Number.MAX_SAFE_INTEGER}
-              onBlur={formikProps.handleBlur}
-              onChange={(strVal: string, val: number) =>
-                formikProps.setFieldValue(
-                  "snapshotBlockNumber",
-                  strVal && Number(strVal) === val ? strVal : isNaN(val) ? 0 : val,
-                )
-              }
-            >
-              <NumberInputField />
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
+              <Switch
+                fontSize={"xs"}
+                isChecked={dateInput}
+                onChange={() => setDateInput(!dateInput)}
+                display={"flex"}
+                alignItems={"center"}
+              >
+                日付からブロック高を取得
+              </Switch>
+            </Flex>
+
+            <HStack spacing={2}>
+              {dateInput && (
+                <>
+                  <Input
+                    flex={1}
+                    type="date"
+                    value={date}
+                    max={new Date().toISOString().split("T")[0]}
+                    onChange={(e) => setDate(e.target.value)}
+                  ></Input>
+                  <chakra.span fontSize={"xs"} color={"gray.400"}>
+                    00:00:00 (UTC)
+                  </chakra.span>
+                </>
+              )}
+
+              <NumberInput
+                flex={1}
+                isReadOnly={dateInput}
+                isDisabled={dateInput}
+                id="snapshotBlockNumber"
+                name="snapshotBlockNumber"
+                value={formikProps.values.snapshotBlockNumber}
+                min={0}
+                max={Number.MAX_SAFE_INTEGER}
+                onBlur={formikProps.handleBlur}
+                onChange={(strVal: string, val: number) =>
+                  formikProps.setFieldValue(
+                    "snapshotBlockNumber",
+                    strVal && Number(strVal) === val ? strVal : isNaN(val) ? 0 : val,
+                  )
+                }
+              >
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+              {blockDataLoading && <Spinner />}
+            </HStack>
           </FormControl>
 
           <FormControl
@@ -255,7 +308,7 @@ export default function SnapshotForm({
               !!formikProps.touched.snapshotTokenAddress
             }
           >
-            <FormLabel htmlFor="snapshotTokenAddress" alignItems={"baseline"}>
+            <FormLabel fontSize={"xs"} htmlFor="snapshotTokenAddress" alignItems={"baseline"}>
               {t("airdrop.snapshotForm.snapshotTokenAddress")}
             </FormLabel>
             <Input
@@ -281,7 +334,7 @@ export default function SnapshotForm({
             mt={4}
             isInvalid={!!formikProps.errors.minAmount && !!formikProps.touched.minAmount}
           >
-            <FormLabel htmlFor="minAmount" alignItems={"baseline"}>
+            <FormLabel fontSize={"xs"} htmlFor="minAmount" alignItems={"baseline"}>
               {t("airdrop.snapshotForm.minAmount")}
             </FormLabel>
             <Flex alignItems={"baseline"}>
@@ -317,7 +370,7 @@ export default function SnapshotForm({
             mt={4}
             isInvalid={!!formikProps.errors.ignoreList && !!formikProps.touched.ignoreList}
           >
-            <FormLabel htmlFor="ignoreList" alignItems={"baseline"}>
+            <FormLabel fontSize={"xs"} htmlFor="ignoreList" alignItems={"baseline"}>
               {t("airdrop.snapshotForm.ignoreList")}
             </FormLabel>
             <Textarea
@@ -341,7 +394,7 @@ export default function SnapshotForm({
           variant="solid"
           colorScheme="green"
           type="submit"
-          isLoading={generating || uploading}
+          isLoading={generating || uploading || blockDataLoading}
           disabled={!formikProps.isValid}
         >
           {t("airdrop.merkletreeForm.generate")}

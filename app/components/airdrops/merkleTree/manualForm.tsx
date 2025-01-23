@@ -117,7 +117,7 @@ export default function ManualForm({
       <HStack spacing={8} alignItems={"start"}>
         <chakra.div w={"full"}>
           <FormControl mt={4} isInvalid={!!formikProps.errors.text && !!formikProps.touched.text}>
-            <FormLabel htmlFor="text" alignItems={"baseline"}>
+            <FormLabel fontSize={"xs"} htmlFor="text" alignItems={"baseline"}>
               {t("airdrop.manualForm.text")}
             </FormLabel>
             <Textarea

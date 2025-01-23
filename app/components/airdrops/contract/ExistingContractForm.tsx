@@ -148,7 +148,7 @@ export default function ExistingContractForm({
               !!formikProps.errors.contractAddress && !!formikProps.touched.contractAddress
             }
           >
-            <FormLabel htmlFor="contractAddress" alignItems={"baseline"}>
+            <FormLabel fontSize={"xs"} htmlFor="contractAddress" alignItems={"baseline"}>
               {t("airdrop.contractForm.existingContractAddress")}
               {/* <Tooltip
                         hasArrow

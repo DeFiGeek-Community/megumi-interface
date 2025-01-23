@@ -158,7 +158,7 @@ export default function AirdropFormModal({
                     mt={4}
                     isInvalid={!!formikProps.errors.title && !!formikProps.touched.title}
                   >
-                    <FormLabel htmlFor="title" alignItems={"baseline"}>
+                    <FormLabel fontSize={"xs"} htmlFor="title" alignItems={"baseline"}>
                       {t("airdrop.airdropForm.title")}
                     </FormLabel>
                     <Input
@@ -179,7 +179,7 @@ export default function AirdropFormModal({
                       !!formikProps.errors.tokenAddress && !!formikProps.touched.tokenAddress
                     }
                   >
-                    <FormLabel htmlFor="tokenAddress" alignItems={"baseline"}>
+                    <FormLabel fontSize={"xs"} htmlFor="tokenAddress" alignItems={"baseline"}>
                       {t("airdrop.airdropForm.tokenAddress")}
                       {/* <Tooltip
                         hasArrow
@@ -217,7 +217,7 @@ export default function AirdropFormModal({
                     mt={4}
                     isInvalid={!!formikProps.errors.tokenLogo && !!formikProps.touched.tokenLogo}
                   >
-                    <FormLabel htmlFor="tokenLogo" alignItems={"baseline"}>
+                    <FormLabel fontSize={"xs"} htmlFor="tokenLogo" alignItems={"baseline"}>
                       {t("airdrop.airdropForm.tokenLogo")}
                     </FormLabel>
                     <Input
@@ -233,7 +233,7 @@ export default function AirdropFormModal({
                   </FormControl>
 
                   <FormControl mt={4}>
-                    <FormLabel htmlFor="templateName" alignItems={"baseline"}>
+                    <FormLabel fontSize={"xs"} htmlFor="templateName" alignItems={"baseline"}>
                       {t("airdrop.airdropForm.templateName")}
                     </FormLabel>
                     <Select

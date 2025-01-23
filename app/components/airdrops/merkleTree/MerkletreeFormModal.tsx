@@ -67,7 +67,7 @@ export default function MerkletreeFormModal({
       >
         <ModalOverlay />
         <ModalContent>
-          <ModalHeader>{t("airdrop.merkletreeForm.register")}</ModalHeader>
+          <ModalHeader>{t("airdrop.merkletreeForm.heading")}</ModalHeader>
           <ModalCloseButton />
           <ModalBody pb={6}>
             <Tabs isFitted>

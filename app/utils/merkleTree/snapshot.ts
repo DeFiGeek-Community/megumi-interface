@@ -69,10 +69,11 @@ async function fetchHolders(
   snapshotBlockNumber: number,
   maxEntries: number = 10000,
 ) {
+  if (!process.env.COVALENT_API_KEY) throw new Error("COVALENT_API_KEY is not set");
   const BASE_URL = `https://api.covalenthq.com/v1/${chainId}/tokens/`;
   const TOKEN_HOLDERS_URL = "/token_holders/?";
   let param = new URLSearchParams({
-    key: process.env.COVALENT_API_KEY as string,
+    key: process.env.COVALENT_API_KEY,
     "block-height": `${snapshotBlockNumber}`,
     "page-size": "1000",
   });
