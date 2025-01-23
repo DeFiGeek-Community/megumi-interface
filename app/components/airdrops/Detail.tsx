@@ -15,7 +15,7 @@ import {
   Tag,
   Tooltip,
 } from "@chakra-ui/react";
-import { useRequireAccount } from "@/app/hooks/common/useRequireAccount";
+import ConnectButton from "@/app/components/common/ConnectButton";
 import { useIsMounted } from "@/app/hooks/common/useIsMounted";
 import { useTranslation } from "react-i18next";
 import { ExternalLinkIcon, QuestionIcon } from "@chakra-ui/icons";
@@ -30,7 +30,7 @@ import Claim from "@/app/components/airdrops/Claim";
 import OwnerMenu from "@/app/components/airdrops/OwnerMenu";
 import type { AirdropHex } from "@/app/types/airdrop";
 import { API_BASE_URL } from "@/app/lib/constants";
-import { useBalance } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import { TokenLogo } from "../common/TokenLogo";
 
 export default function AirdropDetail({
@@ -40,12 +40,7 @@ export default function AirdropDetail({
   chainId: string;
   initAirdrop: AirdropHex;
 }) {
-  const {
-    address,
-    isConnecting,
-    isReconnecting,
-    isConnected: isConnectedRaw,
-  } = useRequireAccount();
+  const { address, isConnecting: isConnectedRaw } = useAccount();
   const { data: session } = useSession();
   const isMounted = useIsMounted();
   const { t } = useTranslation();
@@ -72,7 +67,7 @@ export default function AirdropDetail({
     token: airdrop.tokenAddress || "0x",
   });
 
-  if (!isMounted || !address)
+  if (!isMounted)
     return (
       <Center>
         <Spinner />
@@ -85,7 +80,7 @@ export default function AirdropDetail({
       <VStack spacing="4">
         <Box width={{ base: "100%", md: "50%" }}>
           {/* Header Section */}
-          <Box borderRadius="md" boxShadow="md" p={{ base: "0", lg: "4" }} mb={4}>
+          <Box borderRadius="md" p={{ base: "0", lg: "4" }} mb={4}>
             <HStack spacing={3} mb={4}>
               <TokenLogo
                 width={"96px"}
@@ -206,7 +201,20 @@ export default function AirdropDetail({
             </Flex>
           </Box>
 
-          {airdrop.contractAddress && (
+          {!address && (
+            <Flex
+              bg="#2E3748"
+              borderRadius="md"
+              boxShadow="md"
+              p={4}
+              mb={4}
+              justifyContent={"center"}
+            >
+              <ConnectButton requireSignIn={false} label={t("common.connectWallet")} size="sm" />
+            </Flex>
+          )}
+
+          {address && airdrop.contractAddress && (
             <Claim
               chainId={chainId}
               address={address}

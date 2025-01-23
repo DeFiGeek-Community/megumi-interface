@@ -1,7 +1,7 @@
 "use client";
 import { chakra, Heading, Divider, Card, CardBody, Container } from "@chakra-ui/react";
 
-export default function Render404() {
+export default function NotFound() {
   return (
     <Container maxW={"container.md"} py={8}>
       <Card p={8}>
