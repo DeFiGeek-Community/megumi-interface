@@ -148,7 +148,7 @@ export async function POST(req: Request, { params }: { params: { chainId: string
   }
   const { error: invalidError } = AirdropUtils.validateMerkleTree(merkletree);
 
-  if (!invalidError) {
+  if (invalidError) {
     return respondError(invalidError);
   }
 
