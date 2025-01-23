@@ -154,6 +154,8 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
     }
 
     let updateParams;
+
+    // Pattern A: Update contract address if contract address is given
     if (contractAddress) {
       // 1. Check if contract is already registered
       if (airdrop.contractAddress) {
@@ -162,7 +164,6 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
           { status: 422 },
         );
       }
-      // try {
       // 2. Check if the contract is registered in Factory
       const isRegistered = await AirdropUtils.isRegisteredAirdrop(contractAddress, provider);
       if (!isRegistered) {
@@ -238,24 +239,47 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
         contractAddress: hexStringToUint8Array(contractAddress),
       };
     } else {
-      if (airdrop.contractAddress && tokenAddress) {
-        // When tokenAddress is given, check if the token address is consistent with the contract
-        const tokenAddressInContract = await AirdropUtils.getTokenAddress(
-          contractAddress,
-          provider,
-        );
-        if (tokenAddressInContract.toLowerCase() !== tokenAddress.toLowerCase()) {
-          return NextResponse.json(
-            { error: "Token address is not consistent with the contract" },
-            { status: 422 },
+      // Pattern B: Update airdrop information
+      if (
+        tokenAddress &&
+        tokenAddress.toLowerCase() !== uint8ArrayToHexString(airdrop.tokenAddress).toLowerCase()
+      ) {
+        // Pattern B-1: Update airdrop information and token information when token address is given
+        if (airdrop.contractAddress) {
+          // When tokenAddress is given, check if the token address is consistent with the contract
+          const tokenAddressInContract = await AirdropUtils.getTokenAddress(
+            contractAddress,
+            provider,
           );
+          if (tokenAddressInContract.toLowerCase() !== tokenAddress.toLowerCase()) {
+            return NextResponse.json(
+              { error: "Token address is not consistent with the contract" },
+              { status: 422 },
+            );
+          }
         }
+        // Fetch token information from the token contract address
+        const token = await getTokenInfo(tokenAddress, provider);
+        const tokenName = token.tokenName;
+        const tokenSymbol = token.tokenSymbol;
+        const tokenDecimals = token.tokenDecimals;
+        updateParams = {
+          title,
+          templateName: hexStringToUint8Array(templateName),
+          tokenAddress: hexStringToUint8Array(tokenAddress),
+          tokenName,
+          tokenSymbol,
+          tokenDecimals,
+          tokenLogo,
+        };
+      } else {
+        // Pattern B-2: Update basic airdrop information
+        updateParams = {
+          title,
+          templateName: hexStringToUint8Array(templateName),
+          tokenLogo,
+        };
       }
-      updateParams = {
-        title,
-        tokenLogo,
-        templateName: hexStringToUint8Array(templateName),
-      };
     }
 
     const updatedAirdrop = await prisma.airdrop.update({
