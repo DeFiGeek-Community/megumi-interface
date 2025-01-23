@@ -37,6 +37,7 @@ type NewContractFormProps = {
   totalAirdropAmount: string | null;
   ownerAddress: `0x${string}`;
   tokenAddress: `0x${string}`;
+  merkleTreeRegisteredAt: Date | null;
   onClose: () => void;
   checkContractDeployment: (options?: {
     maxRetry?: number;
@@ -61,7 +62,10 @@ export default function NewContractForm({
   refetchAirdrop,
 }: NewContractFormProps) {
   const { t } = useTranslation();
-  const { merkleRoot, loading, error } = useFetchMerkleTree(chainId, airdropId);
+  const { merkleRoot, loading, error } = useFetchMerkleTree({
+    chainId,
+    airdropId,
+  });
   const handleSubmit = () => {
     writeFn.write({
       onSuccess: () => {
@@ -77,10 +81,8 @@ export default function NewContractForm({
     if (!isAddress(value.tokenAddress)) {
       errors.tokenAddress = "Token address is required";
     }
-    if (!value.amount) {
-      errors.amount = "Amount is required";
-    }
-    if (balance && token && toMinUnit(value.amount, token.decimals) > balance) {
+
+    if (value.amount && balance && token && toMinUnit(value.amount, token.decimals) > balance) {
       errors.amount = "Amount exceeds balance";
     }
     if (merkleRoot === null) {
@@ -193,7 +195,7 @@ export default function NewContractForm({
                 id="amount"
                 name="amount"
                 value={formikProps.values.amount}
-                min={0.01}
+                min={0}
                 step={0.01}
                 max={Number.MAX_SAFE_INTEGER}
                 onBlur={formikProps.handleBlur}
@@ -266,6 +268,9 @@ export default function NewContractForm({
             </HStack>
             <FormErrorMessage>{formikProps.errors.merkleRoot}</FormErrorMessage>
           </FormControl>
+          <chakra.p mt="2" fontSize={"xs"} color={"whiteAlpha.700"}>
+            ※ {t("airdrop.feeNoticeOwner")}
+          </chakra.p>
         </chakra.div>
       </HStack>
 
@@ -280,7 +285,7 @@ export default function NewContractForm({
             isLoading={writeFn.status === "pending" || waitResult?.isLoading}
             disabled={
               !token ||
-              !Number(formikProps.values.amount) ||
+              isNaN(Number(formikProps.values.amount)) ||
               !writeFn.writeContract ||
               !formikProps.isValid ||
               prepareFn.isPending
