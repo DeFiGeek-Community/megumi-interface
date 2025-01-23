@@ -1,6 +1,5 @@
 "use client";
 import { useEffect } from "react";
-import { Session } from "next-auth";
 import { useFormik } from "formik";
 import { erc20Abi, isAddress } from "viem";
 import { useReadContract } from "wagmi";
@@ -18,7 +17,6 @@ import {
   NumberInput,
   NumberInputStepper,
   NumberDecrementStepper,
-  useToast,
   Input,
   Spinner,
   Box,
@@ -31,10 +29,9 @@ import { formatAmount, toMinUnit } from "@/app/utils/clientHelper";
 import { uuidToHex } from "@/app/utils/shared";
 import { TemplateType } from "@/app/lib/constants/templates";
 import useDeployAirdrop from "@/app/hooks/airdrops/useDeployAirdrop";
-import { useFetchMerkleRoot } from "@/app/hooks/airdrops/useFetchMerkleRoot";
+import { useFetchMerkleTree } from "@/app/hooks/airdrops/useFetchMerkleTree";
 
 type NewContractFormProps = {
-  session: Session;
   chainId: number;
   airdropId: string;
   totalAirdropAmount: string | null;
@@ -54,7 +51,6 @@ type ContractFormValues = {
   merkleRoot: `0x${string}` | null;
 };
 export default function NewContractForm({
-  session,
   chainId,
   airdropId,
   totalAirdropAmount,
@@ -65,7 +61,7 @@ export default function NewContractForm({
   refetchAirdrop,
 }: NewContractFormProps) {
   const { t } = useTranslation();
-  const { merkleRoot, fetchMerklrRoot, loading, error } = useFetchMerkleRoot(chainId, airdropId);
+  const { merkleRoot, loading, error } = useFetchMerkleTree(chainId, airdropId);
   const handleSubmit = () => {
     writeFn.write({
       onSuccess: () => {
@@ -110,7 +106,7 @@ export default function NewContractForm({
   const approvals = useApprove({
     chainId,
     targetAddress: formikProps.values.tokenAddress as `0x${string}`,
-    owner: session.user.address,
+    owner: ownerAddress,
     spender: CONTRACT_ADDRESSES[chainId].FACTORY,
     amount: toMinUnit(formikProps.values.amount, token?.decimals ? token?.decimals : 18),
     enabled: isAddress(formikProps.values.tokenAddress),
@@ -120,9 +116,9 @@ export default function NewContractForm({
     address: formikProps.values.tokenAddress as `0x${string}`,
     abi: erc20Abi,
     functionName: "balanceOf",
-    args: [session.user.address],
+    args: [ownerAddress],
     query: {
-      enabled: isAddress(session.user.address) && isAddress(formikProps.values.tokenAddress),
+      enabled: isAddress(ownerAddress) && isAddress(formikProps.values.tokenAddress),
     },
   });
 

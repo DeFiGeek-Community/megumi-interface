@@ -16,6 +16,8 @@ import {
   Spinner,
 } from "@chakra-ui/react";
 import NewContractForm from "./NewContractForm";
+import ExistingContractForm from "./ExistingContractForm";
+import { TemplateNamesType } from "@/app/lib/constants/templates";
 
 type ContractFormModalProps = {
   chainId: number;
@@ -23,6 +25,7 @@ type ContractFormModalProps = {
   totalAirdropAmount: string | null;
   ownerAddress: `0x${string}`;
   tokenAddress: `0x${string}`;
+  templateName: TemplateNamesType;
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
@@ -33,7 +36,12 @@ type ContractFormModalProps = {
   refetchAirdrop: () => Promise<void>;
 };
 
-export default function ContractFormModal({ isOpen, onClose, ...props }: ContractFormModalProps) {
+export default function ContractFormModal({
+  isOpen,
+  onClose,
+  templateName,
+  ...props
+}: ContractFormModalProps) {
   const { data: session } = useSession();
   const { t } = useTranslation();
 
@@ -61,9 +69,15 @@ export default function ContractFormModal({ isOpen, onClose, ...props }: Contrac
                 </TabList>
                 <TabPanels>
                   <TabPanel>
-                    <NewContractForm session={session} onClose={onClose} {...props} />
+                    <NewContractForm onClose={onClose} {...props} />
                   </TabPanel>
-                  <TabPanel>TODO</TabPanel>
+                  <TabPanel>
+                    <ExistingContractForm
+                      onClose={onClose}
+                      templateName={templateName}
+                      {...props}
+                    />
+                  </TabPanel>
                 </TabPanels>
               </Tabs>
             )}

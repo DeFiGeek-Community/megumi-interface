@@ -55,6 +55,7 @@
     "unregistered": "未登録",
     "registered": "登録済み",
     "download": "ダウンロード",
+    "preview": "プレビュー",
     "yourAllocatedAmount": "あなたの割り当て額",
     "contractBalance": "コントラクト残高",
     "airdropForm": {
@@ -81,7 +82,9 @@
       "deploy": "コントラクトをデプロイする",
       "balance": "残高",
       "new": "新規コントラクトのデプロイ",
-      "existing": "既存コントラクトを紐付け"
+      "existing": "既存コントラクトを紐付け",
+      "existingContractAddress": "紐づける既存コントラクトアドレス",
+      "attach": "コントラクトをエアドロップに紐づける"
     },
     "merkletreeForm": {
       "generate": "生成する",
