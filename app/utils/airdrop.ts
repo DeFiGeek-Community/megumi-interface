@@ -66,24 +66,6 @@ export const getAirdropById = async (
           GROUP BY "Airdrop"."id"
           LIMIT 1
       `;
-
-  // const airdrop = await prisma.airdrop.findUnique({
-  //   where: { id: airdropId },
-  //   include: withClaimParamsOf
-  //     ? {
-  //         AirdropClaimerMap: {
-  //           where: {
-  //             claimer: {
-  //               address: hexStringToUint8Array(withClaimParamsOf),
-  //             },
-  //           },
-  //           include: {
-  //             claimer: true,
-  //           },
-  //         },
-  //       }
-  //     : null,
-  // });
   return airdrops[0];
 };
 
