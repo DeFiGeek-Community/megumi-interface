@@ -122,12 +122,16 @@ export default function SnapshotForm({
 
     if (!value.tokenAmount) {
       errors.tokenAmount = "tokenAmount is required";
+    } else if (Number(value.tokenAmount) < 1) {
+      errors.tokenAmount = "tokenAmount must be at least 1";
+    } else {
+      try {
+        BigInt(value.tokenAmount);
+      } catch (e) {
+        errors.tokenAmount = "tokenAmount is invalid";
+      }
     }
-    try {
-      BigInt(value.tokenAmount);
-    } catch (e) {
-      errors.tokenAmount = "tokenAmount is invalid";
-    }
+
     if (!value.snapshotBlockNumber) {
       errors.snapshotBlockNumber = "snapshotBlockNumber is required";
     }
@@ -214,6 +218,8 @@ export default function SnapshotForm({
                 flex="1"
                 id="tokenAmount"
                 name="tokenAmount"
+                min={1}
+                step={1}
                 onBlur={formikProps.handleBlur}
                 value={formikProps.values.tokenAmount}
                 onChange={(strVal: string, val: number) =>
