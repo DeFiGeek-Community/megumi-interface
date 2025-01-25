@@ -71,7 +71,7 @@ export const useSyncMerkletree = (
   useEffect(() => {
     if (!result.data || !shouldSync) return;
     checkContractDeploymentAndSync({ maxRetry: 1 });
-  }, [result.data, shouldSync]);
+  }, [result.data, shouldSync, contractAddress]);
 
   return { checkContractDeploymentAndSync, loading, error };
 };
