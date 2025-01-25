@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { formatDate } from "@/app/utils/clientHelper";
 
 export interface DateContentProps {
-  createdAt: Date;
+  createdAt?: Date;
   contractRegisteredAt: Date | null;
 }
 
@@ -12,14 +12,16 @@ export default function DateContent({ createdAt, contractRegisteredAt }: DateCon
   const { t } = useTranslation();
   return (
     <Row
-      mainAxisAlignment="flex-start"
+      mainAxisAlignment="flex-end"
       crossAxisAlignment="flex-start"
       width="100%"
       paddingX={{ base: "1", sm: "1.5" }}
     >
-      <Text fontSize="sm" textAlign="right" flex="1" paddingRight={4}>
-        {t("dashboard.creationDate")} {formatDate(createdAt, "yyyy/MM/dd")}
-      </Text>
+      {createdAt && (
+        <Text fontSize="sm" textAlign="right" flex="1" paddingRight={4}>
+          {t("dashboard.creationDate")} {formatDate(createdAt, "yyyy/MM/dd")}
+        </Text>
+      )}
       <Text fontSize="sm" textAlign="right">
         {t("dashboard.publicationDate")} {formatDate(contractRegisteredAt, "yyyy/MM/dd")}
       </Text>

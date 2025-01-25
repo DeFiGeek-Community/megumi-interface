@@ -18,6 +18,9 @@ export default function AirdropCard({
   airdrop: AirdropHex;
   isOwner?: boolean;
 }) {
+  const dateContentParams = isOwner
+    ? { createdAt: airdrop.createdAt, contractRegisteredAt: airdrop.contractRegisteredAt }
+    : { contractRegisteredAt: airdrop.contractRegisteredAt };
   return (
     <Link
       href={`/airdrops/${airdrop.chainId}/${airdrop.id}`}
@@ -32,10 +35,7 @@ export default function AirdropCard({
       <Card width="100%">
         <CardBody paddingX={{ base: "1", sm: "5" }}>
           <Box>
-            <DateContent
-              createdAt={airdrop.createdAt}
-              contractRegisteredAt={airdrop.contractRegisteredAt}
-            />
+            <DateContent {...dateContentParams} />
             <Flex
               flexDirection={{ base: "column", md: "row" }}
               justifyContent="center"
