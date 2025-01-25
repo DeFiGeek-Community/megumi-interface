@@ -17,7 +17,7 @@ export default function Status({
       <Flex
         alignItems="center"
         bg={merkleTreeRegisteredAt ? "green.100" : undefined}
-        color={contractRegisteredAt ? "green.800" : "gray.400"}
+        color={merkleTreeRegisteredAt ? "green.800" : "gray.400"}
         fontSize="xs"
         fontWeight="medium"
         px="2.5"
