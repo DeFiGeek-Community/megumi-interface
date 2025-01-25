@@ -167,7 +167,7 @@ export default function AirdropDetail({
                     <Icon as={ExternalLinkIcon} ml={1} mb={1} />
                   </>
                 ) : (
-                  "Not registered"
+                  t("airdrop.unregistered")
                 )}
               </Link>
               <Box
@@ -200,7 +200,7 @@ export default function AirdropDetail({
               >
                 {airdrop.contractAddress
                   ? getEllipsizedAddress({ address: airdrop.contractAddress })
-                  : "Not registered"}
+                  : t("airdrop.unregistered")}
                 {airdrop.contractAddress && <Icon as={ExternalLinkIcon} ml={1} mb={1} />}
               </Link>
             </Flex>
