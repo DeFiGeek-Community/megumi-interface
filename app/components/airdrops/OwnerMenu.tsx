@@ -377,7 +377,7 @@ export default function OwnerMenu({
           )}
         </HStack>
         <Divider />
-        <HStack justify="space-between" py={2}>
+        <HStack justify="space-between" py={4}>
           <Stack>
             <Text fontWeight="medium" color={"red"}>
               {" "}
@@ -390,7 +390,8 @@ export default function OwnerMenu({
               isLoading={deleting}
               disabled={deleting}
               onClick={deleteConfirmationDisclosure.onOpen}
-              py={2}
+              py={4}
+              size={"sm"}
             >
               {t("airdrop.ownerMenu.deleteAirdrop")}
             </Button>
