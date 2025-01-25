@@ -125,8 +125,8 @@ export default function OwnerMenu({
   const {
     merkleTree,
     refetch: fetchMerkleTree,
-    loading,
-    error,
+    loading: merkleTreeLoading,
+    error: merkleTreeError,
   } = useFetchMerkleTree({
     chainId,
     airdropId,
