@@ -11,7 +11,7 @@ import {
   CloseButton,
   Link,
 } from "@chakra-ui/react";
-import { getEtherscanLink } from "@/app/lib/utils";
+import { getEtherscanLink } from "@/app/utils/clientHelper";
 
 export type TxSentToast = {
   txid: `0x${string}`;
@@ -58,7 +58,7 @@ export default function TxSentToast({
         <AlertDescription display="block">
           {description}
           {chain && (
-            <Link href={getEtherscanLink(chain, txid, "tx")} target={"_blank"}>
+            <Link href={getEtherscanLink(chain.id, txid, "tx")} target={"_blank"}>
               Etherscan <ExternalLinkIcon ml={1} />
             </Link>
           )}

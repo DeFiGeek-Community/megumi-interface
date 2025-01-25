@@ -1,142 +1,25 @@
-"use client";
-import styles from "./page.module.css";
-import { useCallback, useContext, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-import { parseEther } from "viem";
-import {
-  useAccount,
-  useBalance,
-  useReadContract,
-  useSimulateContract,
-  useWaitForTransactionReceipt,
-  useWriteContract,
-} from "wagmi";
-import { Flex, Stack, Container, Heading, Button, chakra } from "@chakra-ui/react";
-import { WarningIcon } from "@chakra-ui/icons";
-import MerkleTree from "@/app/lib/constants/merkle-tree.json";
-import StandardABI from "@/app/lib/constants/abis/Standard.json";
-import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
-import ConnectButton from "@/app/components/common/ConnectButton";
-import { TxToastsContext } from "@/app/providers/ToastProvider";
+import * as AirdropUtils from "@/app/utils/airdrop";
+import AirdropDetail from "@/app/components/airdrops/Detail";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/authOptions";
+import { uint8ArrayToHexString } from "@/app/utils/apiHelper";
+import NotFound from "@/app/components/errors/NotFound";
 
-export default function Airdrop({ params }: { params: { chainId: string; id: string } }) {
-  const TOKEN_SYMBOL = "PND";
-  const UUID = "02183055-e991-f6e0-9efb-3bf10e405037";
-  const { t } = useTranslation();
-  const { address, isConnected: isConnectedRaw, chainId } = useAccount();
+export default async function AirdropPage({ params }: { params: { chainId: string; id: string } }) {
+  const session = await getServerSession(authOptions);
 
-  // TODO define as a hook --->
-  const getClaimParameters = useCallback(() => {
-    if (!address || !(address in MerkleTree.claims)) return [];
-    const { index, amount, proof } = MerkleTree.claims[address as keyof typeof MerkleTree.claims];
-    return [index, address, amount, proof];
-  }, [address]);
-  const { data, isError, isSuccess, failureReason } = useSimulateContract({
-    address: chainId ? CONTRACT_ADDRESSES[chainId].PND_AIRDROP : "0x",
-    abi: StandardABI,
-    functionName: "claim",
-    args: getClaimParameters(),
-    value: parseEther("0.0002"),
-  });
-  const { writeContractAsync, status } = useWriteContract();
-  const { setWritePromise } = useContext(TxToastsContext);
-  const {} = useWaitForTransactionReceipt();
-  // <---
+  const airdrop = await AirdropUtils.getAirdropById(params.id as string);
+  // TODO Set up meta tags
 
-  const [isClaimed, setIsClaimed] = useState<boolean>(false);
-  useEffect(() => {
-    setIsClaimed(!!failureReason && failureReason.message.includes("Error: AlreadyClaimed()"));
-  }, [failureReason, status]);
-  const [isConnected, setIsConnected] = useState<boolean>(false);
-  useEffect(() => setIsConnected(isConnectedRaw), [isConnectedRaw]);
+  // If airdrop is not found, return 404
+  if (!airdrop) return <NotFound />;
 
-  // Get token
-  const { data: tokenData, isLoading: isLoadingToken } = useReadContract({
-    address: chainId ? CONTRACT_ADDRESSES[chainId].PND_AIRDROP : "0x",
-    abi: StandardABI,
-    functionName: "token",
-  });
+  // If the contract is not registered yet AND the user is NOT the owner, return 404
+  // TODO Should be handled in the prisma query
+  const shouldNotVisible =
+    !airdrop.contractRegisteredAt &&
+    session?.user.address.toLowerCase() !== uint8ArrayToHexString(airdrop.owner).toLowerCase();
+  if (shouldNotVisible) return <NotFound />;
 
-  // Get token balance on airdrop contract
-  const { data: balanceOnContract } = useBalance({
-    address: chainId ? CONTRACT_ADDRESSES[chainId].PND_AIRDROP : "0x",
-    token: !!tokenData ? (tokenData as `0x${string}`) : "0x",
-  });
-
-  const handleWrite = async () => {
-    try {
-      setWritePromise(writeContractAsync(data!.request));
-    } catch (error) {
-      console.error("Error:", error);
-    }
-  };
-
-  if (params.id !== UUID) {
-    return (
-      <Container py={8} textAlign={"center"}>
-        <Heading>404 Not Fount</Heading>
-        <chakra.div>エアドロップがありません</chakra.div>
-      </Container>
-    );
-  }
-
-  return (
-    <Container py={8} textAlign={"center"}>
-      <Heading>TXJPホルダーPNDエアドロップ</Heading>
-      <Flex py={8} justifyContent={"center"}>
-        <Stack alignItems={"center"}>
-          {isConnected && getClaimParameters().length > 3 && (
-            <>
-              <chakra.div>{t("airdrop.eligible")} 🎉</chakra.div>
-              <chakra.div>
-                <chakra.span fontSize={"2xl"}>
-                  {parseInt(
-                    (BigInt((getClaimParameters() as any)[2]) / BigInt(10 ** 16)).toString(),
-                  ) / 100}
-                </chakra.span>
-                <chakra.span fontSize={"md"}> {TOKEN_SYMBOL}</chakra.span>
-              </chakra.div>
-            </>
-          )}{" "}
-          {isConnected && getClaimParameters().length === 0 && (
-            <chakra.div>{t("airdrop.notEligible")} 😔</chakra.div>
-          )}
-          {isConnected ? (
-            <>
-              <Button
-                mt={4}
-                isDisabled={
-                  !Boolean(data?.request) ||
-                  status === "pending" ||
-                  status === "success" ||
-                  isClaimed
-                }
-                isLoading={status === "pending"}
-                onClick={() => handleWrite()}
-                colorScheme={"green"}
-              >
-                {isClaimed ? t("airdrop.claimed") : t("airdrop.claim")}
-              </Button>
-              {!isClaimed &&
-                !!balanceOnContract &&
-                getClaimParameters().length > 3 &&
-                balanceOnContract.value < BigInt((getClaimParameters() as any)[2]) && (
-                  <chakra.p color="red">
-                    <WarningIcon mr={2} />
-                    Airdrop contract does not have enough token.
-                  </chakra.p>
-                )}
-            </>
-          ) : (
-            <chakra.div>
-              <ConnectButton requireSignIn={false} label={t("common.connectWallet")} size="sm" />
-            </chakra.div>
-          )}
-          <chakra.span fontSize={"sm"} color={"grey"}>
-            ※ {t("airdrop.feeNotice")}
-          </chakra.span>
-        </Stack>
-      </Flex>
-    </Container>
-  );
+  return <AirdropDetail chainId={params.chainId} initAirdrop={AirdropUtils.toHexString(airdrop)} />;
 }

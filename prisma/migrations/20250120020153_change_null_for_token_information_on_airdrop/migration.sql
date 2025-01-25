@@ -1,0 +1,5 @@
+-- AlterTable
+ALTER TABLE "Airdrop" ALTER COLUMN "tokenAddress" DROP NOT NULL,
+ALTER COLUMN "tokenName" DROP NOT NULL,
+ALTER COLUMN "tokenSymbol" DROP NOT NULL,
+ALTER COLUMN "tokenDecimals" DROP NOT NULL;

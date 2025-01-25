@@ -1,0 +1,53 @@
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "rhel-openssl-1.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Airdrop {
+  id            String   @id @default(uuid())
+  chainId       Int
+  title         String
+  contractAddress Bytes?
+  templateName   Bytes
+  owner          Bytes
+  tokenAddress   Bytes
+  tokenName      String
+  tokenSymbol    String
+  tokenDecimals  Int
+  tokenLogo      String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  contractRegisteredAt  DateTime?
+  merkleTreeRegisteredAt  DateTime?
+  lastSyncedAt  DateTime?
+  vestingEndsAt  DateTime?
+  totalAirdropAmount Bytes?
+  AirdropClaimerMap AirdropClaimerMap[]
+
+  @@unique([contractAddress, chainId])
+}
+
+model Claimer {
+  id       String  @id @default(uuid())
+  address  Bytes   @unique
+  AirdropClaimerMap AirdropClaimerMap[]
+}
+
+model AirdropClaimerMap {
+  airdropId  String
+  claimerId  String
+  isClaimed  Boolean @default(false)
+  proofs     Bytes[]
+  index      Int
+  amount     Bytes
+
+  airdrop Airdrop @relation(fields: [airdropId], references: [id], onDelete: Cascade)
+  claimer Claimer @relation(fields: [claimerId], references: [id], onDelete: Cascade)
+
+  @@id(name: "airdropClaimerId", [airdropId, claimerId])
+}
