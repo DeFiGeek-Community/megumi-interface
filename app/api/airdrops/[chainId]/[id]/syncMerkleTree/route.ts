@@ -18,10 +18,14 @@ import { MerkleTreeData } from "@/app/types/airdrop";
 import * as AirdropUtils from "@/app/utils/airdrop";
 import { uuidToHex } from "@/app/utils/shared";
 
-// 1. Check if contrcat is deployed
-// 2. If deployed, get merkletree file
+// 1. Check if merkletree file is registered and synced
+// 2. Get merkle tree file from S3
 // 3. Validate merkletree file
-// 4. Sync merkletree file
+// 4. Check if contract is registered
+// 5. If not, check if contract is deployed
+// 6. If contract is deployed, check if merkle root is identical
+// 7. If contract is valid, register the contract address
+// 8. Sync merkletree file
 export async function POST(req: Request, { params }: { params: { chainId: string; id: string } }) {
   const session = await getServerSession(authOptions);
   if (!session) {
@@ -53,10 +57,56 @@ export async function POST(req: Request, { params }: { params: { chainId: string
       chainId: parseInt(params.chainId),
     });
 
-  // Check if contract is deployed
-  const provider = getViemProvider(parseInt(params.chainId)) as PublicClient;
+  // 1. Check if merkletree file is registered and synced
+  if (!airdrop.merkleTreeRegisteredAt) {
+    return NextResponse.json({ result: "merkletree is not registered yet" });
+  }
 
+  if (
+    airdrop.lastSyncedAt &&
+    airdrop.lastSyncedAt.getTime() > airdrop.merkleTreeRegisteredAt.getTime()
+  ) {
+    return NextResponse.json({ result: "sync status is up-to-date" });
+  }
+
+  // 2. Get merkle tree file from S3
+  const command = new GetObjectCommand({
+    Bucket: process.env.AWS_S3_BUCKET_NAME,
+    Key: AirdropUtils.getMerkleTreeKey(params.chainId, params.id),
+  });
+
+  let response: GetObjectCommandOutput | null;
+  try {
+    response = await s3Client.send(command);
+  } catch (e: unknown) {
+    const error = getErrorMessage(e);
+    return NextResponse.json({ error }, { status: 422 });
+  }
+
+  const str = await response.Body?.transformToString();
+  if (!str) {
+    return NextResponse.json({ error: "Merkletree file not found" }, { status: 422 });
+  }
+
+  let merkletree;
+  try {
+    merkletree = JSON.parse(str) as MerkleTreeData;
+  } catch (e: unknown) {
+    const error = getErrorMessage(e);
+    return NextResponse.json({ error }, { status: 422 });
+  }
+
+  // 3. Validate merkletree file
+  const { error: invalidError } = AirdropUtils.validateMerkleTree(merkletree);
+
+  if (invalidError) {
+    return respondError(invalidError);
+  }
+
+  // 4. Check if contract is registered
+  const provider = getViemProvider(parseInt(params.chainId)) as PublicClient;
   if (!airdrop.contractAddress) {
+    // 5. If not, check if contract is deployed
     // TODO
     // Extract to util
     // loop X times and wait for the contract to be deployed
@@ -72,6 +122,16 @@ export async function POST(req: Request, { params }: { params: { chainId: string
         address: contractAddress,
       });
       if (bytecode) {
+        // 6. If contract is deployed, check if merkle root is identical
+        const merkleRoot = await AirdropUtils.getMerkleRootFromAirdropAddress(
+          contractAddress,
+          provider,
+        );
+        if (merkletree.merkleRoot.toLowerCase() !== merkleRoot.toLowerCase()) {
+          return NextResponse.json({ error: "Merkle root is not identical" }, { status: 500 });
+        }
+
+        // 7. If contract is valid, register the contract address
         // Fetch token information from the contract address
         let tokenAddress;
         let tokenName;
@@ -108,53 +168,7 @@ export async function POST(req: Request, { params }: { params: { chainId: string
     }
   }
 
-  if (!airdrop.merkleTreeRegisteredAt) {
-    // Skip if merkletree is not registered yet
-    return NextResponse.json({ result: "merkletree is not registered yet" });
-  }
-
-  if (
-    airdrop.lastSyncedAt &&
-    airdrop.lastSyncedAt.getTime() > airdrop.merkleTreeRegisteredAt.getTime()
-  ) {
-    return NextResponse.json({ result: "sync status is up-to-date" });
-  }
-
-  // Get merkletree file
-  const command = new GetObjectCommand({
-    Bucket: process.env.AWS_S3_BUCKET_NAME,
-    Key: AirdropUtils.getMerkleTreeKey(params.chainId, params.id),
-  });
-
-  let response: GetObjectCommandOutput | null;
-  try {
-    response = await s3Client.send(command);
-  } catch (e: unknown) {
-    const error = getErrorMessage(e);
-    return NextResponse.json({ error }, { status: 422 });
-  }
-
-  const str = await response.Body?.transformToString();
-  if (!str) {
-    return NextResponse.json({ error: "Merkletree file not found" }, { status: 422 });
-  }
-
-  let merkletree;
-  try {
-    merkletree = JSON.parse(str) as MerkleTreeData;
-  } catch (e: unknown) {
-    const error = getErrorMessage(e);
-    return NextResponse.json({ error }, { status: 422 });
-  }
-  const { error: invalidError } = AirdropUtils.validateMerkleTree(merkletree);
-
-  if (invalidError) {
-    return respondError(invalidError);
-  }
-
-  // TODO
-  // Check if merkletree file is already synced
-
+  // 8. Sync merkletree file
   try {
     // TODO Condider removing await and return 200 and let the process run in the background
     await AirdropUtils.processMerkleTree(prisma, merkletree, params.id);

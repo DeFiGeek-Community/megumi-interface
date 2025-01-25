@@ -1,13 +1,19 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { API_BASE_URL } from "@/app/lib/constants";
-import { getErrorMessage } from "@/app/utils/shared";
+import { getErrorMessage, getTemplateKeyByHex, uuidToHex } from "@/app/utils/shared";
+import { useBytecode } from "wagmi";
+import { getAirdropAddressFromUUID } from "@/app/utils/airdrop";
+import { TemplateNamesType } from "@/app/lib/constants/templates";
+import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
 
 const API_URL = `${API_BASE_URL}/airdrops`;
 export const useSyncMerkletree = (
   chainId: number,
   id: string,
   contractAddress: `0x${string}` | null,
-  callOnMounted: boolean = true,
+  ownerAddress: `0x${string}`,
+  templateName: TemplateNamesType,
+  shouldSync: boolean = true,
 ) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,6 +23,7 @@ export const useSyncMerkletree = (
       maxRetry?: number;
       callbacks?: { onSuccess?: () => void; onError?: (error: string) => void };
     }) => {
+      if (loading) return;
       setLoading(true);
       setError(null);
 
@@ -43,11 +50,28 @@ export const useSyncMerkletree = (
     [chainId, id, contractAddress],
   );
 
+  const estimaetedContractAddress = useMemo(
+    () =>
+      getAirdropAddressFromUUID({
+        chainId,
+        uuid: uuidToHex(id),
+        templateAddress: CONTRACT_ADDRESSES[chainId][getTemplateKeyByHex(templateName)],
+        deployer: ownerAddress,
+      }),
+    [chainId, id, templateName, ownerAddress],
+  );
+
+  // Try to get bytecode from the estimated contract address
+  // until the contract address is registered to the airdrop
+  const result = useBytecode({
+    query: { refetchInterval: 10000, enabled: shouldSync },
+    address: estimaetedContractAddress,
+  });
+
   useEffect(() => {
-    // Not need to sync if already synced
-    if (callOnMounted) return;
+    if (!result.data || !shouldSync) return;
     checkContractDeploymentAndSync({ maxRetry: 1 });
-  }, [chainId, id, contractAddress, callOnMounted]);
+  }, [result.data, shouldSync]);
 
   return { checkContractDeploymentAndSync, loading, error };
 };

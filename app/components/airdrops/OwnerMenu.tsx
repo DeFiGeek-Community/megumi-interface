@@ -1,4 +1,5 @@
 "use client";
+import { useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Stack,
@@ -46,7 +47,6 @@ import { useBalance } from "wagmi";
 import AirdropFormModal from "./AirdropFormModal";
 import { TemplateNamesType } from "@/app/lib/constants/templates";
 import { useDeleteAirdrop } from "@/app/hooks/airdrops/useDeleteAirdrop";
-import { useRef } from "react";
 import PreviewList from "./merkleTree/PreviewList";
 import { useFetchMerkleTree } from "@/app/hooks/airdrops/useFetchMerkleTree";
 
@@ -99,8 +99,18 @@ export default function OwnerMenu({
   const merkletreeModalDisclosure = useDisclosure();
   const merkletreePreviewDisclosure = useDisclosure();
   const contractModalDisclosure = useDisclosure();
-  const shouldSync = !!merkleTreeRegisteredAt && !lastSyncedAt; //  merkle tree is registered and not synced
-  const sync = useSyncMerkletree(chainId, airdropId, contractAddress, shouldSync);
+  const shouldSync = useMemo(
+    () => !!merkleTreeRegisteredAt && !lastSyncedAt,
+    [merkleTreeRegisteredAt, lastSyncedAt],
+  ); //  merkle tree is registered and not synced
+  const sync = useSyncMerkletree(
+    chainId,
+    airdropId,
+    contractAddress,
+    ownerAddress,
+    templateName,
+    shouldSync,
+  );
   const withdrawToken = useWithdrawToken({ chainId, contractAddress });
   const withdrawClaimFee = useWithdrawClaimFee({ chainId, contractAddress });
   const feeBalance = useBalance({
