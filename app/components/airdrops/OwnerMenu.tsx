@@ -172,65 +172,71 @@ export default function OwnerMenu({
         <HStack justify="space-between">
           <Stack>
             <Text fontWeight="medium">{t("airdrop.airdropList")}</Text>
-            {merkleTreeRegisteredAt ? (
-              <VStack alignItems={"baseline"}>
-                <Text fontWeight="medium" textAlign="left">
-                  <Icon as={CheckCircleIcon} mr={1} mb={1} color="green.500" />
-                  {t("airdrop.registered")}
-                  <Tooltip label={t("airdrop.download")}>
-                    <Link
-                      href={`/api/airdrops/${chainId}/${airdropId}/merkletree`}
-                      download={`merkletree.json`}
-                      isExternal
-                      ml={2}
-                    >
-                      <Icon as={DownloadIcon} mr={1} mb={1} />
-                    </Link>
-                  </Tooltip>
-
-                  {merkleTree && (
-                    <Tooltip label={t("airdrop.preview")}>
-                      <Link onClick={merkletreePreviewDisclosure.onOpen} ml={2}>
-                        <Icon as={Search2Icon} mr={1} mb={1} />
-                      </Link>
-                    </Tooltip>
-                  )}
-                  {merkleTree && merkletreePreviewDisclosure.isOpen && (
-                    <Modal
-                      isOpen={merkletreePreviewDisclosure.isOpen}
-                      onClose={merkletreePreviewDisclosure.onClose}
-                      closeOnOverlayClick={false}
-                      blockScrollOnMount={false}
-                      isCentered={true}
-                      size={"2xl"}
-                      scrollBehavior={"inside"}
-                    >
-                      <ModalOverlay />
-                      <ModalContent>
-                        <ModalHeader>{t("airdrop.merkleTreePreview.heading")}</ModalHeader>
-                        <ModalCloseButton />
-                        <ModalBody pb={6}>
-                          <PreviewList
-                            chainId={chainId}
-                            data={merkleTree}
-                            decimals={tokenDecimals}
-                            symbol={tokenSymbol}
-                          />
-                        </ModalBody>
-                      </ModalContent>
-                    </Modal>
-                  )}
-                </Text>
-
-                <chakra.span fontSize={"xs"} ml={2} color={"gray.400"}>
-                  {formatDate(merkleTreeRegisteredAt)}
-                </chakra.span>
-              </VStack>
+            {merkleTreeLoading ? (
+              <Spinner />
             ) : (
-              <Text fontWeight="medium" textAlign="left">
-                <Icon as={WarningTwoIcon} mr={1} mb={1} color="yellow.500" />
-                {t("airdrop.unregistered")}
-              </Text>
+              <>
+                {merkleTreeRegisteredAt ? (
+                  <VStack alignItems={"baseline"}>
+                    <Text fontWeight="medium" textAlign="left">
+                      <Icon as={CheckCircleIcon} mr={1} mb={1} color="green.500" />
+                      {t("airdrop.registered")}
+                      <Tooltip label={t("airdrop.download")}>
+                        <Link
+                          href={`/api/airdrops/${chainId}/${airdropId}/merkletree`}
+                          download={`merkletree.json`}
+                          isExternal
+                          ml={2}
+                        >
+                          <Icon as={DownloadIcon} mr={1} mb={1} />
+                        </Link>
+                      </Tooltip>
+
+                      {merkleTree && (
+                        <Tooltip label={t("airdrop.preview")}>
+                          <Link onClick={merkletreePreviewDisclosure.onOpen} ml={2}>
+                            <Icon as={Search2Icon} mr={1} mb={1} />
+                          </Link>
+                        </Tooltip>
+                      )}
+                      {merkleTree && merkletreePreviewDisclosure.isOpen && (
+                        <Modal
+                          isOpen={merkletreePreviewDisclosure.isOpen}
+                          onClose={merkletreePreviewDisclosure.onClose}
+                          closeOnOverlayClick={false}
+                          blockScrollOnMount={false}
+                          isCentered={true}
+                          size={"2xl"}
+                          scrollBehavior={"inside"}
+                        >
+                          <ModalOverlay />
+                          <ModalContent>
+                            <ModalHeader>{t("airdrop.merkleTreePreview.heading")}</ModalHeader>
+                            <ModalCloseButton />
+                            <ModalBody pb={6}>
+                              <PreviewList
+                                chainId={chainId}
+                                data={merkleTree}
+                                decimals={tokenDecimals}
+                                symbol={tokenSymbol}
+                              />
+                            </ModalBody>
+                          </ModalContent>
+                        </Modal>
+                      )}
+                    </Text>
+
+                    <chakra.span fontSize={"xs"} ml={2} color={"gray.400"}>
+                      {formatDate(merkleTreeRegisteredAt)}
+                    </chakra.span>
+                  </VStack>
+                ) : (
+                  <Text fontWeight="medium" textAlign="left">
+                    <Icon as={WarningTwoIcon} mr={1} mb={1} color="yellow.500" />
+                    {t("airdrop.unregistered")}
+                  </Text>
+                )}
+              </>
             )}
           </Stack>
           <>
