@@ -379,12 +379,12 @@ export const validateMerkleTree = (data: any): { error?: InvalidMerkletreeError 
   }
 
   if (Object.entries(data.claims).length === 0) {
-    return { error: new InvalidMerkletreeError("claims must not be empty.") };
+    return { error: new InvalidMerkletreeError("Eligible users must not be empty.") };
   }
 
   if (Object.entries(data.claims).length > maxEntries) {
     // If the claims exceed 10,000 entries, return an error immediately
-    return { error: new InvalidMerkletreeError("claims must not exceed 10,000 entries.") };
+    return { error: new InvalidMerkletreeError("Eligible users must not exceed 10,000 entries.") };
   }
 
   for (const [address, claim] of Object.entries(data.claims)) {
