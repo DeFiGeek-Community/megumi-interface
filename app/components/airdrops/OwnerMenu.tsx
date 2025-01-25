@@ -121,7 +121,6 @@ export default function OwnerMenu({
     },
   };
 
-  const { merkleTree, fetchMerkleTree, loading, error } = useFetchMerkleTree({
   const {
     merkleTree,
     refetch: fetchMerkleTree,
