@@ -401,7 +401,7 @@ export default function SnapshotForm({
           colorScheme="green"
           type="submit"
           isLoading={generating || uploading || blockDataLoading}
-          disabled={!formikProps.isValid}
+          disabled={!formikProps.isValid || generating || uploading || blockDataLoading}
         >
           {t("airdrop.merkletreeForm.generate")}
         </Button>
@@ -435,7 +435,7 @@ export default function SnapshotForm({
                 variant="solid"
                 colorScheme="green"
                 isLoading={uploading}
-                disabled={!formikProps.isValid}
+                disabled={!formikProps.isValid || uploading}
                 onClick={() => uploadGeneratedMerkleTree(merkleTree)}
               >
                 {t("airdrop.merkletreeForm.register")}

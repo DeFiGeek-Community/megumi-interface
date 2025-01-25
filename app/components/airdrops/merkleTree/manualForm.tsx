@@ -142,7 +142,7 @@ export default function ManualForm({
           colorScheme="green"
           type="submit"
           isLoading={uploading}
-          disabled={!formikProps.isValid}
+          disabled={!formikProps.isValid || uploading}
         >
           {t("airdrop.merkletreeForm.generate")}
         </Button>

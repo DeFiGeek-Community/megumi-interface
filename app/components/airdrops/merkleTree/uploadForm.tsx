@@ -162,7 +162,7 @@ export default function UploadForm({
           colorScheme="green"
           type="submit"
           isLoading={merkleTreeLoading || uploading}
-          disabled={!formikProps.isValid}
+          disabled={!formikProps.isValid || merkleTreeLoading || uploading}
         >
           {t("airdrop.merkletreeForm.register")}
         </Button>

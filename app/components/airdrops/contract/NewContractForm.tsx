@@ -274,7 +274,9 @@ export default function NewContractForm({
               isNaN(Number(formikProps.values.amount)) ||
               !writeFn.writeContract ||
               !formikProps.isValid ||
-              prepareFn.isPending
+              prepareFn.isPending ||
+              writeFn.status === "pending" ||
+              waitResult?.isLoading
             }
           >
             {t("airdrop.contractForm.deploy")}
@@ -291,7 +293,9 @@ export default function NewContractForm({
               !token ||
               !Number(formikProps.values.amount) ||
               !approvals.writeFn.writeContract ||
-              !formikProps.isValid
+              !formikProps.isValid ||
+              approvals.writeFn.status === "pending" ||
+              approvals.waitResult?.isLoading
             }
           >
             {t("airdrop.contractForm.approve")}
