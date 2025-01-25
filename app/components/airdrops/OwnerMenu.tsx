@@ -109,7 +109,7 @@ export default function OwnerMenu({
   const { deleteAirdrop, loading: deleting } = useDeleteAirdrop(chainId, airdropId);
   const deleteConfirmationDisclosure = useDisclosure();
   const cancelRef = useRef<HTMLButtonElement | null>(null);
-  const callbacks = {
+  const deletionCallbacks = {
     onSuccess: () => {
       toast({ title: "Successfully deleted", status: "success" });
       deleteConfirmationDisclosure.onClose();
@@ -297,7 +297,7 @@ export default function OwnerMenu({
                     withdrawToken.waitResult?.isLoading
                   }
                   disabled={withdrawToken.prepareFn.isPending || !balanceOnContract?.value}
-                  onClick={() => withdrawToken.writeFn.write()}
+                  onClick={() => withdrawToken.writeFn.write({ onSuccess: refetchAirdrop })}
                 >
                   {t("airdrop.ownerMenu.withdraw")}
                 </Button>
@@ -316,7 +316,7 @@ export default function OwnerMenu({
                     withdrawClaimFee.waitResult?.isLoading
                   }
                   disabled={withdrawClaimFee.prepareFn.isPending || !feeBalance.data?.value}
-                  onClick={() => withdrawClaimFee.writeFn.write()}
+                  onClick={() => withdrawClaimFee.writeFn.write({ onSuccess: feeBalance.refetch })}
                 >
                   {t("airdrop.ownerMenu.withdraw")}
                 </Button>
@@ -392,7 +392,7 @@ export default function OwnerMenu({
                       colorScheme="red"
                       isLoading={deleting}
                       disabled={deleting}
-                      onClick={() => deleteAirdrop(callbacks)}
+                      onClick={() => deleteAirdrop(deletionCallbacks)}
                       ml={3}
                     >
                       {t("airdrop.ownerMenu.deleteAirdrop")}

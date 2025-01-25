@@ -176,7 +176,7 @@ export default function ManualForm({
                 variant="solid"
                 colorScheme="green"
                 isLoading={uploading}
-                disabled={!formikProps.isValid}
+                disabled={!formikProps.isValid || uploading}
                 onClick={() => uploadGeneratedMerkleTree(merkleTree)}
               >
                 {t("airdrop.merkletreeForm.register")}

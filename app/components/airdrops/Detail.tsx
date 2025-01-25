@@ -62,10 +62,15 @@ export default function AirdropDetail({
   };
 
   // Get token balance on airdrop contract
-  const { data: balanceOnContract } = useBalance({
+  const { data: balanceOnContract, refetch: refetchBalance } = useBalance({
     address: airdrop.contractAddress || "0x",
     token: airdrop.tokenAddress || "0x",
   });
+
+  const refetch = async () => {
+    refetchAirdrop();
+    refetchBalance();
+  };
 
   if (!isMounted)
     return (
@@ -227,7 +232,7 @@ export default function AirdropDetail({
               vestingEndsAt={airdrop.vestingEndsAt}
               templateName={airdrop.templateName}
               balanceOnContract={balanceOnContract}
-              refetchAirdrop={refetchAirdrop}
+              refetchAirdrop={refetch}
             />
           )}
 
@@ -248,7 +253,7 @@ export default function AirdropDetail({
               tokenDecimals={airdrop.tokenDecimals}
               templateName={airdrop.templateName}
               tokenLogo={airdrop.tokenLogo}
-              refetchAirdrop={refetchAirdrop}
+              refetchAirdrop={refetch}
             />
           )}
         </Box>
