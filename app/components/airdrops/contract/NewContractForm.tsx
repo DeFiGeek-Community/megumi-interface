@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
 import { useFormik } from "formik";
-import { erc20Abi, isAddress } from "viem";
+import { erc20Abi, isAddress, formatUnits } from "viem";
 import { useReadContract } from "wagmi";
 import { useTranslation } from "react-i18next";
 import {
@@ -12,11 +12,6 @@ import {
   FormLabel,
   FormErrorMessage,
   FormControl,
-  NumberInputField,
-  NumberIncrementStepper,
-  NumberInput,
-  NumberInputStepper,
-  NumberDecrementStepper,
   Input,
   Spinner,
   Box,
@@ -188,29 +183,22 @@ export default function NewContractForm({
             </Flex>
 
             <Flex alignItems={"center"}>
-              <NumberInput
-                flex="1"
+              <Input
                 id="amount"
                 name="amount"
                 value={formikProps.values.amount}
-                min={0}
-                step={0.01}
-                max={Number.MAX_SAFE_INTEGER}
                 onBlur={formikProps.handleBlur}
-                onChange={(strVal: string, val: number) =>
-                  formikProps.setFieldValue(
-                    "amount",
-                    strVal && Number(strVal) === val ? strVal : isNaN(val) ? 0 : val,
-                  )
-                }
-              >
-                <NumberInputField />
-                <NumberInputStepper>
-                  <NumberIncrementStepper />
-                  <NumberDecrementStepper />
-                </NumberInputStepper>
-              </NumberInput>
-              <chakra.div px={2} minW={"3rem"}>
+                onChange={(e) => {
+                  const str = e.target.value;
+                  let newValue = str;
+                  if (str[str.length - 1] !== ".") {
+                    const safeBig = token ? toMinUnit(e.target.value, token.decimals) : 0n;
+                    newValue = token ? formatUnits(safeBig, token.decimals) : "";
+                  }
+                  formikProps.setFieldValue("amount", newValue);
+                }}
+              />
+              <chakra.div px={2} maxW={"8rem"} whiteSpace={"nowrap"}>
                 {token?.symbol}
               </chakra.div>
             </Flex>
@@ -225,7 +213,7 @@ export default function NewContractForm({
                   if (!totalAirdropAmount || !token) return;
                   formikProps.setFieldValue(
                     "amount",
-                    formatAmount(totalAirdropAmount, token.decimals, 2),
+                    formatUnits(BigInt(totalAirdropAmount), token.decimals),
                   );
                 }}
               >

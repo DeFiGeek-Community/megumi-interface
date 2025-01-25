@@ -3,6 +3,7 @@ import type { GetEnsNameReturnType } from "viem/ens";
 import { DateArg, format, FormatOptions } from "date-fns";
 import { getChainById } from "@/app/utils/chain";
 import { TemplateNamesType } from "@/app/lib/constants/templates";
+import { safeParseBigInt } from "./shared";
 
 export const getEtherscanLink = (
   chainId: number | string,
@@ -77,7 +78,7 @@ export const toMinUnit = (value: bigint | string, decimals: number) => {
     fractionDigits = str.length - 1 - decimalPos;
     integerPart = str.slice(0, decimalPos) + str.slice(decimalPos + 1);
   }
-  let big = BigInt(integerPart);
+  let big = safeParseBigInt(integerPart);
 
   const totalShift = decimals - fractionDigits;
   if (totalShift > 0) {

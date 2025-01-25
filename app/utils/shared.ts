@@ -47,3 +47,15 @@ export const objectToKeyValueString = (obj: { [key: string]: any }) => {
 export const uuidToHex = (uuid: string): `0x${string}` => {
   return `0x${uuid.replace(/-/g, "").padEnd(64, "0")}`;
 };
+
+export const safeParseBigInt = (input: string): bigint => {
+  const numericString = input.replace(/[^0-9]/g, "");
+  if (numericString === "") return BigInt(0);
+
+  try {
+    return BigInt(numericString);
+  } catch (error) {
+    console.warn(`Could not convert ${input} to BigInt`);
+    return BigInt(0);
+  }
+};
