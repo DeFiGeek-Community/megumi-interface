@@ -19,16 +19,14 @@ export const uint8ObjectToHexString = (
 export const uint8ArrayToHexString = (uint8Array: Uint8Array): `0x${string}` => {
   const array = Array.from(uint8Array);
   const str =
-    array.length === 0
-      ? "0"
-      : Array.from(uint8Array)
-          .map((byte) => byte.toString(16).padStart(2, "0"))
-          .join("");
+    array.length === 0 ? "0" : array.map((byte) => byte.toString(16).padStart(2, "0")).join("");
   return ("0x" + str) as `0x${string}`;
 };
 
 export const hexStringToUint8Array = (hexString: `0x${string}`): Uint8Array => {
-  return Uint8Array.from(Buffer.from(hexString.slice(2), "hex"));
+  const str = hexString.startsWith("0x") ? hexString.slice(2) : hexString;
+  const normalizedHex = str.length % 2 ? "0" + str : str;
+  return Uint8Array.from(Buffer.from(normalizedHex, "hex"));
 };
 
 export const getViemProvider = (chainId: number): PublicClient => {
