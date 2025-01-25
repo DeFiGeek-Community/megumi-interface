@@ -121,11 +121,22 @@ export default function OwnerMenu({
   };
 
   const { merkleTree, fetchMerkleTree, loading, error } = useFetchMerkleTree({
+  const {
+    merkleTree,
+    refetch: fetchMerkleTree,
+    loading,
+    error,
+  } = useFetchMerkleTree({
     chainId,
     airdropId,
     store: true,
-    enabled: !!merkleTreeRegisteredAt,
+    callOnMounted: !!merkleTreeRegisteredAt,
   });
+
+  const refetchAirdropAndMerkleTree = async () => {
+    await refetchAirdrop();
+    await fetchMerkleTree();
+  };
   return (
     <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4}>
       <VStack spacing={2} align="stretch">
@@ -241,10 +252,7 @@ export default function OwnerMenu({
                 tokenDecimals={tokenDecimals}
                 isOpen={merkletreeModalDisclosure.isOpen}
                 onClose={merkletreeModalDisclosure.onClose}
-                refetchAirdrop={async () => {
-                  refetchAirdrop();
-                  fetchMerkleTree();
-                }}
+                refetchAirdrop={refetchAirdropAndMerkleTree}
               />
             )}
           </>

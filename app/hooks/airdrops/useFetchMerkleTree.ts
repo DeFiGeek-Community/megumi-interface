@@ -14,12 +14,12 @@ export const useFetchMerkleTree = ({
   chainId,
   airdropId,
   store = false,
-  enabled = true,
+  callOnMounted = true,
 }: {
   chainId: number;
   airdropId: string;
   store?: boolean;
-  enabled?: boolean;
+  callOnMounted?: boolean;
 }) => {
   const [merkleRoot, setMerkleRoot] = useState<`0x${string}` | null>(null);
   const [merkleTree, setMerkleTree] = useState<MerkleDistributorInfo | null>(null);
@@ -28,8 +28,6 @@ export const useFetchMerkleTree = ({
 
   const fetchMerkleTree = useCallback(
     async (callbacks?: Callbacks) => {
-      if (!enabled) return;
-
       setLoading(true);
       try {
         const res = await fetch(`${API_URL}/${chainId}/${airdropId}/merkletree`);
@@ -50,12 +48,13 @@ export const useFetchMerkleTree = ({
         callbacks?.onError?.(message);
       }
     },
-    [chainId, airdropId],
+    [chainId, airdropId, store],
   );
 
   useEffect(() => {
+    if (!callOnMounted) return;
     fetchMerkleTree();
   }, []);
 
-  return { fetchMerkleTree, merkleTree, merkleRoot, loading, error };
+  return { refetch: fetchMerkleTree, merkleTree, merkleRoot, loading, error };
 };
