@@ -21,6 +21,7 @@ RUN pipx install awscli-local
 COPY . .
 
 RUN npx prisma generate
+RUN npx prisma migrate dev
 
 RUN chmod +x /app/entrypoint.sh
 ENTRYPOINT ["/app/entrypoint.sh"]
