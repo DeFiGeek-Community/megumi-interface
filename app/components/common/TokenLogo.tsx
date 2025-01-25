@@ -1,44 +1,55 @@
 import { useState } from "react";
-import { Avatar, Image } from "@chakra-ui/react";
+import { Avatar, Image, SkeletonCircle, Box } from "@chakra-ui/react";
 import type { ImageProps } from "@chakra-ui/react";
 
-export function TokenLogo({
-  airdropTitle,
-  tokenName,
-  tokenLogo,
-  ...props
-}: { airdropTitle: string; tokenName?: string | null; tokenLogo?: string | null } & ImageProps) {
-  const defaultHeight = "64px";
-  const defaultWidth = "64px";
-  const defaultBorderRadius = "64px";
-  const height = props.h ?? defaultHeight;
-  const width = props.w ?? defaultWidth;
-  const title = tokenName ? tokenName : airdropTitle;
-  const [valid, setValid] = useState(true);
+type TokenLogoProps = {
+  airdropTitle: string;
+  tokenName?: string | null;
+  tokenLogo?: string | null;
+} & ImageProps;
 
-  const handleError = () => {
-    setValid(false);
-  };
-  return tokenLogo && valid ? (
-    <Image
-      onError={handleError}
-      alt={tokenName ? tokenName : airdropTitle}
-      src={tokenLogo}
-      h={defaultHeight}
-      w={defaultWidth}
-      borderRadius={defaultBorderRadius}
-      fallbackSrc={`https://via.placeholder.com/${parseInt(String(width))}x${parseInt(
-        String(height),
-      )}?text=${title}`}
-      {...props}
-    />
-  ) : (
-    <Avatar
-      w={width}
-      h={height}
-      // size={{ base: "md", md: "lg" }}
-      name={tokenName || airdropTitle}
-      bg="gray.500"
-    />
+export function TokenLogo({ airdropTitle, tokenName, tokenLogo, ...props }: TokenLogoProps) {
+  const defaultSize = "64px";
+  const title = tokenName ?? airdropTitle;
+  const [isLoading, setIsLoading] = useState(true);
+  const [isValid, setIsValid] = useState(true);
+
+  if (!tokenLogo || !isValid) {
+    return (
+      <Avatar
+        w={props.w ?? props.width ?? defaultSize}
+        h={props.h ?? props.height ?? defaultSize}
+        name={tokenName || airdropTitle}
+        bg="gray.500"
+      />
+    );
+  }
+
+  return (
+    <>
+      <Box
+        display={isLoading ? "block" : "none"}
+        position="relative"
+        w={props.w ?? defaultSize}
+        h={props.h ?? defaultSize}
+        {...props}
+      >
+        <SkeletonCircle position={"absolute"} top={0} left={0} w="100%" h="100%" />
+      </Box>
+      <Image
+        src={tokenLogo as string}
+        alt={title}
+        w={props.w ?? defaultSize}
+        h={props.h ?? defaultSize}
+        borderRadius="full"
+        onLoad={() => setIsLoading(false)}
+        onError={() => {
+          setIsValid(false);
+          setIsLoading(false);
+        }}
+        display={isLoading ? "none" : "block"}
+        {...props}
+      />
+    </>
   );
 }
