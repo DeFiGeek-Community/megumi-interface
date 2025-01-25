@@ -123,14 +123,15 @@ export default function Claim({
               {claimLoading ? (
                 <Spinner />
               ) : (
-                <Text fontSize="3xl" fontWeight="medium">
-                  {`${formatAmount(BigInt(claimParams.amount), tokenDecimals || undefined)}`}
-                </Text>
+                <>
+                  <Text fontSize="3xl" fontWeight="medium">
+                    {`${formatAmount(BigInt(claimParams.amount), tokenDecimals || undefined)}`}
+                  </Text>
+                  <Text fontSize="md" fontWeight="medium">
+                    {tokenSymbol}
+                  </Text>
+                </>
               )}
-
-              <Text fontSize="md" fontWeight="medium">
-                {tokenSymbol}
-              </Text>
             </HStack>
           </HStack>
           <chakra.p color={"gray.400"} fontSize={"sm"} textAlign={"right"}>

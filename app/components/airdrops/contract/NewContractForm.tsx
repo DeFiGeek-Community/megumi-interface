@@ -67,9 +67,8 @@ export default function NewContractForm({
   });
   const handleSubmit = () => {
     writeFn.write({
-      onSuccess: () => {
-        checkContractDeployment({ maxRetry: 10, callbacks: { onSuccess: () => refetchAirdrop() } });
-        refetchAirdrop();
+      onSuccess: async () => {
+        checkContractDeployment({ maxRetry: 10, callbacks: { onSuccess: refetchAirdrop } });
         onClose();
       },
     });

@@ -36,12 +36,7 @@ type ContractFormModalProps = {
   refetchAirdrop: () => Promise<void>;
 };
 
-export default function ContractFormModal({
-  isOpen,
-  onClose,
-  templateName,
-  ...props
-}: ContractFormModalProps) {
+export default function ContractFormModal({ isOpen, onClose, ...props }: ContractFormModalProps) {
   const { data: session } = useSession();
   const { t } = useTranslation();
 
@@ -72,11 +67,7 @@ export default function ContractFormModal({
                     <NewContractForm onClose={onClose} {...props} />
                   </TabPanel>
                   <TabPanel>
-                    <ExistingContractForm
-                      onClose={onClose}
-                      templateName={templateName}
-                      {...props}
-                    />
+                    <ExistingContractForm onClose={onClose} {...props} />
                   </TabPanel>
                 </TabPanels>
               </Tabs>
