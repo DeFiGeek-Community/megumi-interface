@@ -7,7 +7,7 @@ export const useSyncMerkletree = (
   chainId: number,
   id: string,
   contractAddress: `0x${string}` | null,
-  enabled: boolean = true,
+  callOnMounted: boolean = true,
 ) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -17,9 +17,6 @@ export const useSyncMerkletree = (
       maxRetry?: number;
       callbacks?: { onSuccess?: () => void; onError?: (error: string) => void };
     }) => {
-      // Not need to sync if already synced
-      if (!enabled) return;
-
       setLoading(true);
       setError(null);
 
@@ -47,8 +44,10 @@ export const useSyncMerkletree = (
   );
 
   useEffect(() => {
-    checkContractDeploymentAndSync();
-  }, [chainId, id, contractAddress, enabled]);
+    // Not need to sync if already synced
+    if (callOnMounted) return;
+    checkContractDeploymentAndSync({ maxRetry: 1 });
+  }, [chainId, id, contractAddress, callOnMounted]);
 
   return { checkContractDeploymentAndSync, loading, error };
 };

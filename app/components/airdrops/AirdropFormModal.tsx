@@ -256,7 +256,7 @@ export default function AirdropFormModal({
                   colorScheme="green"
                   type="submit"
                   isLoading={loading}
-                  disabled={!formikProps.isValid}
+                  disabled={!formikProps.isValid || loading}
                 >
                   {airdropId ? t("airdrop.airdropForm.update") : t("airdrop.airdropForm.register")}
                 </Button>
