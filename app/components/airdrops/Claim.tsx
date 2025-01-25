@@ -2,13 +2,24 @@
 import { useContext, useEffect, useState } from "react";
 import { parseEther } from "viem";
 import { useTranslation } from "react-i18next";
-import { VStack, Box, HStack, Text, Button, chakra, Spinner, Flex } from "@chakra-ui/react";
+import {
+  VStack,
+  Box,
+  HStack,
+  Text,
+  Button,
+  chakra,
+  Spinner,
+  Flex,
+  useToast,
+} from "@chakra-ui/react";
 import { AirdropNameABI, TemplateNames, TemplateNamesType } from "@/app/lib/constants/templates";
 import { useFetchClaimParams } from "@/app/hooks/airdrops/useFetchClaimParams";
-import { useSimulateContract, useWaitForTransactionReceipt, useWriteContract } from "wagmi";
+import { useSimulateContract, useWriteContract } from "wagmi";
 import { TxToastsContext } from "@/app/providers/ToastProvider";
 import { formatAmount, formatDate } from "@/app/utils/clientHelper";
 import { useUpdateClaimStatus } from "@/app/hooks/airdrops/useUpdateIsClaimed";
+import { getErrorMessage } from "@/app/utils/shared";
 
 interface ClaimProps {
   chainId: string;
@@ -47,6 +58,7 @@ export default function Claim({
   refetchAirdrop,
 }: ClaimProps): JSX.Element {
   const { t } = useTranslation();
+  const toast = useToast({ position: "top-right", isClosable: true });
   const {
     data: claimParams,
     loading: claimLoading,
@@ -68,41 +80,45 @@ export default function Claim({
     },
   });
   const { writeContractAsync, status } = useWriteContract();
-  const { setWritePromise } = useContext(TxToastsContext);
-  const {} = useWaitForTransactionReceipt();
+  const { setWritePromise, waitResult } = useContext(TxToastsContext);
   const { updateClaimStatus } = useUpdateClaimStatus(
     chainId,
     airdropId,
     address,
     claimParams === null ? true : claimParams.isClaimed,
-    {
-      onSuccess: () => {
-        refetchAirdrop();
-        fetchClaimParams();
-      },
-    },
   );
-
   const [isClaimed, setIsClaimed] = useState<boolean>(false);
-  useEffect(() => {
-    const claimed = !!failureReason && failureReason.message.includes("Error: AlreadyClaimed()");
-    setIsClaimed(claimed);
-  }, [failureReason, status]);
 
-  // const isClaimed = !!claimParams?.isClaimed;
+  const refetch = async () => {
+    await updateClaimStatus();
+    await refetchAirdrop();
+    await fetchClaimParams();
+  };
 
   const handleClaim = async () => {
     try {
       data && setWritePromise(writeContractAsync(data.request));
-      updateClaimStatus();
-    } catch (error) {
-      console.error("Error:", error);
+    } catch (error: unknown) {
+      toast({ title: getErrorMessage(error), status: "error" });
     }
   };
 
+  useEffect(() => {
+    if (waitResult?.isSuccess) {
+      refetch();
+    }
+  }, [waitResult?.isSuccess]);
+
+  useEffect(() => {
+    const claimed =
+      claimParams?.isClaimed ||
+      (!!failureReason && failureReason.message.includes("Error: AlreadyClaimed()"));
+    setIsClaimed(claimed);
+  }, [failureReason, status, waitResult?.isSuccess, claimParams?.isClaimed]);
+
   return (
     <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4} mb={4}>
-      {claimLoading && (
+      {!claimParams && claimLoading && (
         <Flex justifyContent={"center"} alignItems={"center"} py={10}>
           <Spinner />
         </Flex>
@@ -187,8 +203,14 @@ export default function Claim({
             </>
           )}
           <Button
-            isDisabled={!data?.request || status === "pending" || status === "success" || isClaimed}
-            isLoading={status === "pending"}
+            isDisabled={
+              !data?.request ||
+              status === "pending" ||
+              status === "success" ||
+              isClaimed ||
+              waitResult?.isLoading
+            }
+            isLoading={status === "pending" || waitResult?.isLoading}
             onClick={() => handleClaim()}
             size="sm"
             colorScheme="blue"

@@ -41,7 +41,7 @@ export const useUpdateClaimStatus = (
 
   useEffect(() => {
     updateClaimStatus();
-  }, [updateClaimStatus]);
+  }, [chainId, id, address, isClaimed]);
 
   return { data, loading, error, updateClaimStatus };
 };
