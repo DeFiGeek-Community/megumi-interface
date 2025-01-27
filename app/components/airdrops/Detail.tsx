@@ -178,7 +178,7 @@ export default function AirdropDetail({
                     address={airdrop.tokenAddress}
                     symbol={airdrop.tokenSymbol}
                     decimals={airdrop.tokenDecimals}
-                    image={airdrop.tokenLogo}
+                    image={airdrop.tokenLogo ? airdrop.tokenLogo : undefined}
                     colorScheme="gray"
                     mr={2}
                     py={{ base: "0.5", sm: "1" }}
