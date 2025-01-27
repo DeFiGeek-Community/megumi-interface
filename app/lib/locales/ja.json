@@ -59,6 +59,7 @@
     "preview": "プレビュー",
     "yourAllocatedAmount": "あなたの割り当て額",
     "contractBalance": "コントラクト残高",
+    "addTokenToWallet": "ウォレットに追加",
     "airdropForm": {
       "headerCreation": "エアドロップの作成",
       "headerUpdate": "エアドロップの更新",

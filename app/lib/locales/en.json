@@ -59,6 +59,7 @@
     "preview": "Preview",
     "yourAllocatedAmount": "Your Allocated Amount",
     "contractBalance": "Contract Balance",
+    "addTokenToWallet": "Add Token",
     "airdropForm": {
       "headerCreation": "Airdrop Creation",
       "headerUpdate": "Airdrop Update",

@@ -11,9 +11,10 @@ import {
   Text,
   Flex,
   Icon,
-  Link,
   Tag,
   Tooltip,
+  Link,
+  chakra,
 } from "@chakra-ui/react";
 import ConnectButton from "@/app/components/common/ConnectButton";
 import { useIsMounted } from "@/app/hooks/common/useIsMounted";
@@ -32,6 +33,7 @@ import type { AirdropHex } from "@/app/types/airdrop";
 import { API_BASE_URL } from "@/app/lib/constants";
 import { useAccount, useBalance } from "wagmi";
 import { TokenLogo } from "../common/TokenLogo";
+import { TokenAddButton } from "../common/TokenAddButton";
 
 export default function AirdropDetail({
   chainId,
@@ -131,7 +133,10 @@ export default function AirdropDetail({
                 </Flex>
               </Box>
             </HStack>
-            <Flex direction={{ base: "column", lg: "row" }}>
+            <Flex
+              direction={{ base: "column", lg: "row" }}
+              alignItems={{ base: undefined, lg: "center" }}
+            >
               <Box
                 bg="gray.500"
                 borderRadius="md"
@@ -146,30 +151,44 @@ export default function AirdropDetail({
                   {t("airdrop.tokenAddress")}
                 </Text>
               </Box>
-              <Link
-                fontSize="sm"
-                fontWeight={{ sm: "bold" }}
-                py={{ base: "0.5", sm: "1" }}
-                mt="1.5"
-                mr={{ base: "0", lg: "4" }}
-                href={
-                  airdrop.tokenAddress
-                    ? getEtherscanLink(chainId, airdrop.tokenAddress, "address")
-                    : undefined
-                }
-                _hover={!airdrop.tokenAddress ? { textDecoration: "none" } : undefined}
-                cursor={!airdrop.tokenAddress ? "default" : "pointer"}
-                target="_blank"
-              >
-                {airdrop.tokenAddress ? (
-                  <>
-                    {getEllipsizedAddress({ address: airdrop.tokenAddress })}
-                    <Icon as={ExternalLinkIcon} ml={1} mb={1} />
-                  </>
-                ) : (
-                  t("airdrop.unregistered")
-                )}
-              </Link>
+              {airdrop.tokenAddress ? (
+                <Flex>
+                  <Link
+                    fontSize="sm"
+                    fontWeight={{ sm: "bold" }}
+                    py={{ base: "0.5", sm: "1" }}
+                    mt="1.5"
+                    mr={{ base: "0", lg: "2" }}
+                    href={
+                      airdrop.tokenAddress
+                        ? getEtherscanLink(chainId, airdrop.tokenAddress, "address")
+                        : undefined
+                    }
+                    _hover={!airdrop.tokenAddress ? { textDecoration: "none" } : undefined}
+                    cursor={!airdrop.tokenAddress ? "default" : "pointer"}
+                    target="_blank"
+                  >
+                    <>
+                      {getEllipsizedAddress({ address: airdrop.tokenAddress })}
+                      <Icon as={ExternalLinkIcon} ml={1} mb={1} />
+                    </>
+                  </Link>
+                  <TokenAddButton
+                    size={"xs"}
+                    address={airdrop.tokenAddress}
+                    symbol={airdrop.tokenSymbol}
+                    decimals={airdrop.tokenDecimals}
+                    image={airdrop.tokenLogo}
+                    colorScheme="gray"
+                    mr={2}
+                    py={{ base: "0.5", sm: "1" }}
+                    mt="1.5"
+                  />
+                </Flex>
+              ) : (
+                t("airdrop.unregistered")
+              )}
+
               <Box
                 bg="gray.500"
                 borderRadius="md"
