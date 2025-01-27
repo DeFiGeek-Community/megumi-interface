@@ -1,16 +1,41 @@
+import type { Metadata, ResolvingMetadata } from "next";
 import * as AirdropUtils from "@/app/utils/airdrop";
 import AirdropDetail from "@/app/components/airdrops/Detail";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/authOptions";
 import { uint8ArrayToHexString } from "@/app/utils/apiHelper";
 import NotFound from "@/app/components/errors/NotFound";
+import { DEFAULT_METADATA } from "@/app/lib/constants";
 
-export default async function AirdropPage({ params }: { params: { chainId: string; id: string } }) {
-  const session = await getServerSession(authOptions);
+type Props = {
+  params: { chainId: string; id: string };
+};
 
+export async function generateMetadata(
+  { params }: Props,
+  parent: ResolvingMetadata,
+): Promise<Metadata> {
   const airdrop = await AirdropUtils.getAirdropById(params.id as string);
-  // TODO Set up meta tags
+  const fallbackImage = "/fallback-image.jpg"; // TODO
+  const metatags = airdrop
+    ? {
+        title: `${airdrop.title} | Megumi - Airdrop tool -`,
+        description: `${airdrop.title}`,
+        openGraph: {
+          siteName: "Megumi - Airdrop tool -",
+          images: [{ url: airdrop.tokenLogo || fallbackImage }],
+          type: "article",
+          publishedTime: airdrop.contractRegisteredAt,
+        },
+      }
+    : DEFAULT_METADATA;
 
+  return metatags;
+}
+
+export default async function AirdropPage({ params }: Props) {
+  const session = await getServerSession(authOptions);
+  const airdrop = await AirdropUtils.getAirdropById(params.id as string);
   // If airdrop is not found, return 404
   if (!airdrop) return <NotFound />;
 
