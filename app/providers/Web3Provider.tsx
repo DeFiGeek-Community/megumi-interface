@@ -12,7 +12,7 @@ const t = i18next.t;
 const metadata = {
   name: ` ${t("appName")} | ${t("tagline")}`,
   description: t("common.connectWallet"),
-  url: "https://megumi.xyz",
+  url: process.env.NEXT_PUBLIC_APP_ORIGIN!,
   icons: [],
 };
 
