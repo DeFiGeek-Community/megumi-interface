@@ -32,6 +32,7 @@ import { isSupportedTemplate } from "@/app/utils/shared";
 import { isSupportedChain } from "@/app/utils/chain";
 import { InvalidMerkletreeError } from "@/app/types/errors";
 import { DefaultArgs } from "@prisma/client/runtime/library";
+import BalanceTree from "@/app/lib/merkleTree/balance-tree";
 
 export const getAirdropById = async (
   airdropId: string,
@@ -434,10 +435,26 @@ export const validateMerkleTree = (data: any): { error?: InvalidMerkletreeError 
       );
       break;
     }
+
+    const amount = BigInt(claim.amount);
+    const proof = claim.proof.map((proof) => Buffer.from(proof.slice(2), "hex"));
+
+    const isValidProof = BalanceTree.verifyProof(
+      claim.index,
+      address as `0x${string}`,
+      amount,
+      proof,
+      Buffer.from(data.merkleRoot.slice(2), "hex"),
+    );
+
+    if (!isValidProof) {
+      error = new InvalidMerkletreeError(`Invalid proof for address '${address}'`);
+      break;
+    }
   }
 
   if (error) {
-    return { error: new InvalidMerkletreeError(error) };
+    return { error };
   }
 
   return {};
