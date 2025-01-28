@@ -376,58 +376,62 @@ export default function OwnerMenu({
             </>
           )}
         </HStack>
-        <Divider />
-        <HStack justify="space-between" py={4}>
-          <Stack>
-            <Text fontWeight="medium" color={"red"}>
-              {" "}
-              {t("airdrop.ownerMenu.deleteAirdropHeading")}
-            </Text>
-          </Stack>
+        {!contractAddress && (
           <>
-            <Button
-              colorScheme="red"
-              isLoading={deleting}
-              disabled={deleting}
-              onClick={deleteConfirmationDisclosure.onOpen}
-              py={4}
-              size={"sm"}
-            >
-              {t("airdrop.ownerMenu.deleteAirdrop")}
-            </Button>
-            <AlertDialog
-              isOpen={deleteConfirmationDisclosure.isOpen}
-              leastDestructiveRef={cancelRef}
-              onClose={deleteConfirmationDisclosure.onClose}
-            >
-              <AlertDialogOverlay>
-                <AlertDialogContent>
-                  <AlertDialogHeader fontSize="lg" fontWeight="bold">
-                    <WarningIcon color={"red.400"} mr={1} />
-                    {t("airdrop.ownerMenu.deleteAirdropHeading")}
-                  </AlertDialogHeader>
+            <Divider />
+            <HStack justify="space-between" py={4}>
+              <Stack>
+                <Text fontWeight="medium" color={"red"}>
+                  {" "}
+                  {t("airdrop.ownerMenu.deleteAirdropHeading")}
+                </Text>
+              </Stack>
+              <>
+                <Button
+                  colorScheme="red"
+                  isLoading={deleting}
+                  disabled={deleting}
+                  onClick={deleteConfirmationDisclosure.onOpen}
+                  py={4}
+                  size={"sm"}
+                >
+                  {t("airdrop.ownerMenu.deleteAirdrop")}
+                </Button>
+                <AlertDialog
+                  isOpen={deleteConfirmationDisclosure.isOpen}
+                  leastDestructiveRef={cancelRef}
+                  onClose={deleteConfirmationDisclosure.onClose}
+                >
+                  <AlertDialogOverlay>
+                    <AlertDialogContent>
+                      <AlertDialogHeader fontSize="lg" fontWeight="bold">
+                        <WarningIcon color={"red.400"} mr={1} />
+                        {t("airdrop.ownerMenu.deleteAirdropHeading")}
+                      </AlertDialogHeader>
 
-                  <AlertDialogBody>{t("airdrop.ownerMenu.deleteAirdropHint")}</AlertDialogBody>
+                      <AlertDialogBody>{t("airdrop.ownerMenu.deleteAirdropHint")}</AlertDialogBody>
 
-                  <AlertDialogFooter>
-                    <Button ref={cancelRef} onClick={deleteConfirmationDisclosure.onClose}>
-                      {t("common.cancel")}
-                    </Button>
-                    <Button
-                      colorScheme="red"
-                      isLoading={deleting}
-                      disabled={deleting}
-                      onClick={() => deleteAirdrop(deletionCallbacks)}
-                      ml={3}
-                    >
-                      {t("airdrop.ownerMenu.deleteAirdrop")}
-                    </Button>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialogOverlay>
-            </AlertDialog>
+                      <AlertDialogFooter>
+                        <Button ref={cancelRef} onClick={deleteConfirmationDisclosure.onClose}>
+                          {t("common.cancel")}
+                        </Button>
+                        <Button
+                          colorScheme="red"
+                          isLoading={deleting}
+                          disabled={deleting}
+                          onClick={() => deleteAirdrop(deletionCallbacks)}
+                          ml={3}
+                        >
+                          {t("airdrop.ownerMenu.deleteAirdrop")}
+                        </Button>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialogOverlay>
+                </AlertDialog>
+              </>
+            </HStack>
           </>
-        </HStack>
+        )}
       </VStack>
     </Box>
   );

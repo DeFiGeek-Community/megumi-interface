@@ -314,6 +314,12 @@ export async function DELETE(
     return respondError(error);
   }
 
+  if (airdrop.contractAddress) {
+    return respondError(
+      new ContractAlreadyRegisteredError("Airdrop cannot be deleted after contract is registered"),
+    );
+  }
+
   try {
     const deleteCommand = new DeleteObjectCommand({
       Bucket: process.env.AWS_S3_BUCKET_NAME,
