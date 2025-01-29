@@ -49,9 +49,9 @@ export default function Footer() {
                 <AiFillGithub />
               </Link>
             </Tooltip>
-            <Tooltip hasArrow label={<Text whiteSpace={"pre-wrap"}>GitBook</Text>}>
+            {/* <Tooltip hasArrow label={<Text whiteSpace={"pre-wrap"}>GitBook</Text>}>
               <Link
-                href="https://docs.yamawake.xyz"
+                href="https://docs.megumi.xyz"
                 target={"_blank"}
                 fontSize={"3xl"}
                 _hover={{ opacity: 0.8 }}
@@ -59,7 +59,7 @@ export default function Footer() {
               >
                 <Image w={"30px"} h={"30px"} src={gitbook.src} />
               </Link>
-            </Tooltip>
+            </Tooltip> */}
           </Flex>
           <chakra.div flex={1}>
             <Select
