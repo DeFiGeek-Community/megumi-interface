@@ -13,7 +13,7 @@ export default function AllAirdrops({ chainId }: { chainId: number }): JSX.Eleme
   return (
     <>
       <Heading mb={4} fontSize={{ base: "xl", md: "3xl" }}>
-        {t("airdrop.title")}
+        {t("airdrops.title")}
       </Heading>
       <VStack spacing="4">
         {airdrops.data === null ? (
