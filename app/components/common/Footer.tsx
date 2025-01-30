@@ -1,19 +1,9 @@
 "use client";
-import {
-  Box,
-  Flex,
-  Container,
-  HStack,
-  Text,
-  Link,
-  chakra,
-  Select,
-  Image,
-  Tooltip,
-} from "@chakra-ui/react";
+import { Box, Flex, Container, Text, Link, chakra, Select, Image, Tooltip } from "@chakra-ui/react";
 import { AiFillGithub } from "react-icons/ai";
 import { useTranslation } from "react-i18next";
 import gitbook from "@/public/images/gitbook.svg";
+import discord from "@/public/images/discord-mark-white.png";
 import SvgCommunityLogoBlack from "./CommunityLogoBlack";
 
 export default function Footer() {
@@ -29,9 +19,23 @@ export default function Footer() {
                 href="https://defigeek.xyz/"
                 target={"_blank"}
                 fontSize={"3xl"}
+                width={"40px"}
                 _hover={{ opacity: 0.8 }}
               >
                 <SvgCommunityLogoBlack width="2.5rem" height="2.5rem" />
+              </Link>
+            </Tooltip>
+            <Tooltip hasArrow label={<Text whiteSpace={"pre-wrap"}>Discord</Text>}>
+              <Link
+                href="https://discord.gg/FQYXqVBEnh"
+                target={"_blank"}
+                fontSize={"3xl"}
+                opacity={0.85}
+                width={"40px"}
+                _hover={{ opacity: 0.6 }}
+                padding={"0.3125rem"}
+              >
+                <Image w={"30px"} src={discord.src} />
               </Link>
             </Tooltip>
             <Tooltip hasArrow label={<Text whiteSpace={"pre-wrap"}>GitHub</Text>}>
@@ -45,7 +49,7 @@ export default function Footer() {
                 <AiFillGithub />
               </Link>
             </Tooltip>
-            <Tooltip hasArrow label={<Text whiteSpace={"pre-wrap"}>GitBook</Text>}>
+            {/* <Tooltip hasArrow label={<Text whiteSpace={"pre-wrap"}>GitBook</Text>}>
               <Link
                 href="https://docs.megumi.xyz"
                 target={"_blank"}
@@ -53,9 +57,9 @@ export default function Footer() {
                 _hover={{ opacity: 0.8 }}
                 padding={"0.3125rem"}
               >
-                <Image w={"30px"} h={"30px"} src={gitbook.src} alt="GitBook" />
+                <Image w={"30px"} h={"30px"} src={gitbook.src} />
               </Link>
-            </Tooltip>
+            </Tooltip> */}
           </Flex>
           <chakra.div flex={1}>
             <Select
@@ -69,17 +73,6 @@ export default function Footer() {
               <option value={"en"}>English</option>
             </Select>
           </chakra.div>
-        </Flex>
-        <Flex justifyContent={"center"}>
-          <HStack fontSize={"xs"} spacing={1} color={"gray.400"}>
-            <chakra.span>Current interface version: </chakra.span>
-            <Link
-              href={`https://github.com/DeFiGeek-Community/megumi-interface/commit/${process.env.NEXT_PUBLIC_GIT_ID}`}
-              target={"_blank"}
-            >
-              {`${process.env.NEXT_PUBLIC_GIT_ID?.substring(0, 7)}`}
-            </Link>
-          </HStack>
         </Flex>
         <Flex justifyContent={"center"} fontSize={"sm"} color={"gray.400"}>
           © DeFiGeek Community JAPAN

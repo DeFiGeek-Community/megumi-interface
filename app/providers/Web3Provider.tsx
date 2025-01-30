@@ -4,7 +4,7 @@ import { mainnet, sepolia } from "wagmi/chains";
 import { createWeb3Modal } from "@web3modal/wagmi/react";
 import { defaultWagmiConfig } from "@web3modal/wagmi/react/config";
 import i18next from "@/app/lib/i18nConfig";
-import { getChain } from "@/app/lib/utils";
+import { getDefaultChain } from "@/app/utils/chain";
 
 const projectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID!;
 const t = i18next.t;
@@ -12,11 +12,11 @@ const t = i18next.t;
 const metadata = {
   name: ` ${t("appName")} | ${t("tagline")}`,
   description: t("common.connectWallet"),
-  url: "https://megumi.xyz",
+  url: process.env.NEXT_PUBLIC_APP_ORIGIN!,
   icons: [],
 };
 
-const chain = getChain(Number(process.env.NEXT_PUBLIC_CHAIN_ID));
+const chain = getDefaultChain();
 const chains = [chain] as const;
 
 const config = defaultWagmiConfig({

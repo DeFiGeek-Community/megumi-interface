@@ -2,9 +2,9 @@ import { withAuth } from "next-auth/middleware";
 import { match } from "@formatjs/intl-localematcher";
 import { NextRequest, NextResponse } from "next/server";
 import Negotiator from "negotiator";
-import { i18nextInitOptions } from "./app/lib/i18nConfig";
+import i18next, { i18nextInitOptions } from "./app/lib/i18nConfig";
 
-const acceptableLocales = new Set(i18nextInitOptions.supportedLngs || []);
+const acceptableLocales: Set<string> = new Set(i18nextInitOptions.supportedLngs || []);
 const defaultLocale = i18nextInitOptions.lng || "en";
 // Set paths that requires auth
 // const authPages = ["/dashboard"];
@@ -23,7 +23,7 @@ const getUserLocale = (req: NextRequest): string => {
   return lang;
 };
 
-const setLocale = (req: NextRequest, res: NextResponse): NextResponse<unknown> => {
+const setLocale = async (req: NextRequest, res: NextResponse): Promise<NextResponse<unknown>> => {
   // If locale cookie is set, use it. Otherwise use default locale
   const locale =
     req.cookies.has("locale") && acceptableLocales.has(req.cookies.get("locale")!.value)
@@ -52,7 +52,7 @@ export default async function middleware(req: NextRequest) {
   } else {
     response = NextResponse.next();
   }
-  return setLocale(req, response);
+  return await setLocale(req, response);
 }
 
 export const config = {

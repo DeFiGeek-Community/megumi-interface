@@ -5,7 +5,6 @@ import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 import type { Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import theme from "../theme";
-import { useIsMounted } from "../hooks/common/useIsMounted";
 import Web3Provider from "./Web3Provider";
 import AuthCallbackProvider from "./AuthCallbackProvider";
 import I18nProvider from "./I18nProvider";
@@ -20,14 +19,13 @@ type ProviderProps = {
 const queryClient = new QueryClient();
 
 const Providers: FC<ProviderProps> = ({ children, session, locale }) => {
-  const isMounted: boolean = useIsMounted();
   return (
     <Web3Provider>
       <SessionProvider refetchInterval={0} session={session}>
         <QueryClientProvider client={queryClient}>
           <AuthCallbackProvider>
             <ChakraProvider theme={theme}>
-              {isMounted && <ColorModeScript initialColorMode={"dark"} />}
+              <ColorModeScript initialColorMode={"dark"} />
               <I18nProvider locale={locale}>
                 <TxToastProvider>{children}</TxToastProvider>
               </I18nProvider>

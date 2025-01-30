@@ -1,28 +1,130 @@
 {
-    "appName": "Megumi",
-    "tagline": "Airdrop tool",
-    "common": {
-        "connectWallet": "Connect Wallet",
-        "signInWithEthereum": "Sign in with Ethereum",
-        "signedInAs": "Signed in as {{name}}",
-        "disconnect": "Disconnect",
-        "joinAirdrop": "Join Airdrop",
-        "manageAirdrop": "Manage Airdrop",
-        "viewAllAirdrops": "View All Airdrops",
-        "transactionSent": "Transaction sent!",
-        "transactionConfirmed": "Transaction confirmed!"
+  "appName": "Megumi",
+  "tagline": "Airdrop tool",
+  "common": {
+    "connectWallet": "Connect Wallet",
+    "signInWithEthereum": "Sign in with Ethereum",
+    "signedInAs": "Signed in as {{name}}",
+    "disconnect": "Disconnect",
+    "joinAirdrop": "Join Airdrop",
+    "manageAirdrop": "Manage Airdrop",
+    "viewAllAirdrops": "View All Airdrops",
+    "transactionSent": "Transaction sent!",
+    "transactionConfirmed": "Transaction confirmed!",
+    "templateExplanation": {
+      "LinearVesting": "The claimable amount increases linearly over time, with the full amount available at the vesting end date",
+      "Standard": "Full amount can be claimed at any time"
     },
-    "airdrops": {
-        "title": "Airdrops"
+    "cancel": "Cancel"
+  },
+  "airdrops": {
+    "title": "Airdrops"
+  },
+  "dashboard": {
+    "claimedAccount": "Claimed Accounts",
+    "createAirdrop": "Create Airdrop",
+    "creationDate": "Creation Date:",
+    "LinearVesting": "Linear Vesting",
+    "publicationDate": "Publication Date:",
+    "registeredAirdropList": "Airdrop List Registered",
+    "registeredContract": "Contract Registered",
+    "Standard": "Standard",
+    "targetAirdrops": "Target Airdrops",
+    "title": "Dashboard",
+    "totalAmount": "Total Airdrop Amount",
+    "unregisteredAirdropList": "Airdrop List Unregistered",
+    "unregisteredContract": "Contract Unregistered",
+    "vestingDeadline": "Vesting end date",
+    "yourAirdrops": "Your Airdrops"
+  },
+  "airdrop": {
+    "airdropContract": "Contract",
+    "airdropList": "Airdrop List",
+    "basicInformation": "Basic Information",
+    "edit": "Edit",
+    "eligible": "You are eligible for the airdrop",
+    "notEligible": "You are not eligible for the airdrop",
+    "claim": "Claim",
+    "claimable": "Claimable Amount",
+    "claimed": "Claimed",
+    "contract": "Contract",
+    "feeNotice": "A claim fee of 0.0001ETH and a platform fee of 0.0001ETH, totaling 0.0002ETH, is required in addition to transaction fees",
+    "feeNoticeOwner": "A platform fee of 0.01ETH is required in addition to transaction fees when deploying the contract",
+    "register": "Register",
+    "tokenAddress": "Token",
+    "totalAmount": "Total",
+    "unregistered": "Unregistered",
+    "registered": "Registered",
+    "download": "Download",
+    "preview": "Preview",
+    "yourAllocatedAmount": "Your Allocated Amount",
+    "contractBalance": "Contract Balance",
+    "addTokenToWallet": "Add Token",
+    "airdropForm": {
+      "headerCreation": "Airdrop Creation",
+      "headerUpdate": "Airdrop Update",
+      "title": "Airdrop Title",
+      "tokenAddress": "Token Address for Airdrop",
+      "templateName": "Airdrop Template",
+      "tokenLogo": "Token Logo URL",
+      "register": "Create",
+      "update": "Update"
     },
-    "dashboard": {
-        "title": "Dashboard"
+    "contractForm": {
+      "registerContract": "Contract Registration",
+      "newContract": "Deploy New Contract",
+      "existingContract": "Link Existing Contract",
+      "tokenAddress": "Token Address for Airdrop",
+      "depositAmount": "Token Deposit Amount",
+      "type": "Airdrop Template",
+      "vestingDeadline": "Vesting Period End Date",
+      "merkleroot": "Merkle Root",
+      "approve": "Approve Token",
+      "confirm": "Confirm Details",
+      "deploy": "Deploy Contract",
+      "balance": "Balance",
+      "new": "Deploy New Contract",
+      "existing": "Link Existing Contract",
+      "existingContractAddress": "Existing Contract Address to Link",
+      "attach": "Attach Contract to Airdrop"
     },
-    "airdrop": {
-        "eligible": "You are eligible for the airdrop",
-        "notEligible": "You are not eligible for the airdrop",
-        "claim": "Claim",
-        "claimed": "Claimed",
-        "feeNotice": "A claim fee of 0.0001 ETH and a platform fee of 0.0001 ETH, totaling 0.0002 ETH, will be required in addition to the transaction fee."
+    "merkletreeForm": {
+      "heading": "Create Airdrop Recipient List",
+      "generate": "Generate",
+      "register": "Register",
+      "uploadListFile": "Upload List File",
+      "manual": "Manual Input",
+      "snapshot": "Create from Snapshot",
+      "uploadListFileHint": "Please upload the list file"
+    },
+    "ownerMenu": {
+      "title": "Owner Menu",
+      "withdraw": "Withdraw",
+      "tokenBalance": "Token Balance",
+      "ethBalance": "Fee Balance",
+      "deleteAirdropHeading": "Delete Airdrop",
+      "deleteAirdrop": "Delete the Airdrop",
+      "deleteAirdropHint": "The airdrop information will be deleted from Megumi. If you want to list it again later, please keep the contract address and airdrop list file, and link the existing contract."
+    },
+    "merkleTreePreview": {
+      "heading": "Recipient Preview",
+      "totalAmount": "Total Amount",
+      "eligibleUsersNum": "Number of Eligible Addresses",
+      "address": "Address",
+      "amount": "Eligible Amount",
+      "uploadListFileHint": "Please upload the list file",
+      "displayInMinUnit": "Display in Minimum Unit"
+    },
+    "snapshotForm": {
+      "tokenAmount": "Total Airdrop Amount",
+      "snapshotBlockNumber": "Snapshot Block Number",
+      "minAmount": "Minimum Holding Amount for Eligibility",
+      "snapshotTokenAddress": "Token Address for Snapshot",
+      "ignoreList": "Exclusion Address List (line-separated)",
+      "generate": "Create Merkle Tree"
+    },
+    "manualForm": {
+      "text": "Enter target addresses and distribution amounts comma-separated, one per line"
     }
+  }
 }

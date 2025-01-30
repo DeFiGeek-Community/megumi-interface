@@ -1,4 +1,10 @@
 "use client";
+import { useEffect, useState } from "react";
+import NextLink from "next/link";
+import { useSession } from "next-auth/react";
+import { useTranslation } from "react-i18next";
+import { normalize } from "viem/ens";
+import { useAccount, useEnsAvatar, useEnsName, useDisconnect } from "wagmi";
 import {
   chakra,
   Tag,
@@ -18,15 +24,9 @@ import {
   MenuItem,
   Button,
 } from "@chakra-ui/react";
-import NextLink from "next/link";
-import { useTranslation } from "react-i18next";
 import { ChevronDownIcon } from "@chakra-ui/icons";
-import { useAccount, useEnsAvatar, useEnsName, useDisconnect } from "wagmi";
-import { normalize } from "viem/ens";
-import { useSession } from "next-auth/react";
-import ConnectButton from "./ConnectButton";
-import { getEllipsizedAddress } from "@/app/lib/utils";
-import { useEffect, useState } from "react";
+import ConnectButton from "@/app/components/common/ConnectButton";
+import { getEllipsizedAddress } from "@/app/utils/clientHelper";
 
 type HeaderProps = {
   title?: string;
@@ -79,7 +79,7 @@ export default function Header({ title }: HeaderProps) {
           </HStack>
           <Menu>
             <HStack spacing={{ base: 2, md: 4 }}>
-              {/* {isConnected && (
+              {isConnected && (
                 <Link as={NextLink} href="/dashboard" _hover={{ textDecor: "none" }}>
                   <Button
                     display={{ base: "none", md: "block" }}
@@ -89,7 +89,7 @@ export default function Header({ title }: HeaderProps) {
                     {t("dashboard.title")}
                   </Button>
                 </Link>
-              )} */}
+              )}
               <Link as={NextLink} href="/" _hover={{ textDecor: "none" }}>
                 <Button
                   variant="ghost"
@@ -166,11 +166,11 @@ export default function Header({ title }: HeaderProps) {
                         </Tag>
                       )}
                     </HStack>
-                    {/* <Link as={NextLink} href="/dashboard" _hover={{ textDecor: "none" }}>
+                    <Link as={NextLink} href="/dashboard" _hover={{ textDecor: "none" }}>
                       <MenuItem display={{ base: "block", md: "none" }}>
                         {t("dashboard.title")}
                       </MenuItem>
-                    </Link> */}
+                    </Link>
                     <Link as={NextLink} href="/" _hover={{ textDecor: "none" }}>
                       <MenuItem display={{ base: "block", md: "none" }}>
                         {t("common.viewAllAirdrops")}
@@ -204,7 +204,7 @@ export default function Header({ title }: HeaderProps) {
                   </>
                 )}
 
-                {/* {!session?.user && (
+                {!session?.user && (
                   <>
                     <Flex align="center" px="2" mt="2">
                       <Divider />
@@ -221,7 +221,7 @@ export default function Header({ title }: HeaderProps) {
                       />
                     </chakra.div>
                   </>
-                )} */}
+                )}
               </MenuList>
             </HStack>
           </Menu>
