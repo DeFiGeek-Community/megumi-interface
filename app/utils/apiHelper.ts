@@ -34,6 +34,12 @@ export const getViemProvider = (chainId: number): PublicClient => {
   if (!chain) throw new Error("Wrong network");
   const thirdPartyEndpoints = [];
 
+  console.log(
+    CHAIN_INFO[chain.id].infuraRpcUrl,
+    process.env.INFURA_API_KEY,
+    CHAIN_INFO[chain.id].alchemyRpcUrl,
+    process.env.ALCHEMY_API_KEY,
+  );
   if (CHAIN_INFO[chain.id].infuraRpcUrl && process.env.INFURA_API_KEY) {
     thirdPartyEndpoints.push(
       http(`${CHAIN_INFO[chain.id].infuraRpcUrl}${process.env.INFURA_API_KEY}`),
