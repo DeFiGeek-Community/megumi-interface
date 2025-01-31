@@ -32,6 +32,7 @@ export const hexStringToUint8Array = (hexString: `0x${string}`): Uint8Array => {
 export const getViemProvider = (chainId: number): PublicClient => {
   const chain = getSupportedChain(chainId);
   if (!chain) throw new Error("Wrong network");
+  const publicEndpoints = chain.rpcUrls.default.http.map((url) => http(url));
   const thirdPartyEndpoints = [];
 
   if (CHAIN_INFO[chain.id].infuraRpcUrl && process.env.INFURA_API_KEY) {
@@ -47,7 +48,7 @@ export const getViemProvider = (chainId: number): PublicClient => {
 
   const client = createPublicClient({
     chain,
-    transport: fallback(thirdPartyEndpoints),
+    transport: fallback([...thirdPartyEndpoints, ...publicEndpoints]),
   });
   return client;
 };
