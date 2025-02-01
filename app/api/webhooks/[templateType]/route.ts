@@ -3,6 +3,7 @@ import * as crypto from "crypto";
 import { prisma } from "@/prisma";
 import { getErrorMessage } from "@/app/utils/shared";
 import { hexStringToUint8Array } from "@/app/utils/apiHelper";
+import { to20ByteHexString } from "@/app/utils/merkleTree/shared";
 
 /*
 Handle claim webhook from Alchemy triggered by Standard Airdrop's Claim event
@@ -96,7 +97,8 @@ export async function POST(request: NextRequest, { params }: { params: { templat
       }
     */
     const transactionData = body.event.data.block.logs[0].transaction;
-    const claimerAddress = transactionData.from.address;
+    const topicData = body.event.data.block.logs[0].topics;
+    const claimerAddress = to20ByteHexString(topicData[2]);
     const airdropAddress = transactionData.to.address;
     console.log("[CLAIM]", transactionData, claimerAddress, airdropAddress);
     const airdrop = await prisma.airdrop.findFirst({
