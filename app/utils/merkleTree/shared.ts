@@ -74,3 +74,9 @@ export function parseBalanceMap(
     claims,
   };
 }
+
+export const to20ByteHexString = (hexString: string): `0x${string}` => {
+  const strippedHex = hexString.startsWith("0x") ? hexString.slice(2) : hexString;
+  const last40 = strippedHex.slice(-40);
+  return `0x${last40}`;
+};
