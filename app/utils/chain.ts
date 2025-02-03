@@ -1,5 +1,5 @@
 import * as chains from "viem/chains";
-import { CHAIN_INFO } from "../lib/constants/chains";
+import { CHAIN_INFO, SUPPORTED_CHAIN } from "../lib/constants/chains";
 import type { ChainInfo } from "../lib/constants/chains";
 
 export const isSupportedChain = (chainId: string | number): boolean => {
@@ -7,7 +7,8 @@ export const isSupportedChain = (chainId: string | number): boolean => {
 };
 
 export const getSupportedChain = (chainId: string | number): ChainInfo | undefined => {
-  return Object.values(CHAIN_INFO).find((c) => c.id === Number(chainId));
+  const id = Object.values(SUPPORTED_CHAIN).find((id) => id === Number(chainId));
+  return id ? CHAIN_INFO[id] : undefined;
 };
 
 export const getDefaultChain = (): chains.Chain => {

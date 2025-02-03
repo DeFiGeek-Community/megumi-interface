@@ -14,7 +14,6 @@ import {
   Tag,
   Tooltip,
   Link,
-  chakra,
 } from "@chakra-ui/react";
 import ConnectButton from "@/app/components/common/ConnectButton";
 import { useIsMounted } from "@/app/hooks/common/useIsMounted";

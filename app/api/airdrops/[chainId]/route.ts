@@ -2,13 +2,12 @@ import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth";
 import { isAddress, type PublicClient } from "viem";
 import { Prisma, prisma, type Airdrop } from "@/prisma";
-import { getTokenInfo, getViemProvider, respondError } from "@/app/utils/apiHelper";
+import { respondError, hexStringToUint8Array } from "@/app/utils/apiHelper";
 import { isSupportedChain } from "@/app/utils/chain";
 import { authOptions } from "@/app/api/auth/authOptions";
-import { hexStringToUint8Array } from "@/app/utils/apiHelper";
 import { InvalidParameterError } from "@/app/types/errors";
 import * as AirdropUtils from "@/app/utils/airdrop";
-import { objectToKeyValueString } from "@/app/utils/shared";
+import { objectToKeyValueString, getTokenInfo, getViemProvider } from "@/app/utils/shared";
 
 // Create new airdrop
 export async function POST(request: NextRequest, { params }: { params: { chainId: string } }) {

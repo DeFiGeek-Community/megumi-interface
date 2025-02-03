@@ -31,6 +31,7 @@ import {
   Text,
   Flex,
   Switch,
+  Select,
 } from "@chakra-ui/react";
 import { useUploadMerkletree } from "@/app/hooks/airdrops/useUploadMerkletree";
 import { useGenerateMerkleTree } from "@/app/hooks/airdrops/useGenerateMerkleTree";
@@ -67,19 +68,24 @@ export default function SnapshotForm({
   callbacks,
 }: SnapshotFormProps) {
   const { t } = useTranslation();
+  const [snapshotChain, setSnapshotChain] = useState<number>(1);
   const {
     generateMerkleTree,
     merkleTree,
     loading: generating,
     error: generateError,
-  } = useGenerateMerkleTree(chainId, airdropId);
+  } = useGenerateMerkleTree(snapshotChain, airdropId);
   const {
     upload,
     loading: uploading,
     error: uploadError,
   } = useUploadMerkletree(chainId, airdropId);
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { fetchBlockNumber, data: blockData, loading: blockDataLoading } = useBlockNumber(chainId);
+  const {
+    fetchBlockNumber,
+    data: blockData,
+    loading: blockDataLoading,
+  } = useBlockNumber(snapshotChain);
   const [dateInput, setDateInput] = useState<boolean>(false);
   const [date, setDate] = useState<string>("");
 
@@ -144,14 +150,7 @@ export default function SnapshotForm({
     ) {
       errors.snapshotTokenAddress = "snapshotTokenAddress address is invalid";
     } else if (snapshotToken.isError) {
-      errors.snapshotTokenAddress = snapshotToken.error.message;
-    }
-    if (
-      value.minAmount &&
-      snapshotToken.data &&
-      toMinUnit(value.minAmount, snapshotToken.data.decimals) === 0n
-    ) {
-      errors.minAmount = "minAmount is too small";
+      errors.snapshotTokenAddress = snapshotToken.error?.message;
     }
 
     if (value.ignoreList) {
@@ -200,7 +199,7 @@ export default function SnapshotForm({
     }
   }, [date]);
 
-  const snapshotToken = useToken(formikProps.values.snapshotTokenAddress);
+  const snapshotToken = useToken(formikProps.values.snapshotTokenAddress, snapshotChain);
 
   return (
     <form onSubmit={formikProps.handleSubmit}>
@@ -272,7 +271,7 @@ export default function SnapshotForm({
                     type="date"
                     value={date}
                     max={new Date().toISOString().split("T")[0]}
-                    onChange={(e) => setDate(e.target.value)}
+                    onChange={(e: any) => setDate(e.target.value)}
                   ></Input>
                   <chakra.span fontSize={"xs"} color={"gray.400"}>
                     00:00:00 (UTC)
@@ -317,14 +316,27 @@ export default function SnapshotForm({
             <FormLabel fontSize={"xs"} htmlFor="snapshotTokenAddress" alignItems={"baseline"}>
               {t("airdrop.snapshotForm.snapshotTokenAddress")}
             </FormLabel>
-            <Input
-              id="snapshotTokenAddress"
-              name="snapshotTokenAddress"
-              onBlur={formikProps.handleBlur}
-              onChange={formikProps.handleChange}
-              value={formikProps.values.snapshotTokenAddress}
-              placeholder="e.g. 0x0123456789012345678901234567890123456789"
-            />
+            <HStack spacing={2} flexDirection={{ base: "column", md: "row" }}>
+              <Select
+                isDisabled={true}
+                isReadOnly={true}
+                w={{ base: "full", md: "260px" }}
+                fontSize={"sm"}
+                value={snapshotChain}
+                onChange={(e: any) => setSnapshotChain(parseInt(e.target.value))}
+              >
+                <option value="1">Ethereum mainnet</option>
+              </Select>
+              <Input
+                id="snapshotTokenAddress"
+                name="snapshotTokenAddress"
+                onBlur={formikProps.handleBlur}
+                onChange={formikProps.handleChange}
+                value={formikProps.values.snapshotTokenAddress}
+                fontSize={"sm"}
+                placeholder="e.g. 0x0123456789012345678901234567890123456789"
+              />
+            </HStack>
             <FormErrorMessage>{formikProps.errors.snapshotTokenAddress}</FormErrorMessage>
             <Box>
               {snapshotToken.isLoading && <Spinner mt={1} textAlign={"right"} />}

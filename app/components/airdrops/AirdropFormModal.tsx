@@ -108,7 +108,7 @@ export default function AirdropFormModal({
     } else if (value.tokenAddress && (!isAddress(value.tokenAddress) || !token)) {
       errors.tokenAddress = "Token address is invalid";
     } else if (token.isError) {
-      errors.tokenAddress = token.error.message;
+      errors.tokenAddress = token.error?.message;
     }
     return errors;
   };
@@ -131,7 +131,7 @@ export default function AirdropFormModal({
     validate: (value: AirdropFormValues) => validate(value),
   });
 
-  const token = useToken(formikProps.values.tokenAddress);
+  const token = useToken(formikProps.values.tokenAddress, chainId);
 
   return (
     <>

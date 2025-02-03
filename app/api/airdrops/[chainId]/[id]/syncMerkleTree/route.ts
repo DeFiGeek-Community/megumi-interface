@@ -3,14 +3,13 @@ import { getServerSession } from "next-auth";
 import { GetCodeReturnType, type PublicClient } from "viem";
 import { prisma } from "@/prisma";
 import { authOptions } from "@/app/api/auth/authOptions";
-import { getErrorMessage, getTemplateKeyByHex, getTemplateTypeByHex } from "@/app/utils/shared";
 import {
+  getErrorMessage,
+  getTemplateKeyByHex,
   getTokenInfo,
   getViemProvider,
-  hexStringToUint8Array,
-  requireOwner,
-  respondError,
-} from "@/app/utils/apiHelper";
+} from "@/app/utils/shared";
+import { hexStringToUint8Array, requireOwner, respondError } from "@/app/utils/apiHelper";
 import { s3Client, GetObjectCommand, GetObjectCommandOutput } from "@/app/lib/aws";
 import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
 import { AirdropNotFoundError } from "@/app/types/errors";

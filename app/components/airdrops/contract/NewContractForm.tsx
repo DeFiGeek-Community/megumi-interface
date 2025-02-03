@@ -96,7 +96,10 @@ export default function NewContractForm({
     validate: (value: ContractFormValues) => validate(value),
   });
 
-  const { data: token, isLoading: tokenLoading } = useToken(formikProps.values.tokenAddress);
+  const { data: token, isLoading: tokenLoading } = useToken(
+    formikProps.values.tokenAddress,
+    chainId,
+  );
 
   const approvals = useApprove({
     chainId,
@@ -129,7 +132,7 @@ export default function NewContractForm({
     uuid: uuidToHex(airdropId),
     enabled:
       isAddress(ownerAddress) &&
-      token &&
+      !!token &&
       approvals.allowance >= toMinUnit(formikProps.values.amount, token.decimals),
   });
 

@@ -313,9 +313,6 @@ describe("POST /api/airdrops/:id Upload merkle tree file", () => {
             const buffer = fs.readFileSync(filePath);
             const json = JSON.parse(buffer.toString("utf-8"));
 
-            // Edit Merkle tree
-            json.merkleRoot = "0xfeea224f956367a8d8b915442393a5fc7973baa54029e852fb6b7df516f6dd71";
-
             const formData = new FormData();
             formData.append("file", new Blob([JSON.stringify(json)], { type: "application/json" }));
 
