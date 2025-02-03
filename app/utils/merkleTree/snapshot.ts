@@ -1,7 +1,8 @@
 import { getAddress } from "viem";
 import { parseBalanceMap } from "./shared";
+import { CHAIN_INFO } from "@/app/lib/constants/chains";
 
-type holdersResponseData = { address: string; balance: string }[];
+type holdersResponseData = { address: `0x${string}`; balance: string }[];
 
 export const generateMerkleTreeFromSnapshot = async (
   chainId: number,
@@ -49,8 +50,8 @@ const extractTokenBalance = async (
   const responseJson = await fetchHolders(chainId, snapshotTokenAddress, untilBlock, maxEntries);
   const _ignoreAddresses = ignoreAddresses.map((addr) => addr.toLowerCase());
 
-  return responseJson.items.reduce(
-    (acc: { [key: string]: string }, data: { address: `0x${string}`; balance: string }) => {
+  return responseJson.reduce(
+    (acc: { [key: `0x${string}`]: string }, data: { address: `0x${string}`; balance: string }) => {
       if (
         !_ignoreAddresses.includes(data.address.toLowerCase()) &&
         BigInt(data.balance) >= minAmount
@@ -69,42 +70,34 @@ async function fetchHolders(
   snapshotBlockNumber: number,
   maxEntries: number = 10000,
 ) {
-  if (!process.env.COVALENT_API_KEY) throw new Error("COVALENT_API_KEY is not set");
-  const BASE_URL = `https://api.covalenthq.com/v1/${chainId}/tokens/`;
-  const TOKEN_HOLDERS_URL = "/token_holders/?";
+  if (!process.env.BLAST_PROJECT_ID) throw new Error("BLAST_PROJECT_ID is not set");
+  const BASE_URL = `${CHAIN_INFO[chainId].blastApiUrl}${process.env.BLAST_PROJECT_ID}/builder/getTokenHolders?`;
   let param = new URLSearchParams({
-    key: process.env.COVALENT_API_KEY,
-    "block-height": `${snapshotBlockNumber}`,
-    "page-size": "1000",
+    contractAddress: tokenAddress,
+    blockNumber: `${snapshotBlockNumber}`,
+    pageSize: "100",
   });
   let response: holdersResponseData = [];
-  let covRes;
-  let pageNumber = 0;
+  let blastRes;
   let count = 0;
   while (true) {
-    param.set("page-number", pageNumber.toString());
-    covRes = await fetch(BASE_URL + tokenAddress + TOKEN_HOLDERS_URL + param.toString());
-    if (covRes.ok) {
-      covRes = await covRes.json();
-      covRes = covRes.data;
-      covRes.items.map((data: { address: `0x${string}`; balance: string }) => {
-        response.push({ address: data.address, balance: data.balance });
+    blastRes = await fetch(BASE_URL + param.toString());
+    if (blastRes.ok) {
+      blastRes = await blastRes.json();
+      blastRes.tokenHolders.map((data: { walletAddress: `0x${string}`; balance: string }) => {
+        response.push({ address: data.walletAddress, balance: data.balance });
       });
-      count += covRes.items.length;
+      count += blastRes.tokenHolders.length;
       if (count >= maxEntries) throw new Error(`Maximum number of entries is ${maxEntries}`);
-      if (covRes.pagination.has_more) {
-        pageNumber += 1;
-        // To handle Covalent API rate limit
-        if (pageNumber % 4 === 0) {
-          await new Promise((resolve) => setTimeout(resolve, 1500));
-        }
+      if (blastRes.nextPageKey) {
+        param.set("pageKey", blastRes.nextPageKey);
       } else {
         break;
       }
     } else {
-      console.error(covRes);
+      console.error(blastRes);
       break;
     }
   }
-  return covRes;
+  return response;
 }
