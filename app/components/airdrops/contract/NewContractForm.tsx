@@ -132,7 +132,7 @@ export default function NewContractForm({
     uuid: uuidToHex(airdropId),
     enabled:
       isAddress(ownerAddress) &&
-      token &&
+      !!token &&
       approvals.allowance >= toMinUnit(formikProps.values.amount, token.decimals),
   });
 
