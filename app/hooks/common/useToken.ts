@@ -1,3 +1,4 @@
+"use client";
 import { useEffect, useState } from "react";
 import { getErrorMessage, getTokenInfo, getViemProvider } from "@/app/utils/shared";
 

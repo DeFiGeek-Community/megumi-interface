@@ -1,3 +1,4 @@
+"use client";
 import { TxToastsContext } from "@/app/providers/ToastProvider";
 import { useContext, useEffect, useState } from "react";
 import { erc20Abi, maxInt256 } from "viem";

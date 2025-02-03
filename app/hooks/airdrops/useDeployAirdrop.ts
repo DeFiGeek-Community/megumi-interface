@@ -1,3 +1,4 @@
+"use client";
 import { TemplateArgs, TemplateNames, TemplateType } from "@/app/lib/constants/templates";
 import { TxToastsContext } from "@/app/providers/ToastProvider";
 import { useCallback, useContext, useMemo } from "react";

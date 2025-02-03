@@ -1,3 +1,4 @@
+"use client";
 import { API_BASE_URL } from "@/app/lib/constants";
 import { MerkleDistributorInfo } from "@/app/types/airdrop";
 import { getErrorMessage } from "@/app/utils/shared";

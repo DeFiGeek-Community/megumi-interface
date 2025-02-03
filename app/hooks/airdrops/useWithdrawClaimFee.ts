@@ -1,3 +1,4 @@
+"use client";
 import { TxToastsContext } from "@/app/providers/ToastProvider";
 import { useCallback, useContext } from "react";
 import { useSimulateContract, useWriteContract } from "wagmi";
