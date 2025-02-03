@@ -131,7 +131,7 @@ export default function AirdropFormModal({
     validate: (value: AirdropFormValues) => validate(value),
   });
 
-  const token = useToken(formikProps.values.tokenAddress);
+  const token = useToken(formikProps.values.tokenAddress, chainId);
 
   return (
     <>

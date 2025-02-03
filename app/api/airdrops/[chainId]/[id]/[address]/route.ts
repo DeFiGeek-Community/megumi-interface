@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/prisma";
-import { getViemProvider, hexStringToUint8Array, respondError } from "@/app/utils/apiHelper";
+import { hexStringToUint8Array, respondError } from "@/app/utils/apiHelper";
+import { getViemProvider } from "@/app/utils/shared";
 import * as AirdropUtils from "@/app/utils/airdrop";
 import { getContract, PublicClient } from "viem";
-import { TemplateContext } from "next/dist/shared/lib/app-router-context.shared-runtime";
 import { TemplateNames } from "@/app/lib/constants/templates";
 
 // Get airdrop claimer map

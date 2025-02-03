@@ -1,4 +1,53 @@
+import { createPublicClient, fallback, http, erc20Abi, getContract, type PublicClient } from "viem";
+import { getChainById, isSupportedChain } from "@/app/utils/chain";
+import { CHAIN_INFO } from "@/app/lib/constants/chains";
 import { TemplateNames, TemplateType } from "@/app/lib/constants/templates";
+
+export const getViemProvider = (
+  chainId: number,
+  allowUnsupportedChain: boolean = false,
+  clientSide: boolean = false,
+): PublicClient => {
+  const chain = getChainById(chainId);
+  if (!chain) throw new Error("Wrong network");
+  if (!isSupportedChain(chain.id) && !allowUnsupportedChain) throw new Error("Unsupported network");
+
+  const infraKey = clientSide ? process.env.NEXT_PUBLIC_INFURA_API_KEY : process.env.INFURA_API_KEY;
+  const alchemyKey = clientSide
+    ? process.env.NEXT_PUBLIC_ALCHEMY_API_KEY
+    : process.env.ALCHEMY_API_KEY;
+  const publicEndpoints = chain.rpcUrls.default.http.map((url) => http(url));
+  const thirdPartyEndpoints = [];
+
+  if (CHAIN_INFO[chain.id]?.infuraRpcUrl && infraKey) {
+    thirdPartyEndpoints.push(http(`${CHAIN_INFO[chain.id].infuraRpcUrl}${infraKey}`));
+  }
+  if (CHAIN_INFO[chain.id]?.alchemyRpcUrl && alchemyKey) {
+    thirdPartyEndpoints.push(http(`${CHAIN_INFO[chain.id].alchemyRpcUrl}${alchemyKey}`));
+  }
+
+  const client = createPublicClient({
+    chain,
+    transport: fallback([...thirdPartyEndpoints, ...publicEndpoints]),
+  });
+  return client;
+};
+
+export const getTokenInfo = async (
+  tokenAddress: `0x${string}`,
+  provider: PublicClient,
+): Promise<{ tokenName: string; tokenSymbol: string; tokenDecimals: number }> => {
+  const token = getContract({
+    address: tokenAddress,
+    abi: erc20Abi,
+    client: provider,
+  });
+  const tokenName = await token.read.name();
+  const tokenSymbol = await token.read.symbol();
+  const tokenDecimals = await token.read.decimals();
+
+  return { tokenName, tokenSymbol, tokenDecimals };
+};
 
 export const isSupportedTemplate = (templateName: string) => {
   return Object.values(TemplateNames)

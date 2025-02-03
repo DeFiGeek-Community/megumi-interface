@@ -10,9 +10,8 @@ import {
   InvalidMerkletreeError,
   UnauthorizedError,
 } from "@/app/types/errors";
-import { getTokenInfo } from "@/app/utils/apiHelper";
+import { getTokenInfo, getViemProvider } from "@/app/utils/shared";
 import {
-  getViemProvider,
   requireOwner,
   respondError,
   hexStringToUint8Array,

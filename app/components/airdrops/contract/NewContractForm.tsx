@@ -96,7 +96,10 @@ export default function NewContractForm({
     validate: (value: ContractFormValues) => validate(value),
   });
 
-  const { data: token, isLoading: tokenLoading } = useToken(formikProps.values.tokenAddress);
+  const { data: token, isLoading: tokenLoading } = useToken(
+    formikProps.values.tokenAddress,
+    chainId,
+  );
 
   const approvals = useApprove({
     chainId,
