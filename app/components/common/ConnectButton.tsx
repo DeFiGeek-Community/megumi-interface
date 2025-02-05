@@ -1,9 +1,8 @@
 "use client";
 import { useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useAccount, useSignMessage } from "wagmi";
+import { useAccount } from "wagmi";
 import { chakra, Button } from "@chakra-ui/react";
-import { handleLogin } from "@/app/lib/auth/handleLogin";
 import { useIsMounted } from "@/app/hooks/common/useIsMounted";
 import { RequireAuthContext } from "@/app/providers/AuthCallbackProvider";
 
@@ -19,8 +18,7 @@ type ConnectButtonProps = {
 export default function ConnectButton({ requireSignIn = false, ...props }: ConnectButtonProps) {
   const isMounted = useIsMounted();
   const { address, isConnected, chain } = useAccount();
-  const { signMessageAsync } = useSignMessage();
-  const { setRequireAuth } = useContext(RequireAuthContext);
+  const { login, signingIn, setRequireAuth } = useContext(RequireAuthContext);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -49,15 +47,16 @@ export default function ConnectButton({ requireSignIn = false, ...props }: Conne
   return (
     <>
       {!isConnected && (
-        <chakra.span onClick={() => setRequireAuth(requireSignIn)}>
-          <w3m-button {...props} />
+        <chakra.span w={"full"} onClick={() => setRequireAuth({ flag: requireSignIn })}>
+          <w3m-button {...props} loadingLabel="" />
         </chakra.span>
       )}
-      {isConnected && (
+      {isConnected && !!chain && !!address && (
         <Button
-          colorScheme={"green"}
+          isLoading={signingIn}
           w={"full"}
-          onClick={() => handleLogin({ chain, address, signMessageAsync })}
+          onClick={() => login?.({ chain, address })}
+          {...props}
         >
           {t("common.signInWithEthereum")}
         </Button>

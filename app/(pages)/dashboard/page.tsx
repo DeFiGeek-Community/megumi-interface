@@ -10,7 +10,7 @@ import MyAirdrops from "@/app/components/dashboard/myAirdrops";
 import EligibleAirdrops from "@/app/components/dashboard/eligibleAirdrops";
 
 export default function Dashboard() {
-  const { address, isConnecting, isReconnecting, chainId } = useRequireAccount();
+  const { address, chainId } = useRequireAccount();
   const { data: session } = useSession();
   const isMounted = useIsMounted();
   const { t } = useTranslation();
@@ -41,7 +41,7 @@ export default function Dashboard() {
                 </TabPanel>
               )}
               <TabPanel>
-                <EligibleAirdrops chainId={chainId} address={address} />
+                <EligibleAirdrops chainId={chainId} address={address as `0x${string}`} />
               </TabPanel>
             </TabPanels>
           </Tabs>
