@@ -4,6 +4,9 @@ import { getCsrfToken } from "next-auth/react";
 import { SiweMessage } from "siwe";
 import { ethers } from "ethers";
 import { getSupportedChain } from "@/app/utils/chain";
+import { getContract, isAddress, PublicClient } from "viem";
+import { getViemProvider } from "@/app/utils/shared";
+import SafeABI from "@/app/lib/constants/abis/Safe.json";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -46,9 +49,26 @@ export const authOptions: AuthOptions = {
             { provider },
           );
 
+          if (result.data.resources && isAddress(result.data.resources[0])) {
+            // Sign in as a Safe address owner
+            const safeAddress = result.data.resources[0];
+            const publicClient = getViemProvider(chain.id) as PublicClient;
+            const safeAccount = getContract({
+              address: safeAddress,
+              abi: SafeABI,
+              client: publicClient,
+            });
+            const isOwner = await safeAccount.read.isOwner([result.data.address]);
+            if (!isOwner) return null;
+          } else {
+            // To ensure that resources are emply
+            delete result.data.resources;
+          }
+
           if (result.success) {
             return {
               id: siwe.address,
+              resources: result.data.resources,
             };
           }
           return null;
@@ -64,8 +84,15 @@ export const authOptions: AuthOptions = {
   },
   secret: process.env.NEXTAUTH_SECRET,
   callbacks: {
-    async session({ session, token }: { session: any; token: any }) {
-      session.user.address = token.sub;
+    async jwt({ token, user }) {
+      if (user?.resources?.[0]) {
+        token.safeAddress = user.resources[0] as `0x${string}`;
+      }
+      return token;
+    },
+    async session({ session, token }) {
+      session.user.address = token.sub as `0x${string}`;
+      session.user.safeAddress = token.safeAddress;
       return session;
     },
   },
