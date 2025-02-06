@@ -20,10 +20,12 @@ import { TxToastsContext } from "@/app/providers/ToastProvider";
 import { formatAmount, formatDate } from "@/app/utils/clientHelper";
 import { useUpdateClaimStatus } from "@/app/hooks/airdrops/useUpdateIsClaimed";
 import { getErrorMessage } from "@/app/utils/shared";
+import { useSafeWriteContract } from "@/app/hooks/safe/useSafeWriteContract";
 
 interface ClaimProps {
   chainId: string;
   address: `0x${string}`;
+  isAddressSafe: boolean;
   airdropId: string;
   contractAddress: `0x${string}`;
   tokenAddress: `0x${string}` | null;
@@ -46,6 +48,7 @@ interface ClaimProps {
 export default function Claim({
   chainId,
   address,
+  isAddressSafe = false,
   airdropId,
   contractAddress,
   tokenAddress,
@@ -65,7 +68,7 @@ export default function Claim({
     error: claimError,
     fetchClaimParams,
   } = useFetchClaimParams(chainId, airdropId, address);
-  const { data, isError, isSuccess, failureReason, isFetched } = useSimulateContract({
+  const { data, isError, failureReason } = useSimulateContract({
     chainId: parseInt(chainId),
     address: contractAddress,
     abi: AirdropNameABI[templateName],
@@ -79,7 +82,9 @@ export default function Claim({
       enabled: !!claimParams && !!address,
     },
   });
-  const { writeContractAsync, status } = useWriteContract();
+  const { writeContractAsync, status, isSuccess } = useSafeWriteContract({
+    safeAddress: isAddressSafe ? address : undefined,
+  });
   const { setWritePromise, waitResult } = useContext(TxToastsContext);
   const { updateClaimStatus } = useUpdateClaimStatus(
     chainId,
@@ -97,7 +102,7 @@ export default function Claim({
 
   const handleClaim = async () => {
     try {
-      data && setWritePromise(writeContractAsync(data.request));
+      data && setWritePromise({ promise: writeContractAsync(data.request), isSafe: isAddressSafe });
     } catch (error: unknown) {
       toast({ title: getErrorMessage(error), status: "error" });
     }
@@ -116,6 +121,8 @@ export default function Claim({
     setIsClaimed(claimed);
   }, [failureReason, status, waitResult?.isSuccess, claimParams?.isClaimed]);
 
+  const claimButtonLoading =
+    status === "pending" || waitResult?.isLoading || (isSuccess && waitResult?.isPending);
   return (
     <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4} mb={4}>
       {!claimParams && claimLoading && (
@@ -203,14 +210,8 @@ export default function Claim({
             </>
           )}
           <Button
-            isDisabled={
-              !data?.request ||
-              status === "pending" ||
-              status === "success" ||
-              isClaimed ||
-              waitResult?.isLoading
-            }
-            isLoading={status === "pending" || waitResult?.isLoading}
+            isDisabled={!data?.request || status === "success" || isClaimed || claimButtonLoading}
+            isLoading={claimButtonLoading}
             onClick={() => handleClaim()}
             size="sm"
             colorScheme="blue"

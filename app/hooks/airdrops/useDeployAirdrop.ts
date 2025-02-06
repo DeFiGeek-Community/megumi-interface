@@ -67,7 +67,7 @@ export default function useDeployAirdrop<T extends TemplateType>({
   const prepareFn = useSimulateContract({
     chainId,
     address: CONTRACT_ADDRESSES[chainId].FACTORY,
-    // account: ownerAddress,
+    account: ownerAddress,
     abi: Factory,
     functionName: "deployMerkleAirdrop",
     args: [TemplateNames[type], uuid, getEncodedArgs()],
@@ -85,8 +85,9 @@ export default function useDeployAirdrop<T extends TemplateType>({
   const write = useCallback(
     (callbacks?: { onSuccess?: () => void }): void => {
       if (!prepareFn.data || !writeFn.writeContractAsync) return;
+      const { account, ...request } = prepareFn.data.request;
       return setWritePromise({
-        promise: writeFn.writeContractAsync(prepareFn.data.request, callbacks),
+        promise: writeFn.writeContractAsync(request, callbacks),
         isSafe: isSafeTx,
       });
     },

@@ -1,5 +1,5 @@
 "use client";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Stack,
@@ -113,8 +113,18 @@ export default function OwnerMenu({
     templateName,
     shouldSync,
   );
-  const withdrawToken = useWithdrawToken({ chainId, contractAddress });
-  const withdrawClaimFee = useWithdrawClaimFee({ chainId, contractAddress });
+  const withdrawToken = useWithdrawToken({
+    chainId,
+    contractAddress,
+    ownerAddress,
+    isSafeTx: isOwnerSafe,
+  });
+  const withdrawClaimFee = useWithdrawClaimFee({
+    chainId,
+    contractAddress,
+    ownerAddress,
+    isSafeTx: isOwnerSafe,
+  });
   const feeBalance = useBalance({
     chainId,
     address: contractAddress ? contractAddress : undefined,
@@ -149,6 +159,28 @@ export default function OwnerMenu({
     await refetchAirdrop();
     await fetchMerkleTree();
   };
+
+  useEffect(() => {
+    if (withdrawToken.waitResult?.isSuccess) {
+      refetchAirdrop();
+    }
+  }, [withdrawToken.waitResult?.isSuccess]);
+
+  useEffect(() => {
+    if (withdrawClaimFee.waitResult?.isSuccess) {
+      feeBalance.refetch();
+    }
+  }, [withdrawClaimFee.waitResult?.isSuccess]);
+
+  const withdrawTokenButtonLoading =
+    withdrawToken.writeFn.status === "pending" ||
+    withdrawToken.waitResult?.isLoading ||
+    (withdrawToken.writeFn.isSuccess && withdrawToken.waitResult?.isPending);
+  const withdrawClaimFeeButtonLoading =
+    withdrawClaimFee.writeFn.status === "pending" ||
+    withdrawClaimFee.waitResult?.isLoading ||
+    (withdrawClaimFee.writeFn.isSuccess && withdrawClaimFee.waitResult?.isPending);
+
   return (
     <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4}>
       <VStack spacing={2} align="stretch">
@@ -317,12 +349,13 @@ export default function OwnerMenu({
                   variant={"solid"}
                   colorScheme="blue"
                   size={"sm"}
-                  isLoading={
-                    withdrawToken.writeFn.status === "pending" ||
-                    withdrawToken.waitResult?.isLoading
+                  isLoading={withdrawTokenButtonLoading}
+                  disabled={
+                    withdrawToken.prepareFn.isPending ||
+                    !balanceOnContract?.value ||
+                    withdrawTokenButtonLoading
                   }
-                  disabled={withdrawToken.prepareFn.isPending || !balanceOnContract?.value}
-                  onClick={() => withdrawToken.writeFn.write({ onSuccess: refetchAirdrop })}
+                  onClick={() => withdrawToken.writeFn.write()}
                 >
                   {t("airdrop.ownerMenu.withdraw")}
                 </Button>
@@ -336,12 +369,13 @@ export default function OwnerMenu({
                   variant={"solid"}
                   colorScheme="blue"
                   size={"sm"}
-                  isLoading={
-                    withdrawClaimFee.writeFn.status === "pending" ||
-                    withdrawClaimFee.waitResult?.isLoading
+                  isLoading={withdrawClaimFeeButtonLoading}
+                  disabled={
+                    withdrawClaimFee.prepareFn.isPending ||
+                    !feeBalance.data?.value ||
+                    withdrawClaimFeeButtonLoading
                   }
-                  disabled={withdrawClaimFee.prepareFn.isPending || !feeBalance.data?.value}
-                  onClick={() => withdrawClaimFee.writeFn.write({ onSuccess: feeBalance.refetch })}
+                  onClick={() => withdrawClaimFee.writeFn.write()}
                 >
                   {t("airdrop.ownerMenu.withdraw")}
                 </Button>
