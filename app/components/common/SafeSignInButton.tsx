@@ -19,7 +19,7 @@ export default function SafeSignInButton({
   text?: string;
 } & ButtonProps) {
   const safeModalDisclosure = useDisclosure();
-  const { address: connectedAddress, isConnected, chain, isConnecting } = useAccount();
+  const { address: connectedAddress, isConnected, chainId, isConnecting } = useAccount();
   const { setRequireAuth, login, signingIn, error: signInError } = useContext(RequireAuthContext);
   const { open } = useWeb3Modal();
   const { t } = useTranslation();
@@ -37,7 +37,7 @@ export default function SafeSignInButton({
         variant={"solid"}
         isLoading={signingIn}
         onClick={
-          !connectedAddress || !chain?.id
+          !connectedAddress || !chainId
             ? () => {
                 safeModalDisclosure.onOpen();
               }
@@ -64,9 +64,9 @@ export default function SafeSignInButton({
           isLoading={signingIn || isConnecting}
           onClose={safeModalDisclosure.onClose}
           onProceed={
-            !!isConnected && !!chain && connectedAddress
+            !!isConnected && !!chainId && connectedAddress
               ? async (safeAddress: `0x${string}`) => {
-                  login?.({ chain, address: connectedAddress, safeAddress });
+                  login?.({ chainId, address: connectedAddress, safeAddress });
                 }
               : async (safeAddress: `0x${string}`) => {
                   setRequireAuth({ flag: true, safeAddress: safeAddress });

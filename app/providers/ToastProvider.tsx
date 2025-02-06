@@ -4,21 +4,26 @@ import { useTranslation } from "react-i18next";
 import { useWaitForTransactionReceipt } from "wagmi";
 import { useToast } from "@chakra-ui/react";
 import TxToast from "@/app/components/common/TxToast";
+import { useSafeWaitForTransactionReceipt } from "../hooks/safe/useSafeWaitForTransactionReceipt";
 
-export type TxToastsContextType = {
+type WritePromiseParams = {
+  promise: Promise<`0x${string}`>;
+  isSafe?: boolean;
+};
+type TxToastsContextType = {
   txid?: `0x${string}`;
   // TX hash you want to wait for
   setTxid: Dispatch<SetStateAction<`0x${string}` | undefined>>;
   // TX write promise you want to wait for. ex) return value of sendTransactionAsync or writeContractAsync
-  setWritePromise: Dispatch<SetStateAction<Promise<`0x${string}`> | undefined>>;
-  writePromise: Promise<`0x${string}`> | undefined;
+  setWritePromise: Dispatch<SetStateAction<WritePromiseParams | null>>;
+  writePromise: WritePromiseParams | null;
   waitResult: ReturnType<typeof useWaitForTransactionReceipt> | null;
 };
 
 export const TxToastsContext = createContext<TxToastsContextType>({
   setTxid: () => {},
   setWritePromise: () => {},
-  writePromise: undefined,
+  writePromise: null,
   waitResult: null,
 });
 
@@ -29,16 +34,22 @@ type ProviderProps = {
 const TxToastProvider: FC<ProviderProps> = ({ children }) => {
   const toast = useToast({ position: "top-right", isClosable: true });
   const [txid, setTxid] = useState<`0x${string}`>();
-  const [writePromise, setWritePromise] = useState<Promise<`0x${string}`>>();
-  const result = useWaitForTransactionReceipt({ hash: txid });
+  const [writePromise, setWritePromise] = useState<WritePromiseParams | null>(null);
+  const result = useSafeWaitForTransactionReceipt({
+    hash: txid,
+    isSafe: !!writePromise?.isSafe,
+    query: { enabled: !!writePromise },
+  });
   const { t } = useTranslation();
 
   useEffect(() => {
     if (writePromise) {
-      writePromise
+      writePromise.promise
         .then((hash: `0x${string}`) => {
           toast({
-            title: t("common.transactionSent"),
+            title: writePromise.isSafe
+              ? t("common.safeTransactionProposed")
+              : t("common.transactionSent"),
             status: "success",
             duration: 5000,
             render: (props) => <TxToast txid={hash} {...props} />,

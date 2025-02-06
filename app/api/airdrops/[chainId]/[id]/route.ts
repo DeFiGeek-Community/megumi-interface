@@ -32,7 +32,7 @@ export async function POST(req: Request, { params }: { params: { chainId: string
   if (!airdrop) {
     return respondError(new AirdropNotFoundError());
   }
-  const { error } = await requireOwner(airdrop, session.user.address);
+  const { error } = await requireOwner(airdrop, session.user.safeAddress || session.user.address);
 
   if (error) {
     return respondError(error);
@@ -101,10 +101,11 @@ export async function GET(req: Request, { params }: { params: { chainId: string;
     // If airdrop is not found,
     // or the contract is not registered yet AND the user is NOT the owner, return 404
     // TODO Should be handled in the prisma query
+    const signedInUserAddress = session?.user.safeAddress || session?.user.address;
     if (
       !airdrop ||
       (!airdrop.contractRegisteredAt &&
-        session?.user.address.toLowerCase() !== uint8ArrayToHexString(airdrop.owner).toLowerCase())
+        signedInUserAddress?.toLowerCase() !== uint8ArrayToHexString(airdrop.owner).toLowerCase())
     ) {
       return respondError(new AirdropNotFoundError());
     }
@@ -127,7 +128,7 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
   if (!airdrop) {
     return respondError(new AirdropNotFoundError());
   }
-  const { error } = await requireOwner(airdrop, session.user.address);
+  const { error } = await requireOwner(airdrop, session.user.safeAddress || session.user.address);
 
   if (error) {
     return respondError(error);
@@ -170,7 +171,11 @@ export async function PATCH(req: Request, { params }: { params: { chainId: strin
       }
 
       // 3. Check if the user is the owner
-      const isOwner = await AirdropUtils.isOwnerOf(contractAddress, session.user.address, provider);
+      const isOwner = await AirdropUtils.isOwnerOf(
+        contractAddress,
+        session.user.safeAddress || session.user.address,
+        provider,
+      );
       if (!isOwner) {
         return NextResponse.json(
           { error: "You are not the owner of this airdrop" },
@@ -307,7 +312,7 @@ export async function DELETE(
   if (!airdrop) {
     return respondError(new AirdropNotFoundError());
   }
-  const { error } = await requireOwner(airdrop, session.user.address);
+  const { error } = await requireOwner(airdrop, session.user.safeAddress || session.user.address);
 
   if (error) {
     return respondError(error);

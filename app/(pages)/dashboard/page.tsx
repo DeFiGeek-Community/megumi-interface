@@ -22,6 +22,10 @@ export default function Dashboard() {
       </Center>
     );
 
+  const userAddress = session
+    ? session.user.safeAddress || session.user.address
+    : (address as `0x${string}`);
+
   return (
     <Container maxW={"container.lg"}>
       <Heading fontSize={{ base: "xl", md: "3xl" }}>Dashboard</Heading>
@@ -37,11 +41,11 @@ export default function Dashboard() {
             <TabPanels>
               {session && (
                 <TabPanel>
-                  <MyAirdrops chainId={chainId} signedInUser={session.user.address} />
+                  <MyAirdrops chainId={chainId} ownerAddress={userAddress} />
                 </TabPanel>
               )}
               <TabPanel>
-                <EligibleAirdrops chainId={chainId} address={address as `0x${string}`} />
+                <EligibleAirdrops chainId={chainId} address={userAddress} />
               </TabPanel>
             </TabPanels>
           </Tabs>

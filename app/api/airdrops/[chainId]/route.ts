@@ -30,7 +30,7 @@ export async function POST(request: NextRequest, { params }: { params: { chainId
     // ↓ From Yamawake
     // (!session.user.siwe.resources && contractOwner === session.siwe.address) ||
     // (session.siwe.resources && contractOwner === session.siwe.resources[0])
-    const _owner = session.user.address;
+    const _owner = session.user.safeAddress || session.user.address;
 
     if (_owner.toLowerCase() !== owner.toLowerCase()) {
       return respondError(new InvalidParameterError("Owner address is invalid"));
@@ -107,12 +107,12 @@ export async function GET(req: NextRequest, { params }: { params: { chainId: str
       ${
         // Owner can see all airdrops, others can see only registered airdrops
         !!session && mine && !eligible
-          ? Prisma.sql` WHERE "Airdrop"."owner" = ${hexStringToUint8Array(session.user.address)}`
+          ? Prisma.sql` WHERE "Airdrop"."owner" = ${hexStringToUint8Array(session.user.safeAddress || session.user.address)}`
           : Prisma.sql` WHERE "Airdrop"."contractRegisteredAt" IS NOT NULL`
       }
       ${
         !!eligible && isAddress(eligible)
-          ? Prisma.sql` AND "Claimer"."address" = ${hexStringToUint8Array(eligible)}`
+          ? Prisma.sql` AND "Claimer"."address" = ${hexStringToUint8Array(eligible as `0x${string}`)}`
           : Prisma.empty
       }
     `;
@@ -145,12 +145,12 @@ export async function GET(req: NextRequest, { params }: { params: { chainId: str
         ${
           // Owner can see all airdrops, others can see only registered airdrops
           !!session && mine && !eligible
-            ? Prisma.sql` WHERE "Airdrop"."owner" = ${hexStringToUint8Array(session.user.address)}`
+            ? Prisma.sql` WHERE "Airdrop"."owner" = ${hexStringToUint8Array(session.user.safeAddress || session.user.address)}`
             : Prisma.sql` WHERE "Airdrop"."contractRegisteredAt" IS NOT NULL`
         }
         ${
           !!eligible && isAddress(eligible)
-            ? Prisma.sql` AND "Claimer"."address" = ${hexStringToUint8Array(eligible)}`
+            ? Prisma.sql` AND "Claimer"."address" = ${hexStringToUint8Array(eligible as `0x${string}`)}`
             : Prisma.empty
         }
         ORDER BY "Airdrop"."createdAt" DESC

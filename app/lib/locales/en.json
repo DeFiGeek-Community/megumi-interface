@@ -19,7 +19,8 @@
     "siginInWithEthereumAsSafe": "Sign in as Safe account",
     "safeAddress": "Safe Account Address",
     "safeAddressHelp": "Input Safe account multisig address",
-    "next": "Next"
+    "next": "Next",
+    "safeTransactionProposed": "Transaction has been proposed via Safe account"
   },
   "airdrops": {
     "title": "Airdrops"

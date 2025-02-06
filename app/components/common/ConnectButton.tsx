@@ -17,7 +17,7 @@ type ConnectButtonProps = {
 
 export default function ConnectButton({ requireSignIn = false, ...props }: ConnectButtonProps) {
   const isMounted = useIsMounted();
-  const { address, isConnected, chain } = useAccount();
+  const { address, isConnected, chain, chainId, connector, status } = useAccount();
   const { login, signingIn, setRequireAuth } = useContext(RequireAuthContext);
   const { t } = useTranslation();
 
@@ -51,11 +51,11 @@ export default function ConnectButton({ requireSignIn = false, ...props }: Conne
           <w3m-button {...props} loadingLabel="" />
         </chakra.span>
       )}
-      {isConnected && !!chain && !!address && (
+      {isConnected && !!chainId && !!address && (
         <Button
           isLoading={signingIn}
           w={"full"}
-          onClick={() => login?.({ chain, address })}
+          onClick={() => login?.({ chainId, address })}
           {...props}
         >
           {t("common.signInWithEthereum")}

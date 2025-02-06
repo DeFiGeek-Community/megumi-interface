@@ -8,7 +8,7 @@ import { LoginProps, useHandleLogin } from "@/app/hooks/common/useHandleLogin";
 export type RequireAuthContextType = {
   requireAuth: RequireAuthParams;
   setRequireAuth: Dispatch<SetStateAction<RequireAuthParams>>;
-  login: (({ chain, address, safeAddress }: LoginProps) => Promise<void>) | null;
+  login: (({ chainId, address, safeAddress }: LoginProps) => Promise<void>) | null;
   signingIn: boolean;
   error: string | null;
 };
@@ -47,7 +47,7 @@ const AuthCallbackProvider: FC<ProviderProps> = ({ children }) => {
       setTimeout(
         () =>
           login({
-            chain,
+            chainId: chain.id,
             address,
             safeAddress: requireAuth.safeAddress,
           }),

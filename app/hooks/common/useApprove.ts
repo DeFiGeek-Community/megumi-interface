@@ -3,11 +3,13 @@ import { TxToastsContext } from "@/app/providers/ToastProvider";
 import { useContext, useEffect, useState } from "react";
 import { erc20Abi, maxInt256 } from "viem";
 import { useSimulateContract, useReadContract, useWriteContract } from "wagmi";
+import { useSafeWriteContract } from "../safe/useSafeWriteContract";
 
 export default function useApprove({
   chainId,
   targetAddress,
   owner,
+  isOwnerSafe,
   spender,
   enabled = true,
   amount,
@@ -15,6 +17,7 @@ export default function useApprove({
   chainId: number;
   targetAddress: `0x${string}`;
   owner: `0x${string}` | undefined;
+  isOwnerSafe: boolean;
   spender: `0x${string}`;
   enabled?: boolean;
   amount?: bigint;
@@ -27,7 +30,6 @@ export default function useApprove({
   const prepareFn = useSimulateContract({
     chainId,
     address: targetAddress as `0x${string}`,
-    account: owner,
     abi: erc20Abi,
     functionName: "approve",
     args: approveArgs,
@@ -36,12 +38,17 @@ export default function useApprove({
     },
   });
 
-  const writeFn = useWriteContract();
+  const writeFn = useSafeWriteContract({
+    safeAddress: isOwnerSafe ? owner : undefined,
+  });
   const { setWritePromise, waitResult } = useContext(TxToastsContext);
 
   const write = async () => {
     if (!prepareFn.data) return;
-    return setWritePromise(writeFn.writeContractAsync(prepareFn.data.request));
+    return setWritePromise({
+      promise: writeFn.writeContractAsync(prepareFn.data.request),
+      isSafe: isOwnerSafe,
+    });
   };
 
   const { data, isSuccess, refetch } = useReadContract({

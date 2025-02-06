@@ -19,7 +19,8 @@
     "siginInWithEthereumAsSafe": "Safeアカウントとしてログイン",
     "safeAddress": "Safeアカウントアドレス",
     "safeAddressHelp": "Safeアカウントのマルチシグアドレスを入力してください",
-    "next": "次へ"
+    "next": "次へ",
+    "safeTransactionProposed": "Safeアカウントでトランザクションを提案しました"
   },
   "airdrops": {
     "title": "エアドロップ一覧"

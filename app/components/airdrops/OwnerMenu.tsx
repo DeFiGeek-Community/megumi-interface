@@ -54,6 +54,7 @@ export default function OwnerMenu({
   chainId,
   airdropId,
   ownerAddress,
+  isOwnerSafe,
   contractAddress,
   totalAirdropAmount,
   merkleTreeRegisteredAt,
@@ -71,6 +72,7 @@ export default function OwnerMenu({
   chainId: number;
   airdropId: string;
   ownerAddress: `0x${string}`;
+  isOwnerSafe: boolean;
   contractAddress: `0x${string}` | null;
   totalAirdropAmount: string | null;
   merkleTreeRegisteredAt: Date | null;
@@ -263,7 +265,6 @@ export default function OwnerMenu({
               <MerkletreeFormModal
                 chainId={chainId}
                 airdropId={airdropId}
-                ownerAddress={ownerAddress}
                 tokenSymbol={tokenSymbol}
                 tokenDecimals={tokenDecimals}
                 isOpen={merkletreeModalDisclosure.isOpen}
@@ -363,6 +364,7 @@ export default function OwnerMenu({
                   chainId={chainId}
                   airdropId={airdropId}
                   ownerAddress={ownerAddress}
+                  isOwnerSafe={isOwnerSafe}
                   tokenAddress={tokenAddress}
                   totalAirdropAmount={totalAirdropAmount}
                   templateName={templateName}
