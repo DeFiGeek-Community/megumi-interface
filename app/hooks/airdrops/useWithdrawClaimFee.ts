@@ -1,8 +1,10 @@
 "use client";
-import { TxToastsContext } from "@/app/providers/ToastProvider";
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useState } from "react";
 import { useSimulateContract } from "wagmi";
+import { TxToastsContext } from "@/app/providers/ToastProvider";
+import { getErrorMessage } from "@/app/utils/shared";
 import { useSafeWriteContract } from "../safe/useSafeWriteContract";
+import { useSafeWaitForTransactionReceipt } from "../safe/useSafeWaitForTransactionReceipt";
 
 export default function useWithdrawClaimFee({
   chainId,
@@ -41,23 +43,40 @@ export default function useWithdrawClaimFee({
   const writeFn = useSafeWriteContract({
     safeAddress: isSafeTx ? ownerAddress : undefined,
   });
-  const { setWritePromise, waitResult } = useContext(TxToastsContext);
+  const { addTxPromise } = useContext(TxToastsContext);
+  const [hash, setHash] = useState<`0x${string}` | undefined>();
+  const [withdrawing, setWithdrawing] = useState<boolean>(false);
+  const waitFn = useSafeWaitForTransactionReceipt({
+    hash,
+    isSafe: isSafeTx,
+    query: { enabled: !!hash },
+  });
 
-  const write = useCallback(
-    (callbacks?: { onSuccess?: () => void }): void => {
+  const withdraw = useCallback(
+    async (callbacks?: { onSuccess?: () => void; onError?: (e: unknown) => void }) => {
       if (!prepareFn.data || !writeFn.writeContractAsync) return;
-      const { account, ...request } = prepareFn.data.request;
-      return setWritePromise({
-        promise: writeFn.writeContractAsync(request, callbacks),
-        isSafe: isSafeTx,
-      });
+      setWithdrawing(true);
+      try {
+        const { account, ...request } = prepareFn.data.request;
+        const promise = writeFn.writeContractAsync(request, callbacks);
+        addTxPromise({
+          promise,
+          isSafe: isSafeTx,
+        });
+        const hash = await promise;
+        setHash(hash);
+      } catch (e: unknown) {
+        console.log(getErrorMessage(e));
+      } finally {
+        setWithdrawing(false);
+      }
     },
-    [prepareFn.data, writeFn.writeContractAsync, isSafeTx],
+    [prepareFn.data, writeFn.writeContractAsync, isSafeTx, addTxPromise],
   );
 
   return {
     prepareFn,
-    writeFn: { ...writeFn, write },
-    waitResult,
+    writeFn: { ...writeFn, withdraw, withdrawing },
+    waitFn,
   };
 }

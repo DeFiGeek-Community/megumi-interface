@@ -63,7 +63,7 @@ export default function NewContractForm({
     airdropId,
   });
   const handleSubmit = () => {
-    writeFn.write();
+    writeFn.deploy();
   };
 
   const validate = (value: ContractFormValues) => {
@@ -118,7 +118,7 @@ export default function NewContractForm({
     },
   });
 
-  const { prepareFn, writeFn, waitResult } = useDeployAirdrop({
+  const { prepareFn, writeFn, waitFn } = useDeployAirdrop({
     chainId,
     type: TemplateType.STANDARD, // TODO
     ownerAddress,
@@ -137,25 +137,22 @@ export default function NewContractForm({
   });
 
   useEffect(() => {
-    if (waitResult?.isSuccess) {
+    if (waitFn.isSuccess) {
       checkContractDeployment({ maxRetry: 10, callbacks: { onSuccess: refetchAirdrop } });
       onClose();
     }
-  }, [waitResult?.isSuccess]);
+  }, [waitFn.isSuccess]);
 
   useEffect(() => {
     approvals.refetchAllowance();
-  }, [approvals.waitResult?.status]);
+  }, [approvals.waitFn.status]);
 
   const approveButtonLoading =
-    approvals.writeFn.status === "pending" ||
-    approvals.waitResult?.isLoading ||
-    (approvals.writeFn.isSuccess && approvals.waitResult?.isPending);
-
+    approvals.writeFn.approving ||
+    approvals.waitFn.isLoading ||
+    (approvals.writeFn.isSuccess && approvals.waitFn.isPending);
   const deployButtonLoading =
-    writeFn.status === "pending" ||
-    waitResult?.isLoading ||
-    (writeFn.isSuccess && waitResult?.isPending);
+    writeFn.deploying || waitFn.isLoading || (writeFn.isSuccess && waitFn.isPending);
 
   return (
     <form onSubmit={formikProps.handleSubmit}>
@@ -306,7 +303,7 @@ export default function NewContractForm({
             w={"full"}
             variant="solid"
             colorScheme="blue"
-            onClick={approvals.writeFn.write}
+            onClick={() => approvals.writeFn.approve()}
             isLoading={approveButtonLoading}
             disabled={
               !token ||

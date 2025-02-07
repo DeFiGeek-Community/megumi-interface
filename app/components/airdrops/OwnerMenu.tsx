@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "next/navigation";
+import { useBalance } from "wagmi";
 import {
   Stack,
   HStack,
@@ -29,7 +31,6 @@ import {
   useToast,
   Spinner,
 } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
 import {
   CheckCircleIcon,
   DownloadIcon,
@@ -37,18 +38,17 @@ import {
   WarningIcon,
   WarningTwoIcon,
 } from "@chakra-ui/icons";
-import ContractFormModal from "./contract/ContractFormModal";
-import MerkletreeFormModal from "./merkleTree/MerkletreeFormModal";
 import { formatAmount, formatDate } from "@/app/utils/clientHelper";
 import { useSyncMerkletree } from "@/app/hooks/airdrops/useSyncMerkletree";
 import useWithdrawToken from "@/app/hooks/airdrops/useWithdrawToken";
 import useWithdrawClaimFee from "@/app/hooks/airdrops/useWithdrawClaimFee";
-import { useBalance } from "wagmi";
-import AirdropFormModal from "./AirdropFormModal";
-import { TemplateNamesType } from "@/app/lib/constants/templates";
 import { useDeleteAirdrop } from "@/app/hooks/airdrops/useDeleteAirdrop";
-import PreviewList from "./merkleTree/PreviewList";
 import { useFetchMerkleTree } from "@/app/hooks/airdrops/useFetchMerkleTree";
+import { TemplateNamesType } from "@/app/lib/constants/templates";
+import ContractFormModal from "./contract/ContractFormModal";
+import MerkletreeFormModal from "./merkleTree/MerkletreeFormModal";
+import AirdropFormModal from "./AirdropFormModal";
+import PreviewList from "./merkleTree/PreviewList";
 
 export default function OwnerMenu({
   chainId,
@@ -161,25 +161,26 @@ export default function OwnerMenu({
   };
 
   useEffect(() => {
-    if (withdrawToken.waitResult?.isSuccess) {
+    if (withdrawToken.waitFn.isSuccess) {
       refetchAirdrop();
     }
-  }, [withdrawToken.waitResult?.isSuccess]);
+  }, [withdrawToken.waitFn.isSuccess]);
 
   useEffect(() => {
-    if (withdrawClaimFee.waitResult?.isSuccess) {
+    if (withdrawClaimFee.waitFn.isSuccess) {
       feeBalance.refetch();
     }
-  }, [withdrawClaimFee.waitResult?.isSuccess]);
+  }, [withdrawClaimFee.waitFn.isSuccess]);
 
   const withdrawTokenButtonLoading =
-    withdrawToken.writeFn.status === "pending" ||
-    withdrawToken.waitResult?.isLoading ||
-    (withdrawToken.writeFn.isSuccess && withdrawToken.waitResult?.isPending);
+    withdrawToken.writeFn.withdrawing ||
+    withdrawToken.waitFn.isLoading ||
+    (withdrawToken.writeFn.isSuccess && withdrawToken.waitFn.isPending);
+
   const withdrawClaimFeeButtonLoading =
-    withdrawClaimFee.writeFn.status === "pending" ||
-    withdrawClaimFee.waitResult?.isLoading ||
-    (withdrawClaimFee.writeFn.isSuccess && withdrawClaimFee.waitResult?.isPending);
+    withdrawClaimFee.writeFn.withdrawing ||
+    withdrawClaimFee.waitFn.isLoading ||
+    (withdrawClaimFee.writeFn.isSuccess && withdrawClaimFee.waitFn.isPending);
 
   return (
     <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4}>
@@ -355,7 +356,7 @@ export default function OwnerMenu({
                     !balanceOnContract?.value ||
                     withdrawTokenButtonLoading
                   }
-                  onClick={() => withdrawToken.writeFn.write()}
+                  onClick={() => withdrawToken.writeFn.withdraw()}
                 >
                   {t("airdrop.ownerMenu.withdraw")}
                 </Button>
@@ -375,7 +376,7 @@ export default function OwnerMenu({
                     !feeBalance.data?.value ||
                     withdrawClaimFeeButtonLoading
                   }
-                  onClick={() => withdrawClaimFee.writeFn.write()}
+                  onClick={() => withdrawClaimFee.writeFn.withdraw()}
                 >
                   {t("airdrop.ownerMenu.withdraw")}
                 </Button>

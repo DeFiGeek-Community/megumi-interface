@@ -1,9 +1,11 @@
 "use client";
 import { TxToastsContext } from "@/app/providers/ToastProvider";
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { erc20Abi, maxInt256 } from "viem";
 import { useSimulateContract, useReadContract, useWriteContract } from "wagmi";
 import { useSafeWriteContract } from "../safe/useSafeWriteContract";
+import { useSafeWaitForTransactionReceipt } from "../safe/useSafeWaitForTransactionReceipt";
+import { getErrorMessage } from "@/app/utils/shared";
 
 export default function useApprove({
   chainId,
@@ -41,15 +43,36 @@ export default function useApprove({
   const writeFn = useSafeWriteContract({
     safeAddress: isOwnerSafe ? owner : undefined,
   });
-  const { setWritePromise, waitResult } = useContext(TxToastsContext);
+  const { addTxPromise } = useContext(TxToastsContext);
+  const [hash, setHash] = useState<`0x${string}` | undefined>();
+  const [approving, setApproving] = useState<boolean>(false);
+  const waitFn = useSafeWaitForTransactionReceipt({
+    hash,
+    isSafe: isOwnerSafe,
+    query: { enabled: !!hash },
+  });
 
-  const write = async () => {
-    if (!prepareFn.data) return;
-    return setWritePromise({
-      promise: writeFn.writeContractAsync(prepareFn.data.request),
-      isSafe: isOwnerSafe,
-    });
-  };
+  const approve = useCallback(
+    async (callbacks?: { onSuccess?: () => void; onError?: (e: unknown) => void }) => {
+      if (!prepareFn.data || !writeFn.writeContractAsync) return;
+      setApproving(true);
+      try {
+        const { account, ...request } = prepareFn.data.request;
+        const promise = writeFn.writeContractAsync(request, callbacks);
+        addTxPromise({
+          promise,
+          isSafe: isOwnerSafe,
+        });
+        const hash = await promise;
+        setHash(hash);
+      } catch (e: unknown) {
+        console.log(getErrorMessage(e));
+      } finally {
+        setApproving(false);
+      }
+    },
+    [prepareFn.data, writeFn.writeContractAsync, isOwnerSafe, addTxPromise],
+  );
 
   const { data, isSuccess, refetch } = useReadContract({
     address: targetAddress as `0x${string}`,
@@ -66,9 +89,9 @@ export default function useApprove({
 
   return {
     prepareFn,
-    writeFn: { ...writeFn, write },
+    writeFn: { ...writeFn, approve, approving },
+    waitFn,
     allowance,
-    waitResult,
     refetchAllowance: refetch,
   };
 }

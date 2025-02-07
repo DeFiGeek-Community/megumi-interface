@@ -1,7 +1,5 @@
 "use client";
-import { TemplateArgs, TemplateNames, TemplateType } from "@/app/lib/constants/templates";
-import { TxToastsContext } from "@/app/providers/ToastProvider";
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useState } from "react";
 import {
   decodeAbiParameters,
   encodeAbiParameters,
@@ -11,9 +9,13 @@ import {
   parseEther,
 } from "viem";
 import { useSimulateContract } from "wagmi";
+import { TemplateArgs, TemplateNames, TemplateType } from "@/app/lib/constants/templates";
+import { TxToastsContext } from "@/app/providers/ToastProvider";
 import { Factory } from "@/app/lib/constants/abis";
 import { CONTRACT_ADDRESSES } from "@/app/lib/constants/contracts";
+import { getErrorMessage } from "@/app/utils/shared";
 import { useSafeWriteContract } from "../safe/useSafeWriteContract";
+import { useSafeWaitForTransactionReceipt } from "../safe/useSafeWaitForTransactionReceipt";
 
 export default function useDeployAirdrop<T extends TemplateType>({
   chainId,
@@ -80,25 +82,43 @@ export default function useDeployAirdrop<T extends TemplateType>({
   const writeFn = useSafeWriteContract({
     safeAddress: isSafeTx ? ownerAddress : undefined,
   });
-  const { setWritePromise, waitResult } = useContext(TxToastsContext);
 
-  const write = useCallback(
-    (callbacks?: { onSuccess?: () => void }): void => {
+  const { addTxPromise } = useContext(TxToastsContext);
+  const [hash, setHash] = useState<`0x${string}` | undefined>();
+  const [deploying, setDeploying] = useState<boolean>(false);
+  const waitFn = useSafeWaitForTransactionReceipt({
+    hash,
+    isSafe: isSafeTx,
+    query: { enabled: !!hash },
+  });
+
+  const deploy = useCallback(
+    async (callbacks?: { onSuccess?: () => void; onError?: (e: unknown) => void }) => {
       if (!prepareFn.data || !writeFn.writeContractAsync) return;
-      const { account, ...request } = prepareFn.data.request;
-      return setWritePromise({
-        promise: writeFn.writeContractAsync(request, callbacks),
-        isSafe: isSafeTx,
-      });
+      setDeploying(true);
+      try {
+        const { account, ...request } = prepareFn.data.request;
+        const promise = writeFn.writeContractAsync(request, callbacks);
+        addTxPromise({
+          promise,
+          isSafe: isSafeTx,
+        });
+        const hash = await promise;
+        setHash(hash);
+      } catch (e: unknown) {
+        console.log(getErrorMessage(e));
+      } finally {
+        setDeploying(false);
+      }
     },
-    [prepareFn.data, writeFn.writeContractAsync, isSafeTx],
+    [prepareFn.data, writeFn.writeContractAsync, isSafeTx, addTxPromise],
   );
 
   return {
     prepareFn,
-    writeFn: { ...writeFn, write },
+    writeFn: { ...writeFn, deploy, deploying },
+    waitFn,
     getDecodedArgs,
     getTransactionRawData,
-    waitResult,
   };
 }

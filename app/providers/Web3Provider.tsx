@@ -19,7 +19,7 @@ const metadata = {
 const chain = getDefaultChain();
 const chains = [chain] as const;
 
-const config = defaultWagmiConfig({
+export const config = defaultWagmiConfig({
   // connectors,
   chains, // required
   projectId, // required
