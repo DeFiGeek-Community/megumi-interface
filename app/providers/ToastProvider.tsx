@@ -44,7 +44,7 @@ const TxToastProvider: FC<ProviderProps> = ({ children }) => {
         title: item.isSafe ? t("common.safeTransactionProposed") : t("common.transactionSent"),
         status: "success",
         duration: 5000,
-        render: (props) => <TxToast txid={hash} {...props} />,
+        render: (props) => (item.isSafe ? null : <TxToast txid={hash} {...props} />),
       });
 
       if (item.isSafe && chainId) {
