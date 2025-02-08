@@ -21,7 +21,6 @@ import ManualForm from "./manualForm";
 type MerkletreeFormModalProps = {
   chainId: number;
   airdropId: string;
-  ownerAddress: `0x${string}`;
   tokenDecimals: number;
   tokenSymbol: string;
   isOpen: boolean;
@@ -35,7 +34,6 @@ type MerkletreeFileFormValues = {
 export default function MerkletreeFormModal({
   chainId,
   airdropId,
-  ownerAddress,
   tokenDecimals,
   tokenSymbol,
   isOpen,

@@ -56,7 +56,7 @@ const extractTokenBalance = async (
         !_ignoreAddresses.includes(data.address.toLowerCase()) &&
         BigInt(data.balance) >= minAmount
       ) {
-        acc[getAddress(data.address)] = data.balance.toString();
+        acc[getAddress(data.address) as `0x${string}`] = data.balance.toString();
       }
       return acc;
     },

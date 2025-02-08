@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import NextLink from "next/link";
+import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useTranslation } from "react-i18next";
 import { normalize } from "viem/ens";
@@ -23,16 +24,22 @@ import {
   MenuList,
   MenuItem,
   Button,
+  useToast,
+  Image,
 } from "@chakra-ui/react";
 import { ChevronDownIcon } from "@chakra-ui/icons";
 import ConnectButton from "@/app/components/common/ConnectButton";
 import { getEllipsizedAddress } from "@/app/utils/clientHelper";
+import SafeSignInButton from "./SafeSignInButton";
+import safeLogo from "@/public/images/safe.png";
 
 type HeaderProps = {
   title?: string;
 };
 
 export default function Header({ title }: HeaderProps) {
+  const router = useRouter();
+  const toast = useToast({ position: "top-right", isClosable: true });
   const { address, isConnected: isConnectedRaw, chain } = useAccount();
   const { data: session } = useSession();
   const { data: ensName } = useEnsName({
@@ -140,6 +147,20 @@ export default function Header({ title }: HeaderProps) {
                             getEllipsizedAddress({ ensName, address })
                           )}
                         </Text>
+                        {session?.user?.safeAddress && (
+                          <Flex alignItems={"center"}>
+                            <Image
+                              width={"12px"}
+                              height={"12px"}
+                              alt={"Safe account"}
+                              src={safeLogo.src}
+                            />
+                            <chakra.span fontSize={"sm"} lineHeight={1} ml={2}>
+                              {session?.user?.safeAddress.slice(0, 6)}...
+                              {session?.user?.safeAddress.slice(-6)}
+                            </chakra.span>
+                          </Flex>
+                        )}
                       </VStack>
                       <ChevronDownIcon />
                     </>
@@ -194,13 +215,13 @@ export default function Header({ title }: HeaderProps) {
                       </Text>
                       <Divider />
                     </Flex>
-                    <chakra.div px={3} py={1}>
+                    <VStack px={3} py={1} spacing={3}>
                       <ConnectButton
                         requireSignIn={false}
                         label={t("common.connectWallet")}
                         size="sm"
                       />
-                    </chakra.div>
+                    </VStack>
                   </>
                 )}
 
@@ -213,13 +234,25 @@ export default function Header({ title }: HeaderProps) {
                       </Text>
                       <Divider />
                     </Flex>
-                    <chakra.div px={3} py={1}>
+                    <VStack px={3} py={1} spacing={3}>
                       <ConnectButton
                         requireSignIn={true}
                         label={t("common.signInWithEthereum")}
                         size="sm"
                       />
-                    </chakra.div>
+                      <SafeSignInButton
+                        id="safe-sign-in-with-ethereum-connection"
+                        size={"sm"}
+                        w="full"
+                        onSignInError={(error: string) => {
+                          toast({
+                            description: error,
+                            status: "error",
+                            duration: 5000,
+                          });
+                        }}
+                      />
+                    </VStack>
                   </>
                 )}
               </MenuList>

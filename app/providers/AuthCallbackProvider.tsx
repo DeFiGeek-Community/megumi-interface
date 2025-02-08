@@ -1,28 +1,38 @@
 "use client";
 import { Dispatch, FC, ReactNode, SetStateAction, createContext, useEffect, useState } from "react";
 import { signOut, useSession } from "next-auth/react";
-import { useAccount, useSignMessage } from "wagmi";
+import { useAccount } from "wagmi";
 import { usePrevious } from "@chakra-ui/react";
-import { handleLogin } from "@/app/lib/auth/handleLogin";
+import { LoginProps, useHandleLogin } from "@/app/hooks/common/useHandleLogin";
 
 export type RequireAuthContextType = {
-  requireAuth: boolean;
-  setRequireAuth: Dispatch<SetStateAction<boolean>>;
+  requireAuth: RequireAuthParams;
+  setRequireAuth: Dispatch<SetStateAction<RequireAuthParams>>;
+  login: (({ chainId, address, safeAddress }: LoginProps) => Promise<void>) | null;
+  signingIn: boolean;
+  error: string | null;
 };
 export const RequireAuthContext = createContext<RequireAuthContextType>({
-  requireAuth: false,
+  requireAuth: { flag: false },
   setRequireAuth: () => {},
+  login: null,
+  signingIn: false,
+  error: null,
 });
 
 type ProviderProps = {
   children: ReactNode;
 };
+type RequireAuthParams = {
+  flag: boolean;
+  safeAddress?: `0x${string}`;
+};
 const AuthCallbackProvider: FC<ProviderProps> = ({ children }) => {
   const { isConnected, address, chain } = useAccount();
-  const [requireAuth, setRequireAuth] = useState<boolean>(false);
+  const { login, signingIn, error } = useHandleLogin();
+  const [requireAuth, setRequireAuth] = useState<RequireAuthParams>({ flag: false });
   const prevIsConnected = usePrevious(isConnected);
   const { data: session } = useSession();
-  const { signMessageAsync } = useSignMessage();
 
   // Sign out when the wallet is disconnected
   useEffect(() => {
@@ -33,14 +43,22 @@ const AuthCallbackProvider: FC<ProviderProps> = ({ children }) => {
 
   // Sign in when after the wallet is connected
   useEffect(() => {
-    if (requireAuth && prevIsConnected === false && isConnected) {
-      setTimeout(() => handleLogin({ chain, address, signMessageAsync }), 1000);
+    if (requireAuth.flag && prevIsConnected === false && isConnected && !!chain && !!address) {
+      setTimeout(
+        () =>
+          login({
+            chainId: chain.id,
+            address,
+            safeAddress: requireAuth.safeAddress,
+          }),
+        1000,
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isConnected, requireAuth]);
+  }, [isConnected, requireAuth.flag]);
 
   return (
-    <RequireAuthContext.Provider value={{ requireAuth, setRequireAuth }}>
+    <RequireAuthContext.Provider value={{ requireAuth, setRequireAuth, signingIn, error, login }}>
       {children}
     </RequireAuthContext.Provider>
   );

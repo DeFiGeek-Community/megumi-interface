@@ -31,7 +31,7 @@ export function parseBalanceMap(
     if (!isAddress(account)) {
       throw new Error(`Found invalid address: ${account}`);
     }
-    const parsed = getAddress(account);
+    const parsed = getAddress(account) as `0x${string}`;
     if (memo[parsed]) throw new Error(`Duplicate address: ${parsed}`);
     const parsedNum = BigInt(amount);
     if (parsedNum <= 0n) return memo;

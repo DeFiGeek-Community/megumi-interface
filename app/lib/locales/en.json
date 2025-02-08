@@ -15,7 +15,12 @@
       "LinearVesting": "The claimable amount increases linearly over time, with the full amount available at the vesting end date",
       "Standard": "Full amount can be claimed at any time"
     },
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "siginInWithEthereumAsSafe": "Sign in as Safe account",
+    "safeAddress": "Safe Account Address",
+    "safeAddressHelp": "Input Safe account multisig address",
+    "next": "Next",
+    "safeTransactionProposed": "Transaction has been proposed via Safe account"
   },
   "airdrops": {
     "title": "Airdrops"

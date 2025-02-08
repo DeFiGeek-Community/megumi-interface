@@ -24,6 +24,7 @@ type ContractFormModalProps = {
   airdropId: string;
   totalAirdropAmount: string | null;
   ownerAddress: `0x${string}`;
+  isOwnerSafe: boolean;
   tokenAddress: `0x${string}`;
   templateName: TemplateNamesType;
   isOpen: boolean;

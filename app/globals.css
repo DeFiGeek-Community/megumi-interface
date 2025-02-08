@@ -23,3 +23,6 @@ body {
     sans-serif;
 }
 
+w3m-modal {
+  z-index: 2000!important;
+}

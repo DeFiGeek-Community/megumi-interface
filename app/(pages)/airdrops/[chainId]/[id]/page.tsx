@@ -41,9 +41,10 @@ export default async function AirdropPage({ params }: Props) {
 
   // If the contract is not registered yet AND the user is NOT the owner, return 404
   // TODO Should be handled in the prisma query
+  const signedInUserAddress = session?.user.safeAddress || session?.user.address;
   const shouldNotVisible =
     !airdrop.contractRegisteredAt &&
-    session?.user.address.toLowerCase() !== uint8ArrayToHexString(airdrop.owner).toLowerCase();
+    signedInUserAddress?.toLowerCase() !== uint8ArrayToHexString(airdrop.owner).toLowerCase();
   if (shouldNotVisible) return <NotFound />;
 
   return <AirdropDetail chainId={params.chainId} initAirdrop={AirdropUtils.toHexString(airdrop)} />;

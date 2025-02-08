@@ -1,6 +1,5 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
-import { parseEther } from "viem";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   VStack,
@@ -13,17 +12,16 @@ import {
   Flex,
   useToast,
 } from "@chakra-ui/react";
-import { AirdropNameABI, TemplateNames, TemplateNamesType } from "@/app/lib/constants/templates";
+import { TemplateNames, TemplateNamesType } from "@/app/lib/constants/templates";
 import { useFetchClaimParams } from "@/app/hooks/airdrops/useFetchClaimParams";
-import { useSimulateContract, useWriteContract } from "wagmi";
-import { TxToastsContext } from "@/app/providers/ToastProvider";
 import { formatAmount, formatDate } from "@/app/utils/clientHelper";
 import { useUpdateClaimStatus } from "@/app/hooks/airdrops/useUpdateIsClaimed";
-import { getErrorMessage } from "@/app/utils/shared";
+import useClaim from "@/app/hooks/airdrops/useClaim";
 
 interface ClaimProps {
   chainId: string;
   address: `0x${string}`;
+  isAddressSafe: boolean;
   airdropId: string;
   contractAddress: `0x${string}`;
   tokenAddress: `0x${string}` | null;
@@ -46,6 +44,7 @@ interface ClaimProps {
 export default function Claim({
   chainId,
   address,
+  isAddressSafe = false,
   airdropId,
   contractAddress,
   tokenAddress,
@@ -65,22 +64,18 @@ export default function Claim({
     error: claimError,
     fetchClaimParams,
   } = useFetchClaimParams(chainId, airdropId, address);
-  const { data, isError, isSuccess, failureReason, isFetched } = useSimulateContract({
+
+  const { prepareFn, writeFn, waitFn } = useClaim({
     chainId: parseInt(chainId),
-    address: contractAddress,
-    abi: AirdropNameABI[templateName],
-    functionName: "claim",
-    args:
+    contractAddress,
+    claimerAddress: address,
+    templateName,
+    claimParams:
       claimParams && address
         ? [claimParams.index, address, claimParams.amount, claimParams.proofs]
         : [],
-    value: parseEther("0.0002"), // Fixed fee
-    query: {
-      enabled: !!claimParams && !!address,
-    },
+    isSafeTx: isAddressSafe,
   });
-  const { writeContractAsync, status } = useWriteContract();
-  const { setWritePromise, waitResult } = useContext(TxToastsContext);
   const { updateClaimStatus } = useUpdateClaimStatus(
     chainId,
     airdropId,
@@ -95,26 +90,24 @@ export default function Claim({
     await fetchClaimParams();
   };
 
-  const handleClaim = async () => {
-    try {
-      data && setWritePromise(writeContractAsync(data.request));
-    } catch (error: unknown) {
-      toast({ title: getErrorMessage(error), status: "error" });
-    }
-  };
+  const handleClaim = writeFn.claim;
 
   useEffect(() => {
-    if (waitResult?.isSuccess) {
+    if (waitFn.isSuccess) {
       refetch();
     }
-  }, [waitResult?.isSuccess]);
+  }, [waitFn.isSuccess]);
 
   useEffect(() => {
     const claimed =
       claimParams?.isClaimed ||
-      (!!failureReason && failureReason.message.includes("Error: AlreadyClaimed()"));
+      (!!prepareFn.failureReason &&
+        prepareFn.failureReason.message.includes("Error: AlreadyClaimed()"));
     setIsClaimed(claimed);
-  }, [failureReason, status, waitResult?.isSuccess, claimParams?.isClaimed]);
+  }, [prepareFn.failureReason, writeFn.status, waitFn.isSuccess, claimParams?.isClaimed]);
+
+  const claimButtonLoading =
+    writeFn.claiming || waitFn.isLoading || (writeFn.isSuccess && waitFn.isPending);
 
   return (
     <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4} mb={4}>
@@ -123,7 +116,7 @@ export default function Claim({
           <Spinner />
         </Flex>
       )}
-      {!claimParams && !claimLoading && !failureReason && (
+      {!claimParams && !claimLoading && !prepareFn.failureReason && (
         <chakra.div py={10} textAlign={"center"}>
           {t("airdrop.notEligible")} 😔
         </chakra.div>
@@ -204,13 +197,12 @@ export default function Claim({
           )}
           <Button
             isDisabled={
-              !data?.request ||
-              status === "pending" ||
-              status === "success" ||
+              !prepareFn.data?.request ||
+              writeFn.status === "success" ||
               isClaimed ||
-              waitResult?.isLoading
+              claimButtonLoading
             }
-            isLoading={status === "pending" || waitResult?.isLoading}
+            isLoading={claimButtonLoading}
             onClick={() => handleClaim()}
             size="sm"
             colorScheme="blue"

@@ -8,10 +8,10 @@ import AirdropFormModal from "@/app/components/airdrops/AirdropFormModal";
 
 export default function MyAirdrops({
   chainId,
-  signedInUser,
+  ownerAddress,
 }: {
   chainId: number;
-  signedInUser: `0x${string}`;
+  ownerAddress: `0x${string}`;
 }): JSX.Element {
   const myAirdrops = useInfiniteScrollAirdrops({
     chainId,
@@ -35,7 +35,7 @@ export default function MyAirdrops({
         {isOpen && (
           <AirdropFormModal
             chainId={chainId}
-            ownerAddress={signedInUser}
+            ownerAddress={ownerAddress}
             isOpen={isOpen}
             onClose={onClose}
             callback={myAirdrops.unshiftAirdrop}
