@@ -71,7 +71,7 @@ export default function Claim({
     claimerAddress: address,
     templateName,
     claimParams:
-      claimParams && address
+      !!claimParams && !!address
         ? [claimParams.index, address, claimParams.amount, claimParams.proofs]
         : [],
     isSafeTx: isAddressSafe,

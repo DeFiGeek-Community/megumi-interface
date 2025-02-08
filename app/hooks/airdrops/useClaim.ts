@@ -34,7 +34,7 @@ export default function useClaim({
     args: claimParams,
     value: claimFee,
     query: {
-      enabled: claimParams.length !== 3 && enabled,
+      enabled: claimParams.length === 4 && enabled,
     },
   });
 
