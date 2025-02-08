@@ -216,11 +216,13 @@ export default function Header({ title }: HeaderProps) {
                       <Divider />
                     </Flex>
                     <VStack px={3} py={1} spacing={3}>
-                      <ConnectButton
-                        requireSignIn={false}
-                        label={t("common.connectWallet")}
-                        size="sm"
-                      />
+                      <chakra.span w={"full"}>
+                        <ConnectButton
+                          requireSignIn={false}
+                          label={t("common.connectWallet")}
+                          size="sm"
+                        />
+                      </chakra.span>
                     </VStack>
                   </>
                 )}
@@ -235,11 +237,13 @@ export default function Header({ title }: HeaderProps) {
                       <Divider />
                     </Flex>
                     <VStack px={3} py={1} spacing={3}>
-                      <ConnectButton
-                        requireSignIn={true}
-                        label={t("common.signInWithEthereum")}
-                        size="sm"
-                      />
+                      <chakra.span w={"full"}>
+                        <ConnectButton
+                          requireSignIn={true}
+                          label={t("common.signInWithEthereum")}
+                          size="sm"
+                        />
+                      </chakra.span>
                       <SafeSignInButton
                         id="safe-sign-in-with-ethereum-connection"
                         size={"sm"}

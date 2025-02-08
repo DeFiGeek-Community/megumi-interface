@@ -41,7 +41,7 @@ export default function AirdropDetail({
   chainId: string;
   initAirdrop: AirdropHex;
 }) {
-  const { address, isConnecting: isConnectedRaw } = useAccount();
+  const { address, isConnected: isConnectedRaw } = useAccount();
   const { data: session } = useSession();
   const isMounted = useIsMounted();
   const { t } = useTranslation();
@@ -80,7 +80,7 @@ export default function AirdropDetail({
       </Center>
     );
   const signedInUserAddress = session?.user.safeAddress || session?.user.address;
-  const userAddress = signedInUserAddress || address;
+  const userAddress = !isConnected ? undefined : signedInUserAddress || address;
   const isOwner = signedInUserAddress?.toLowerCase() === airdrop.owner.toLowerCase();
   return (
     <Container maxW={"container.xl"} mb={4}>
