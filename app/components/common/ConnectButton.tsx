@@ -47,7 +47,7 @@ export default function ConnectButton({ requireSignIn = false, ...props }: Conne
   return (
     <>
       {!isConnected && (
-        <chakra.span w={"full"} onClick={() => setRequireAuth({ flag: requireSignIn })}>
+        <chakra.span onClick={() => setRequireAuth({ flag: requireSignIn })}>
           <w3m-button {...props} loadingLabel="" />
         </chakra.span>
       )}
