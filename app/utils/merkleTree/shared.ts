@@ -7,7 +7,7 @@ import BalanceTree from "@/app/lib/merkleTree/balance-tree";
 // Anyone can verify that all air drops are included in the tree,
 // and the tree has no additional distributions.
 
-type Format = { [account: `0x${string}`]: number | string };
+type Format = { [account: `0x${string}`]: bigint | string };
 type Format2 = { address: `0x${string}`; amount: bigint | string };
 
 export function parseBalanceMap(
