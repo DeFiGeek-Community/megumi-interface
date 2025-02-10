@@ -1,3 +1,4 @@
+import { TargetEvent } from "@/app/types/snapshots";
 import { mainnet, sepolia } from "viem/chains";
 
 type ContractAddresses = {
@@ -23,4 +24,135 @@ export const CONTRACT_ADDRESSES: ContractAddresses = {
 export const FACTORY_DEPLOYED_BLOCK_NUMBER: FactoryDeployedBlockNumber = {
   [mainnet.id]: 21738286n,
   [sepolia.id]: 6572893n,
+};
+
+// Preset for snapshot contract events
+export const SNAPSHOT_CONTRACT_EVENT_KEY_MAP: {
+  [key: number]: { [key: `0x${string}`]: TargetEvent[] };
+} = {
+  [mainnet.id]: {
+    // pnd CJPY (pCJPY)
+    "0xAA59F501c92092E624D30Cff77eAFf5EA4E7BfA2": [
+      {
+        index: 5,
+        abi: {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "from",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "dst",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "asset",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+          ],
+          name: "SupplyCollateral",
+          type: "event",
+        },
+        tokenAddressKey: "asset",
+        addressKey: "dst",
+        amountKey: "amount",
+        sub: false,
+      },
+      {
+        index: 9,
+        abi: {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "src",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "to",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "asset",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "amount",
+              type: "uint256",
+            },
+          ],
+          name: "WithdrawCollateral",
+          type: "event",
+        },
+        tokenAddressKey: "asset",
+        addressKey: "src",
+        amountKey: "amount",
+        sub: true,
+      },
+      {
+        index: 0,
+        abi: {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              internalType: "address",
+              name: "absorber",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "borrower",
+              type: "address",
+            },
+            {
+              indexed: true,
+              internalType: "address",
+              name: "asset",
+              type: "address",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "collateralAbsorbed",
+              type: "uint256",
+            },
+            {
+              indexed: false,
+              internalType: "uint256",
+              name: "usdValue",
+              type: "uint256",
+            },
+          ],
+          name: "AbsorbCollateral",
+          type: "event",
+        },
+        tokenAddressKey: "asset",
+        addressKey: "borrower",
+        amountKey: "collateralAbsorbed",
+        sub: true,
+      },
+    ],
+  },
 };

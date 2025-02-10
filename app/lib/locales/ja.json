@@ -127,7 +127,7 @@
       "snapshotTokenAddress": "スナップショットを取得するトークンアドレス",
       "ignoreList": "除外アドレスリスト（改行区切り）",
       "generate": "マークルツリーを作成する",
-      "advancedSettings": "高度な設定",
+      "advancedSettings": "別コントラクトのイベントを保有額に加味する",
       "eventName": "イベント名",
       "tokenAddress": "トークンアドレス",
       "userAddress": "ユーザーアドレス",
@@ -137,7 +137,8 @@
       "targetEvents": "保有額に加味するイベント",
       "register": "設定する",
       "contractAddress": "イベントを取得するコントラクトアドレス",
-      "heading": "保有額に加味するイベントの設定"
+      "heading": "保有額に加味するイベントの設定",
+      "applyPreset": "プリセットを適用"
     },
     "manualForm": {
       "text": "1行ずつ対象アドレスと配布額をカンマ区切りで入力してください"
