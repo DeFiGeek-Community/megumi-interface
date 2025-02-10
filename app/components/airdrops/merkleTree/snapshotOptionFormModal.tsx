@@ -110,6 +110,7 @@ export default function SnapshotOptionFormModal({
   useEffect(() => {
     const _hasPreset =
       !!formikProps.values.contractAddress &&
+      isAddress(formikProps.values.contractAddress) &&
       getAddress(formikProps.values.contractAddress) in SNAPSHOT_CONTRACT_EVENT_KEY_MAP[chainId];
     setHasPreset(_hasPreset);
 
