@@ -108,3 +108,32 @@ export const safeParseBigInt = (input: string): bigint => {
     return BigInt(0);
   }
 };
+
+export async function findContractDeploymentBlock(
+  client: PublicClient,
+  address: `0x${string}`,
+  startBlock: bigint,
+  endBlock: bigint,
+): Promise<bigint> {
+  let low = startBlock;
+  let high = endBlock;
+  let deploymentBlock = -1n;
+
+  while (low <= high) {
+    const mid = (low + high) >> 1n;
+
+    const code = await client.getCode({
+      address,
+      blockNumber: mid,
+    });
+
+    if (code && code !== "0x") {
+      deploymentBlock = mid;
+      high = mid - 1n;
+    } else {
+      low = mid + 1n;
+    }
+  }
+
+  return deploymentBlock;
+}
