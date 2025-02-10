@@ -1,3 +1,4 @@
+"use client";
 import { useCallback, useState } from "react";
 import { API_BASE_URL } from "@/app/lib/constants";
 import { AirdropHex } from "@/app/types/airdrop";

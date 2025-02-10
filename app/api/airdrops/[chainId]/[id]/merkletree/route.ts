@@ -59,24 +59,32 @@ export async function POST(
   if (!airdrop) {
     return respondError(new AirdropNotFoundError());
   }
-  const { error } = await requireOwner(airdrop, session.user.address);
+  const { error } = await requireOwner(airdrop, session.user.safeAddress || session.user.address);
 
   if (error) {
     return respondError(error);
   }
 
   const body = await req.json();
-  const { snapshotTokenAddress, untilBlock, totalAirdropAmount, ignoreAddresses, minAmount } = body;
+  const {
+    snapshotTokenAddress,
+    untilBlock,
+    totalAirdropAmount,
+    ignoreAddresses,
+    minAmount,
+    contractEvents,
+  } = body;
 
   try {
-    const merkleTree = await generateMerkleTreeFromSnapshot(
-      parseInt(params.chainId),
+    const merkleTree = await generateMerkleTreeFromSnapshot({
+      chainId: parseInt(params.chainId),
       snapshotTokenAddress,
-      parseInt(untilBlock),
-      BigInt(totalAirdropAmount),
+      untilBlock: parseInt(untilBlock),
+      totalAirdropAmount: BigInt(totalAirdropAmount),
       ignoreAddresses,
-      minAmount ? BigInt(minAmount) : BigInt(0),
-    );
+      minAmount: minAmount ? BigInt(minAmount) : BigInt(0),
+      contractEvents: contractEvents ? contractEvents : undefined,
+    });
     return NextResponse.json(merkleTree);
   } catch (e: unknown) {
     const error = getErrorMessage(e);

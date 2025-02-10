@@ -31,6 +31,7 @@ type NewContractFormProps = {
   airdropId: string;
   totalAirdropAmount: string | null;
   ownerAddress: `0x${string}`;
+  isOwnerSafe: boolean;
   tokenAddress: `0x${string}`;
   onClose: () => void;
   checkContractDeployment: (options?: {
@@ -50,6 +51,7 @@ export default function NewContractForm({
   airdropId,
   totalAirdropAmount,
   ownerAddress,
+  isOwnerSafe,
   tokenAddress,
   onClose,
   checkContractDeployment,
@@ -61,12 +63,7 @@ export default function NewContractForm({
     airdropId,
   });
   const handleSubmit = () => {
-    writeFn.write({
-      onSuccess: async () => {
-        checkContractDeployment({ maxRetry: 10, callbacks: { onSuccess: refetchAirdrop } });
-        onClose();
-      },
-    });
+    writeFn.deploy();
   };
 
   const validate = (value: ContractFormValues) => {
@@ -105,6 +102,7 @@ export default function NewContractForm({
     chainId,
     targetAddress: formikProps.values.tokenAddress as `0x${string}`,
     owner: ownerAddress,
+    isOwnerSafe,
     spender: CONTRACT_ADDRESSES[chainId].FACTORY,
     amount: toMinUnit(formikProps.values.amount, token?.decimals ? token?.decimals : 18),
     enabled: isAddress(formikProps.values.tokenAddress),
@@ -120,9 +118,11 @@ export default function NewContractForm({
     },
   });
 
-  const { prepareFn, writeFn, waitResult } = useDeployAirdrop({
+  const { prepareFn, writeFn, waitFn } = useDeployAirdrop({
     chainId,
     type: TemplateType.STANDARD, // TODO
+    ownerAddress,
+    isSafeTx: isOwnerSafe,
     args: [
       ownerAddress,
       merkleRoot || "0x",
@@ -137,8 +137,22 @@ export default function NewContractForm({
   });
 
   useEffect(() => {
+    if (waitFn.isSuccess) {
+      checkContractDeployment({ maxRetry: 10, callbacks: { onSuccess: refetchAirdrop } });
+      onClose();
+    }
+  }, [waitFn.isSuccess]);
+
+  useEffect(() => {
     approvals.refetchAllowance();
-  }, [approvals.waitResult?.status]);
+  }, [approvals.waitFn.status]);
+
+  const approveButtonLoading =
+    approvals.writeFn.approving ||
+    approvals.waitFn.isLoading ||
+    (approvals.writeFn.isSuccess && approvals.waitFn.isPending);
+  const deployButtonLoading =
+    writeFn.deploying || waitFn.isLoading || (writeFn.isSuccess && waitFn.isPending);
 
   return (
     <form onSubmit={formikProps.handleSubmit}>
@@ -271,15 +285,14 @@ export default function NewContractForm({
             variant="solid"
             colorScheme="green"
             type="submit"
-            isLoading={writeFn.status === "pending" || waitResult?.isLoading}
+            isLoading={deployButtonLoading}
             disabled={
               !token ||
               isNaN(Number(formikProps.values.amount)) ||
               !writeFn.writeContract ||
               !formikProps.isValid ||
               prepareFn.isPending ||
-              writeFn.status === "pending" ||
-              waitResult?.isLoading
+              deployButtonLoading
             }
           >
             {t("airdrop.contractForm.deploy")}
@@ -290,15 +303,14 @@ export default function NewContractForm({
             w={"full"}
             variant="solid"
             colorScheme="blue"
-            onClick={approvals.writeFn.write}
-            isLoading={approvals.writeFn.status === "pending" || approvals.waitResult?.isLoading}
+            onClick={() => approvals.writeFn.approve()}
+            isLoading={approveButtonLoading}
             disabled={
               !token ||
               !Number(formikProps.values.amount) ||
               !approvals.writeFn.writeContract ||
               !formikProps.isValid ||
-              approvals.writeFn.status === "pending" ||
-              approvals.waitResult?.isLoading
+              approveButtonLoading
             }
           >
             {t("airdrop.contractForm.approve")}

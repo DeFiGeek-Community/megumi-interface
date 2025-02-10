@@ -1,5 +1,7 @@
+"use client";
 import { API_BASE_URL } from "@/app/lib/constants";
 import { MerkleDistributorInfo } from "@/app/types/airdrop";
+import { ContractEvents } from "@/app/types/snapshots";
 import { getErrorMessage } from "@/app/utils/shared";
 import { useState, useCallback } from "react";
 const API_URL = `${API_BASE_URL}/airdrops`;
@@ -16,6 +18,7 @@ type Payload = {
   totalAirdropAmount: string;
   ignoreAddresses: `0x${string}`[];
   minAmount?: string;
+  contractEvents: ContractEvents | null;
 };
 
 type Callbacks = {

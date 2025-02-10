@@ -10,7 +10,7 @@ import MyAirdrops from "@/app/components/dashboard/myAirdrops";
 import EligibleAirdrops from "@/app/components/dashboard/eligibleAirdrops";
 
 export default function Dashboard() {
-  const { address, isConnecting, isReconnecting, chainId } = useRequireAccount();
+  const { address, chainId } = useRequireAccount();
   const { data: session } = useSession();
   const isMounted = useIsMounted();
   const { t } = useTranslation();
@@ -21,6 +21,10 @@ export default function Dashboard() {
         <Spinner />
       </Center>
     );
+
+  const userAddress = session
+    ? session.user.safeAddress || session.user.address
+    : (address as `0x${string}`);
 
   return (
     <Container maxW={"container.lg"}>
@@ -37,11 +41,11 @@ export default function Dashboard() {
             <TabPanels>
               {session && (
                 <TabPanel>
-                  <MyAirdrops chainId={chainId} signedInUser={session.user.address} />
+                  <MyAirdrops chainId={chainId} ownerAddress={userAddress} />
                 </TabPanel>
               )}
               <TabPanel>
-                <EligibleAirdrops chainId={chainId} address={address} />
+                <EligibleAirdrops chainId={chainId} address={userAddress} />
               </TabPanel>
             </TabPanels>
           </Tabs>

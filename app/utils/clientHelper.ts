@@ -1,4 +1,4 @@
-import { formatUnits, fromHex } from "viem";
+import { formatUnits, fromHex, isAddress } from "viem";
 import type { GetEnsNameReturnType } from "viem/ens";
 import { DateArg, format, FormatOptions } from "date-fns";
 import { getChainById } from "@/app/utils/chain";
@@ -25,10 +25,10 @@ export const getEllipsizedAddress = ({
   address,
   ensName,
 }: {
-  address?: `0x${string}` | null;
+  address?: string | null;
   ensName?: GetEnsNameReturnType;
 }): string => {
-  if (!address) return "";
+  if (!address || !isAddress(address)) return "";
   return ensName ? `${ensName}` : `${address?.slice(0, 5)}...${address?.slice(-4)}`;
 };
 

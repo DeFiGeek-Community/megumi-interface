@@ -7,7 +7,7 @@ import BalanceTree from "@/app/lib/merkleTree/balance-tree";
 // Anyone can verify that all air drops are included in the tree,
 // and the tree has no additional distributions.
 
-type Format = { [account: `0x${string}`]: number | string };
+type Format = { [account: `0x${string}`]: bigint | string };
 type Format2 = { address: `0x${string}`; amount: bigint | string };
 
 export function parseBalanceMap(
@@ -31,7 +31,7 @@ export function parseBalanceMap(
     if (!isAddress(account)) {
       throw new Error(`Found invalid address: ${account}`);
     }
-    const parsed = getAddress(account);
+    const parsed = getAddress(account) as `0x${string}`;
     if (memo[parsed]) throw new Error(`Duplicate address: ${parsed}`);
     const parsedNum = BigInt(amount);
     if (parsedNum <= 0n) return memo;

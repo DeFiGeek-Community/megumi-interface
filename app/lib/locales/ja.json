@@ -15,7 +15,12 @@
       "LinearVesting": "請求可能額が時間経過と共に線形に増加し、べスティング終了日時に全額が請求できるようになります",
       "Standard": "いつでも全額の請求が可能です"
     },
-    "cancel": "キャンセル"
+    "cancel": "キャンセル",
+    "siginInWithEthereumAsSafe": "Safeアカウントとしてログイン",
+    "safeAddress": "Safeアカウントアドレス",
+    "safeAddressHelp": "Safeアカウントのマルチシグアドレスを入力してください",
+    "next": "次へ",
+    "safeTransactionProposed": "Safeアカウントでトランザクションを提案しました"
   },
   "airdrops": {
     "title": "エアドロップ一覧"
@@ -121,7 +126,19 @@
       "minAmount": "受取権利に必要な最小保有額",
       "snapshotTokenAddress": "スナップショットを取得するトークンアドレス",
       "ignoreList": "除外アドレスリスト（改行区切り）",
-      "generate": "マークルツリーを作成する"
+      "generate": "マークルツリーを作成する",
+      "advancedSettings": "別コントラクトのイベントを保有額に加味する",
+      "eventName": "イベント名",
+      "tokenAddress": "トークンアドレス",
+      "userAddress": "ユーザーアドレス",
+      "amount": "額",
+      "addIncrementEvent": "加算するイベントを追加",
+      "addDecrementEvent": "減算するイベントを追加",
+      "targetEvents": "保有額に加味するイベント",
+      "register": "設定する",
+      "contractAddress": "イベントを取得するコントラクトアドレス",
+      "heading": "保有額に加味するイベントの設定",
+      "applyPreset": "プリセットを適用"
     },
     "manualForm": {
       "text": "1行ずつ対象アドレスと配布額をカンマ区切りで入力してください"

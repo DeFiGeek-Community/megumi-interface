@@ -24,7 +24,6 @@ import {
   ModalBody,
   ModalCloseButton,
   useDisclosure,
-  useToast,
   ModalFooter,
   Box,
   Spinner,
@@ -36,10 +35,13 @@ import {
 import { useUploadMerkletree } from "@/app/hooks/airdrops/useUploadMerkletree";
 import { useGenerateMerkleTree } from "@/app/hooks/airdrops/useGenerateMerkleTree";
 import { MerkleDistributorInfo } from "@/app/types/airdrop";
-import { toMinUnit } from "@/app/utils/clientHelper";
+import { getEllipsizedAddress, toMinUnit } from "@/app/utils/clientHelper";
 import { useBlockNumber } from "@/app/hooks/common/useBlockNumber";
 import useToken from "@/app/hooks/common/useToken";
 import PreviewList from "./PreviewList";
+import SnapshotOptionFormModal from "./snapshotOptionFormModal";
+import { DeleteIcon, SettingsIcon } from "@chakra-ui/icons";
+import { ContractEvents } from "@/app/types/snapshots";
 
 type SnapshotFormProps = {
   chainId: number;
@@ -69,6 +71,7 @@ export default function SnapshotForm({
 }: SnapshotFormProps) {
   const { t } = useTranslation();
   const [snapshotChain, setSnapshotChain] = useState<number>(1);
+  const [contractEvents, setContractEvents] = useState<ContractEvents | null>(null);
   const {
     generateMerkleTree,
     merkleTree,
@@ -81,6 +84,7 @@ export default function SnapshotForm({
     error: uploadError,
   } = useUploadMerkletree(chainId, airdropId);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { isOpen: isOptionOpen, onOpen: onOptionOpen, onClose: onOptionClose } = useDisclosure();
   const {
     fetchBlockNumber,
     data: blockData,
@@ -115,6 +119,7 @@ export default function SnapshotForm({
           snapshotToken.data && data.minAmount
             ? toMinUnit(data.minAmount, snapshotToken.data.decimals).toString()
             : undefined,
+        contractEvents,
       },
       { onError: callbacks?.onError },
     );
@@ -244,6 +249,48 @@ export default function SnapshotForm({
           <FormControl
             mt={4}
             isInvalid={
+              !!formikProps.errors.snapshotTokenAddress &&
+              !!formikProps.touched.snapshotTokenAddress
+            }
+          >
+            <FormLabel fontSize={"xs"} htmlFor="snapshotTokenAddress" alignItems={"baseline"}>
+              {t("airdrop.snapshotForm.snapshotTokenAddress")}
+            </FormLabel>
+            <HStack spacing={2} flexDirection={{ base: "column", md: "row" }}>
+              <Select
+                isDisabled={true}
+                isReadOnly={true}
+                w={{ base: "full", md: "260px" }}
+                fontSize={"sm"}
+                value={snapshotChain}
+                onChange={(e: any) => setSnapshotChain(parseInt(e.target.value))}
+              >
+                <option value="1">Ethereum mainnet</option>
+              </Select>
+              <Input
+                id="snapshotTokenAddress"
+                name="snapshotTokenAddress"
+                onBlur={formikProps.handleBlur}
+                onChange={formikProps.handleChange}
+                value={formikProps.values.snapshotTokenAddress}
+                fontSize={"sm"}
+                placeholder="e.g. 0x0123456789012345678901234567890123456789"
+              />
+            </HStack>
+            <FormErrorMessage>{formikProps.errors.snapshotTokenAddress}</FormErrorMessage>
+            <Box>
+              {snapshotToken.isLoading && <Spinner mt={1} textAlign={"right"} />}
+              {snapshotToken.data && (
+                <Text textAlign={"right"} fontSize={"sm"} mt={1} color={"gray.400"}>
+                  {snapshotToken.data.name} ({snapshotToken.data.symbol})
+                </Text>
+              )}
+            </Box>
+          </FormControl>
+
+          <FormControl
+            mt={4}
+            isInvalid={
               !!formikProps.errors.snapshotBlockNumber && !!formikProps.touched.snapshotBlockNumber
             }
           >
@@ -306,47 +353,34 @@ export default function SnapshotForm({
             </HStack>
           </FormControl>
 
-          <FormControl
-            mt={4}
-            isInvalid={
-              !!formikProps.errors.snapshotTokenAddress &&
-              !!formikProps.touched.snapshotTokenAddress
-            }
-          >
-            <FormLabel fontSize={"xs"} htmlFor="snapshotTokenAddress" alignItems={"baseline"}>
-              {t("airdrop.snapshotForm.snapshotTokenAddress")}
-            </FormLabel>
-            <HStack spacing={2} flexDirection={{ base: "column", md: "row" }}>
-              <Select
-                isDisabled={true}
-                isReadOnly={true}
-                w={{ base: "full", md: "260px" }}
-                fontSize={"sm"}
-                value={snapshotChain}
-                onChange={(e: any) => setSnapshotChain(parseInt(e.target.value))}
-              >
-                <option value="1">Ethereum mainnet</option>
-              </Select>
-              <Input
-                id="snapshotTokenAddress"
-                name="snapshotTokenAddress"
-                onBlur={formikProps.handleBlur}
-                onChange={formikProps.handleChange}
-                value={formikProps.values.snapshotTokenAddress}
-                fontSize={"sm"}
-                placeholder="e.g. 0x0123456789012345678901234567890123456789"
+          <Flex mt={2} alignItems={"baseline"}>
+            <Button onClick={onOptionOpen} size={"xs"}>
+              <SettingsIcon mr={1} />
+              {t("airdrop.snapshotForm.advancedSettings")}
+            </Button>
+            {isOptionOpen && (
+              <SnapshotOptionFormModal
+                chainId={snapshotChain}
+                isOpen={isOptionOpen}
+                onClose={onOptionClose}
+                setContractEvents={setContractEvents}
+                initialData={contractEvents}
               />
-            </HStack>
-            <FormErrorMessage>{formikProps.errors.snapshotTokenAddress}</FormErrorMessage>
-            <Box>
-              {snapshotToken.isLoading && <Spinner mt={1} textAlign={"right"} />}
-              {snapshotToken.data && (
-                <Text textAlign={"right"} fontSize={"sm"} mt={1} color={"gray.400"}>
-                  {snapshotToken.data.name} ({snapshotToken.data.symbol})
-                </Text>
-              )}
-            </Box>
-          </FormControl>
+            )}
+            {contractEvents && (
+              <>
+                <chakra.span fontSize={"xs"} ml={2}>
+                  {getEllipsizedAddress({ address: contractEvents.contractAddress })}
+                </chakra.span>
+                <chakra.span fontSize={"xs"} ml={2}>
+                  {contractEvents.targetEvents.length} Events
+                </chakra.span>
+                <Button ml={2} size={"xs"} onClick={() => setContractEvents(null)}>
+                  <DeleteIcon />
+                </Button>
+              </>
+            )}
+          </Flex>
 
           <FormControl
             mt={4}

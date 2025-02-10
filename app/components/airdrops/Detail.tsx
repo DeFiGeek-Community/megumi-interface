@@ -41,7 +41,7 @@ export default function AirdropDetail({
   chainId: string;
   initAirdrop: AirdropHex;
 }) {
-  const { address, isConnecting: isConnectedRaw } = useAccount();
+  const { address, isConnected: isConnectedRaw } = useAccount();
   const { data: session } = useSession();
   const isMounted = useIsMounted();
   const { t } = useTranslation();
@@ -79,8 +79,9 @@ export default function AirdropDetail({
         <Spinner />
       </Center>
     );
-  const isOwner =
-    session?.user?.address && session.user.address.toLowerCase() === airdrop.owner.toLowerCase();
+  const signedInUserAddress = session?.user.safeAddress || session?.user.address;
+  const userAddress = !isConnected ? undefined : signedInUserAddress || address;
+  const isOwner = signedInUserAddress?.toLowerCase() === airdrop.owner.toLowerCase();
   return (
     <Container maxW={"container.xl"} mb={4}>
       <VStack spacing="4">
@@ -237,10 +238,11 @@ export default function AirdropDetail({
             </Flex>
           )}
 
-          {address && airdrop.contractAddress && (
+          {userAddress && airdrop.contractAddress && (
             <Claim
               chainId={chainId}
-              address={address}
+              address={userAddress as `0x${string}`}
+              isAddressSafe={!!session?.user.safeAddress}
               airdropId={airdrop.id}
               contractAddress={airdrop.contractAddress}
               tokenAddress={airdrop.tokenAddress}
@@ -258,7 +260,8 @@ export default function AirdropDetail({
             <OwnerMenu
               chainId={parseInt(chainId)}
               airdropId={airdrop.id}
-              ownerAddress={session.user.address}
+              ownerAddress={signedInUserAddress}
+              isOwnerSafe={!!session?.user.safeAddress}
               contractAddress={airdrop.contractAddress}
               totalAirdropAmount={airdrop.totalAirdropAmount}
               merkleTreeRegisteredAt={airdrop.merkleTreeRegisteredAt}

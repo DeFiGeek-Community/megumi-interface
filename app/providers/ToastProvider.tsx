@@ -1,25 +1,24 @@
 "use client";
-import { Dispatch, FC, ReactNode, SetStateAction, createContext, useEffect, useState } from "react";
+import { FC, ReactNode, createContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useWaitForTransactionReceipt } from "wagmi";
+import { useAccount } from "wagmi";
+import { waitForTransactionReceipt } from "wagmi/actions";
 import { useToast } from "@chakra-ui/react";
 import TxToast from "@/app/components/common/TxToast";
+import { getErrorMessage } from "../utils/shared";
+import { config } from "./Web3Provider";
+import { resolveSafeTx } from "../utils/safe";
 
-export type TxToastsContextType = {
-  txid?: `0x${string}`;
-  // TX hash you want to wait for
-  setTxid: Dispatch<SetStateAction<`0x${string}` | undefined>>;
-  // TX write promise you want to wait for. ex) return value of sendTransactionAsync or writeContractAsync
-  setWritePromise: Dispatch<SetStateAction<Promise<`0x${string}`> | undefined>>;
-  writePromise: Promise<`0x${string}`> | undefined;
-  waitResult: ReturnType<typeof useWaitForTransactionReceipt> | null;
+type WritePromiseParams = {
+  promise: Promise<`0x${string}`>;
+  isSafe?: boolean;
+};
+type TxToastsContextType = {
+  addTxPromise: (promise: WritePromiseParams) => void;
 };
 
 export const TxToastsContext = createContext<TxToastsContextType>({
-  setTxid: () => {},
-  setWritePromise: () => {},
-  writePromise: undefined,
-  waitResult: null,
+  addTxPromise: () => {},
 });
 
 type ProviderProps = {
@@ -27,59 +26,62 @@ type ProviderProps = {
 };
 
 const TxToastProvider: FC<ProviderProps> = ({ children }) => {
+  const { chainId } = useAccount();
   const toast = useToast({ position: "top-right", isClosable: true });
-  const [txid, setTxid] = useState<`0x${string}`>();
-  const [writePromise, setWritePromise] = useState<Promise<`0x${string}`>>();
-  const result = useWaitForTransactionReceipt({ hash: txid });
+  const [txPromise, setTxPromise] = useState<WritePromiseParams[]>([]);
+  const [processedPromiseIndex, setProcessedPromiseIndex] = useState<number[]>([]);
   const { t } = useTranslation();
 
-  useEffect(() => {
-    if (writePromise) {
-      writePromise
-        .then((hash: `0x${string}`) => {
-          toast({
-            title: t("common.transactionSent"),
-            status: "success",
-            duration: 5000,
-            render: (props) => <TxToast txid={hash} {...props} />,
-          });
-          setTxid(hash);
-        })
-        .catch((e) => {
-          toast({
-            description: e.message,
-            status: "error",
-            duration: 5000,
-          });
-        });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [writePromise]);
+  const addTxPromise = (promise: WritePromiseParams) => {
+    setTxPromise([...txPromise, promise]);
+  };
 
-  useEffect(() => {
-    if (result.isSuccess) {
+  const handlePromise = async (item: WritePromiseParams) => {
+    let hash: `0x${string}`;
+    try {
+      hash = await item.promise;
+      toast({
+        title: item.isSafe ? t("common.safeTransactionProposed") : t("common.transactionSent"),
+        status: "success",
+        duration: 5000,
+        render: (props) => (item.isSafe ? null : <TxToast txid={hash} {...props} />),
+      });
+
+      if (item.isSafe && chainId) {
+        const resolvedHash = await resolveSafeTx(chainId, hash);
+        if (!resolvedHash) throw new Error("Safe transaction couldn't resolved");
+        hash = resolvedHash;
+      }
+
+      const transactionReceipt = await waitForTransactionReceipt(config, {
+        hash,
+      });
+
       toast({
         title: t("common.transactionConfirmed"),
         status: "success",
         duration: 5000,
       });
-    }
-    if (result.isError) {
+    } catch (e: unknown) {
       toast({
-        description: result.error.message,
+        description: getErrorMessage(e),
         status: "error",
         duration: 5000,
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [result.isSuccess, result.isError]);
-  return (
-    <TxToastsContext.Provider
-      value={{ txid, setTxid, setWritePromise, writePromise, waitResult: result }}
-    >
-      {children}
-    </TxToastsContext.Provider>
-  );
+  };
+
+  useEffect(() => {
+    const index = txPromise.length - 1;
+    if (index < 0 || processedPromiseIndex.includes(index)) return;
+    const target = txPromise[index];
+
+    setProcessedPromiseIndex([...processedPromiseIndex, index]);
+
+    handlePromise(target);
+  }, [txPromise.length]);
+
+  return <TxToastsContext.Provider value={{ addTxPromise }}>{children}</TxToastsContext.Provider>;
 };
 
 export default TxToastProvider;

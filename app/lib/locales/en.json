@@ -15,7 +15,12 @@
       "LinearVesting": "The claimable amount increases linearly over time, with the full amount available at the vesting end date",
       "Standard": "Full amount can be claimed at any time"
     },
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "siginInWithEthereumAsSafe": "Sign in as Safe account",
+    "safeAddress": "Safe Account Address",
+    "safeAddressHelp": "Input Safe account multisig address",
+    "next": "Next",
+    "safeTransactionProposed": "Transaction has been proposed via Safe account"
   },
   "airdrops": {
     "title": "Airdrops"
@@ -121,7 +126,19 @@
       "minAmount": "Minimum Holding Amount for Eligibility",
       "snapshotTokenAddress": "Token Address for Snapshot",
       "ignoreList": "Exclusion Address List (line-separated)",
-      "generate": "Create Merkle Tree"
+      "generate": "Create Merkle Tree",
+      "advancedSettings": "Include events from another contract in the holding amount",
+      "eventName": "Event name",
+      "tokenAddress": "Token address",
+      "userAddress": "User address",
+      "amount": "Amount",
+      "addIncrementEvent": "Add Increment Event",
+      "addDecrementEvent": "Add Decrement Event",
+      "targetEvents": "Target events",
+      "register": "Register",
+      "contractAddress": "The contract address from which to retrieve events",
+      "heading": "Settings for the event that takes the holding amount into account",
+      "applyPreset": "Apply preset"
     },
     "manualForm": {
       "text": "Enter target addresses and distribution amounts comma-separated, one per line"

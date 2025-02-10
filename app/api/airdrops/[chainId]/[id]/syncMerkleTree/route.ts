@@ -35,7 +35,7 @@ export async function POST(req: Request, { params }: { params: { chainId: string
   if (!airdrop) {
     return respondError(new AirdropNotFoundError());
   }
-  const { error } = await requireOwner(airdrop, session.user.address);
+  const { error } = await requireOwner(airdrop, session.user.safeAddress || session.user.address);
 
   if (error) {
     return respondError(error);

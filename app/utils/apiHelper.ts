@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import type { Airdrop } from "@/prisma";
 import { getErrorMessage } from "@/app/utils/shared";
 import { InvalidOwnerError, NetworkAccessError } from "@/app/types/errors";
+import { getChainById } from "./chain";
+import { createPublicClient, http } from "viem";
+import { CHAIN_INFO } from "../lib/constants/chains";
 
 export const uint8ObjectToHexString = (
   object: { [key: string]: number } | Uint8Array | null,
@@ -45,4 +48,15 @@ export const requireOwner = async (
   }
 
   return {};
+};
+
+export const getAlchemyProvider = (chainId: number) => {
+  const chain = getChainById(chainId);
+  if (!chain) throw new Error("Chain id is invalid");
+  if (!process.env.ALCHEMY_API_KEY) throw new Error("ALCHEMY_API_KEY not set");
+
+  return createPublicClient({
+    chain,
+    transport: http(`${CHAIN_INFO[chain.id].alchemyRpcUrl}${process.env.ALCHEMY_API_KEY}`),
+  });
 };

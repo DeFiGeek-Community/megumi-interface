@@ -1,6 +1,8 @@
 "use client";
-import { useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { useRouter } from "next/navigation";
+import { useBalance } from "wagmi";
 import {
   Stack,
   HStack,
@@ -29,7 +31,6 @@ import {
   useToast,
   Spinner,
 } from "@chakra-ui/react";
-import { useRouter } from "next/navigation";
 import {
   CheckCircleIcon,
   DownloadIcon,
@@ -37,23 +38,23 @@ import {
   WarningIcon,
   WarningTwoIcon,
 } from "@chakra-ui/icons";
-import ContractFormModal from "./contract/ContractFormModal";
-import MerkletreeFormModal from "./merkleTree/MerkletreeFormModal";
 import { formatAmount, formatDate } from "@/app/utils/clientHelper";
 import { useSyncMerkletree } from "@/app/hooks/airdrops/useSyncMerkletree";
 import useWithdrawToken from "@/app/hooks/airdrops/useWithdrawToken";
 import useWithdrawClaimFee from "@/app/hooks/airdrops/useWithdrawClaimFee";
-import { useBalance } from "wagmi";
-import AirdropFormModal from "./AirdropFormModal";
-import { TemplateNamesType } from "@/app/lib/constants/templates";
 import { useDeleteAirdrop } from "@/app/hooks/airdrops/useDeleteAirdrop";
-import PreviewList from "./merkleTree/PreviewList";
 import { useFetchMerkleTree } from "@/app/hooks/airdrops/useFetchMerkleTree";
+import { TemplateNamesType } from "@/app/lib/constants/templates";
+import ContractFormModal from "./contract/ContractFormModal";
+import MerkletreeFormModal from "./merkleTree/MerkletreeFormModal";
+import AirdropFormModal from "./AirdropFormModal";
+import PreviewList from "./merkleTree/PreviewList";
 
 export default function OwnerMenu({
   chainId,
   airdropId,
   ownerAddress,
+  isOwnerSafe,
   contractAddress,
   totalAirdropAmount,
   merkleTreeRegisteredAt,
@@ -71,6 +72,7 @@ export default function OwnerMenu({
   chainId: number;
   airdropId: string;
   ownerAddress: `0x${string}`;
+  isOwnerSafe: boolean;
   contractAddress: `0x${string}` | null;
   totalAirdropAmount: string | null;
   merkleTreeRegisteredAt: Date | null;
@@ -111,8 +113,18 @@ export default function OwnerMenu({
     templateName,
     shouldSync,
   );
-  const withdrawToken = useWithdrawToken({ chainId, contractAddress });
-  const withdrawClaimFee = useWithdrawClaimFee({ chainId, contractAddress });
+  const withdrawToken = useWithdrawToken({
+    chainId,
+    contractAddress,
+    ownerAddress,
+    isSafeTx: isOwnerSafe,
+  });
+  const withdrawClaimFee = useWithdrawClaimFee({
+    chainId,
+    contractAddress,
+    ownerAddress,
+    isSafeTx: isOwnerSafe,
+  });
   const feeBalance = useBalance({
     chainId,
     address: contractAddress ? contractAddress : undefined,
@@ -147,6 +159,29 @@ export default function OwnerMenu({
     await refetchAirdrop();
     await fetchMerkleTree();
   };
+
+  useEffect(() => {
+    if (withdrawToken.waitFn.isSuccess) {
+      refetchAirdrop();
+    }
+  }, [withdrawToken.waitFn.isSuccess]);
+
+  useEffect(() => {
+    if (withdrawClaimFee.waitFn.isSuccess) {
+      feeBalance.refetch();
+    }
+  }, [withdrawClaimFee.waitFn.isSuccess]);
+
+  const withdrawTokenButtonLoading =
+    withdrawToken.writeFn.withdrawing ||
+    withdrawToken.waitFn.isLoading ||
+    (withdrawToken.writeFn.isSuccess && withdrawToken.waitFn.isPending);
+
+  const withdrawClaimFeeButtonLoading =
+    withdrawClaimFee.writeFn.withdrawing ||
+    withdrawClaimFee.waitFn.isLoading ||
+    (withdrawClaimFee.writeFn.isSuccess && withdrawClaimFee.waitFn.isPending);
+
   return (
     <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4}>
       <VStack spacing={2} align="stretch">
@@ -263,7 +298,6 @@ export default function OwnerMenu({
               <MerkletreeFormModal
                 chainId={chainId}
                 airdropId={airdropId}
-                ownerAddress={ownerAddress}
                 tokenSymbol={tokenSymbol}
                 tokenDecimals={tokenDecimals}
                 isOpen={merkletreeModalDisclosure.isOpen}
@@ -316,12 +350,13 @@ export default function OwnerMenu({
                   variant={"solid"}
                   colorScheme="blue"
                   size={"sm"}
-                  isLoading={
-                    withdrawToken.writeFn.status === "pending" ||
-                    withdrawToken.waitResult?.isLoading
+                  isLoading={withdrawTokenButtonLoading}
+                  disabled={
+                    withdrawToken.prepareFn.isPending ||
+                    !balanceOnContract?.value ||
+                    withdrawTokenButtonLoading
                   }
-                  disabled={withdrawToken.prepareFn.isPending || !balanceOnContract?.value}
-                  onClick={() => withdrawToken.writeFn.write({ onSuccess: refetchAirdrop })}
+                  onClick={() => withdrawToken.writeFn.withdraw()}
                 >
                   {t("airdrop.ownerMenu.withdraw")}
                 </Button>
@@ -335,12 +370,13 @@ export default function OwnerMenu({
                   variant={"solid"}
                   colorScheme="blue"
                   size={"sm"}
-                  isLoading={
-                    withdrawClaimFee.writeFn.status === "pending" ||
-                    withdrawClaimFee.waitResult?.isLoading
+                  isLoading={withdrawClaimFeeButtonLoading}
+                  disabled={
+                    withdrawClaimFee.prepareFn.isPending ||
+                    !feeBalance.data?.value ||
+                    withdrawClaimFeeButtonLoading
                   }
-                  disabled={withdrawClaimFee.prepareFn.isPending || !feeBalance.data?.value}
-                  onClick={() => withdrawClaimFee.writeFn.write({ onSuccess: feeBalance.refetch })}
+                  onClick={() => withdrawClaimFee.writeFn.withdraw()}
                 >
                   {t("airdrop.ownerMenu.withdraw")}
                 </Button>
@@ -363,6 +399,7 @@ export default function OwnerMenu({
                   chainId={chainId}
                   airdropId={airdropId}
                   ownerAddress={ownerAddress}
+                  isOwnerSafe={isOwnerSafe}
                   tokenAddress={tokenAddress}
                   totalAirdropAmount={totalAirdropAmount}
                   templateName={templateName}
