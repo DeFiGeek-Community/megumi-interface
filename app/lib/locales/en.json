@@ -127,7 +127,7 @@
       "snapshotTokenAddress": "Token Address for Snapshot",
       "ignoreList": "Exclusion Address List (line-separated)",
       "generate": "Create Merkle Tree",
-      "advancedSettings": "Advanced settings",
+      "advancedSettings": "Include events from another contract in the holding amount",
       "eventName": "Event name",
       "tokenAddress": "Token address",
       "userAddress": "User address",
@@ -137,7 +137,8 @@
       "targetEvents": "Target events",
       "register": "Register",
       "contractAddress": "The contract address from which to retrieve events",
-      "heading": "Settings for the event that takes the holding amount into account"
+      "heading": "Settings for the event that takes the holding amount into account",
+      "applyPreset": "Apply preset"
     },
     "manualForm": {
       "text": "Enter target addresses and distribution amounts comma-separated, one per line"

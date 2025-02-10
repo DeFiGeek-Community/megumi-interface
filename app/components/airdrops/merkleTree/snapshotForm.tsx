@@ -40,7 +40,7 @@ import { useBlockNumber } from "@/app/hooks/common/useBlockNumber";
 import useToken from "@/app/hooks/common/useToken";
 import PreviewList from "./PreviewList";
 import SnapshotOptionFormModal from "./snapshotOptionFormModal";
-import { SettingsIcon } from "@chakra-ui/icons";
+import { DeleteIcon, SettingsIcon } from "@chakra-ui/icons";
 import { ContractEvents } from "@/app/types/snapshots";
 
 type SnapshotFormProps = {
@@ -368,9 +368,17 @@ export default function SnapshotForm({
               />
             )}
             {contractEvents && (
-              <chakra.span fontSize={"xs"} ml={2}>
-                {getEllipsizedAddress({ address: contractEvents.contractAddress })}
-              </chakra.span>
+              <>
+                <chakra.span fontSize={"xs"} ml={2}>
+                  {getEllipsizedAddress({ address: contractEvents.contractAddress })}
+                </chakra.span>
+                <chakra.span fontSize={"xs"} ml={2}>
+                  {contractEvents.targetEvents.length} Events
+                </chakra.span>
+                <Button ml={2} size={"xs"} onClick={() => setContractEvents(null)}>
+                  <DeleteIcon />
+                </Button>
+              </>
             )}
           </Flex>
 

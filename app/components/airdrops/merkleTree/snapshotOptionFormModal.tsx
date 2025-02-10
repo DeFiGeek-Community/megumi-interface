@@ -1,6 +1,6 @@
 "use client";
 import { Dispatch, SetStateAction, useEffect, useState } from "react";
-import { isAddress } from "viem";
+import { getAddress, isAddress } from "viem";
 import { FieldArray, FormikProvider, useFormik } from "formik";
 import { useTranslation } from "react-i18next";
 import {
@@ -34,8 +34,9 @@ import {
   Flex,
 } from "@chakra-ui/react";
 import { useFetchAbi } from "@/app/hooks/abi/useFetchAbi";
-import { AddIcon, ChevronDownIcon } from "@chakra-ui/icons";
+import { AddIcon, ChevronDownIcon, DeleteIcon } from "@chakra-ui/icons";
 import { ContractEvents } from "@/app/types/snapshots";
+import { SNAPSHOT_CONTRACT_EVENT_KEY_MAP } from "@/app/lib/constants/contracts";
 
 type SnapshotFormProps = {
   chainId: number;
@@ -98,12 +99,39 @@ export default function SnapshotOptionFormModal({
   });
   const { data, loading, error } = useFetchAbi(chainId, formikProps.values.contractAddress);
   const [events, setEvents] = useState<{ [key: string]: any }[]>([]);
+  const [hasPreset, setHasPreset] = useState<boolean>(false);
 
   useEffect(() => {
     if (!data) return;
     const filteredData = data.filter((item) => item.type === "event") ?? [];
     setEvents(filteredData);
   }, [data]);
+
+  useEffect(() => {
+    const _hasPreset =
+      !!formikProps.values.contractAddress &&
+      getAddress(formikProps.values.contractAddress) in SNAPSHOT_CONTRACT_EVENT_KEY_MAP[chainId];
+    setHasPreset(_hasPreset);
+
+    if (_hasPreset && formikProps.values.targetEvents.length === 0) {
+      formikProps.setFieldValue(
+        "targetEvents",
+        SNAPSHOT_CONTRACT_EVENT_KEY_MAP[chainId][
+          getAddress(formikProps.values.contractAddress) as `0x${string}`
+        ],
+      );
+    }
+  }, [formikProps.values.contractAddress]);
+
+  const applyPreset = () => {
+    if (!hasPreset) return;
+    formikProps.setFieldValue(
+      "targetEvents",
+      SNAPSHOT_CONTRACT_EVENT_KEY_MAP[chainId][
+        getAddress(formikProps.values.contractAddress) as `0x${string}`
+      ],
+    );
+  };
 
   return (
     <Modal
@@ -155,7 +183,12 @@ export default function SnapshotOptionFormModal({
                       name="targetEvents"
                       render={(arrayHelpers) => (
                         <>
-                          <FormLabel fontSize={"xs"} htmlFor="targetEvents" alignItems={"baseline"}>
+                          <FormLabel
+                            display={"flex"}
+                            fontSize={"xs"}
+                            htmlFor="targetEvents"
+                            alignItems={"baseline"}
+                          >
                             {t("airdrop.snapshotForm.targetEvents")}
                             <Menu>
                               <MenuButton
@@ -199,6 +232,11 @@ export default function SnapshotOptionFormModal({
                                 </MenuItem>
                               </MenuList>
                             </Menu>
+                            {hasPreset && (
+                              <Button ml={"auto"} size={"xs"} onClick={applyPreset}>
+                                {t("airdrop.snapshotForm.applyPreset")}
+                              </Button>
+                            )}
                           </FormLabel>
                           <TableContainer>
                             <Table>
@@ -338,7 +376,12 @@ export default function SnapshotOptionFormModal({
                                       </Select>
                                     </Td>
                                     <Td py={1} px={2}>
-                                      <Button onClick={() => arrayHelpers.remove(index)}>x</Button>
+                                      <Button
+                                        size={"sm"}
+                                        onClick={() => arrayHelpers.remove(index)}
+                                      >
+                                        <DeleteIcon />
+                                      </Button>
                                     </Td>
                                   </Tr>
                                 ))}
