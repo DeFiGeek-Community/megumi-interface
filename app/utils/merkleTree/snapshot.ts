@@ -214,16 +214,17 @@ async function fetchHoldersCov(
 }
 
 // Fetch holders and balances by aggregating Transfer events of given token address
-// This takes forever in most cases
-// Should consider using a different method or upgrading to a paid plan!
-async function fetchHoldersAlchemyPaging(
+// This could take a while to fetch all logs. 50000 logs would be acceptable.
+// TODO
+// Extract this method as an asyncronous function
+async function fetchHoldersAlchemy(
   chainId: number,
   tokenAddress: `0x${string}`,
   snapshotBlockNumber: number,
   maxEntries: number = 10000,
+  maxLogSize: number = 50000,
 ) {
-  const blockCapPerRequest = 2000n; // From https://docs.alchemy.com/reference/eth-getlogs
-  const client = getViemProvider(chainId, true);
+  const client = getAlchemyProvider(chainId);
   const startBlockNumber = await findContractDeploymentBlock(
     client,
     tokenAddress,
@@ -231,8 +232,6 @@ async function fetchHoldersAlchemyPaging(
     BigInt(snapshotBlockNumber),
   );
   if (startBlockNumber < 0n) throw new Error("Deployed block not found");
-
-  let blockNumberCursor = startBlockNumber;
 
   const transferEventSignature =
     "event Transfer(address indexed from, address indexed to, uint256 value)" as const;
@@ -245,72 +244,47 @@ async function fetchHoldersAlchemyPaging(
     bigint
   >;
   let logs: TransferLogType = [];
-  while (true) {
-    let toBlock = blockNumberCursor + blockCapPerRequest - 1n;
-    if (toBlock > BigInt(snapshotBlockNumber)) {
-      toBlock = BigInt(snapshotBlockNumber);
+
+  let fromBlock = startBlockNumber;
+  let toBlock = BigInt(snapshotBlockNumber);
+  let requireNextRequest = true;
+
+  while (requireNextRequest) {
+    try {
+      const localLogs = await client.getLogs({
+        address: tokenAddress,
+        event: transferEventAbi,
+        fromBlock,
+        toBlock,
+      });
+      logs = [...logs, ...localLogs];
+
+      if (logs.length > maxLogSize) {
+        throw new Error(`Maximum number of log size is ${maxEntries}`);
+      }
+
+      if (toBlock < BigInt(snapshotBlockNumber)) {
+        fromBlock = toBlock + 1n;
+        toBlock = BigInt(snapshotBlockNumber);
+      } else {
+        requireNextRequest = false;
+      }
+    } catch (error: unknown) {
+      if (!(error instanceof Error) || !("details" in error) || typeof error.details !== "string")
+        throw error;
+
+      // Extract block range from error message
+      const match = error.details.match(/\[([^\]]+)\]$/);
+      if (!match) throw error;
+
+      requireNextRequest = true;
+
+      // Output: ["0x329d3a", "0x66683f"]
+      const blockRangeArray = match[1].split(",").map((item) => item.trim());
+      fromBlock = BigInt(blockRangeArray[0]);
+      toBlock = BigInt(blockRangeArray[1]);
     }
-    const localLogs = await client.getLogs({
-      address: tokenAddress,
-      event: transferEventAbi,
-      fromBlock: blockNumberCursor,
-      toBlock: toBlock,
-    });
-
-    logs = [...logs, ...localLogs];
-
-    blockNumberCursor += blockCapPerRequest;
-
-    if (toBlock === BigInt(snapshotBlockNumber)) break;
   }
-
-  let addressAmountMap: { [key: `0x${string}`]: bigint } = {};
-
-  for (let i = 0; i < logs.length; i++) {
-    const log = logs[i];
-    const logArgs = log.args as any;
-    const from = logArgs.from;
-    const to = logArgs.to;
-    const amount = BigInt(logArgs.value);
-
-    addressAmountMap[from] = from in addressAmountMap ? addressAmountMap[from] - amount : -amount;
-    addressAmountMap[to] = to in addressAmountMap ? addressAmountMap[to] + amount : amount;
-  }
-
-  if (Object.keys(addressAmountMap).length > maxEntries)
-    throw new Error(`Maximum number of entries is ${maxEntries}`);
-  const response = Object.entries(addressAmountMap).map(([address, balance]) => ({
-    address: address as `0x${string}`,
-    balance: balance.toString(),
-  })) as holdersResponseData;
-  return response;
-}
-
-// Fetch holders and balances by aggregating Transfer events of given token address
-async function fetchHoldersAlchemy(
-  chainId: number,
-  tokenAddress: `0x${string}`,
-  snapshotBlockNumber: number,
-  maxEntries: number = 10000,
-) {
-  // TODO
-  // Condsider alchemy's api limit
-  // https://docs.alchemy.com/reference/eth-getlogs
-  const client = getViemProvider(chainId, true);
-  const startBlockNumber = await findContractDeploymentBlock(
-    client,
-    tokenAddress,
-    1n,
-    BigInt(snapshotBlockNumber),
-  );
-  if (startBlockNumber < 0n) throw new Error("Deployed block not found");
-
-  let logs = await client.getLogs({
-    address: tokenAddress,
-    event: parseAbiItem("event Transfer(address indexed from, address indexed to, uint256 value)"),
-    fromBlock: startBlockNumber,
-    toBlock: BigInt(snapshotBlockNumber),
-  });
 
   let addressAmountMap: { [key: `0x${string}`]: bigint } = {};
 
