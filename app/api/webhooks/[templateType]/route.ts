@@ -98,9 +98,11 @@ export async function POST(request: NextRequest, { params }: { params: { templat
     */
     const transactionData = body.event.data.block.logs[0].transaction;
     const topicData = body.event.data.block.logs[0].topics;
+    console.log("[transactionData] ", transactionData);
+    console.log("[topicData] ", topicData);
     const claimerAddress = to20ByteHexString(topicData[2]);
     const airdropAddress = transactionData.to.address;
-    console.log("[CLAIM]", transactionData, claimerAddress, airdropAddress);
+    console.log("[CLAIM] ", transactionData, claimerAddress, airdropAddress);
     const airdrop = await prisma.airdrop.findFirst({
       where: {
         contractAddress: hexStringToUint8Array(airdropAddress),
@@ -111,7 +113,7 @@ export async function POST(request: NextRequest, { params }: { params: { templat
     });
 
     if (!airdrop || !claimer) {
-      return NextResponse.json({ error: "airdrop or claimer not found" }, { status: 500 });
+      return NextResponse.json({ error: "airdrop or claimer not found" });
     }
 
     // TODO
@@ -133,6 +135,6 @@ export async function POST(request: NextRequest, { params }: { params: { templat
   } catch (error: unknown) {
     const message = getErrorMessage(error);
     console.log(message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    return NextResponse.json({ error: message });
   }
 }
