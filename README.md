@@ -7,7 +7,7 @@ pnpm i
 ```
 
 ```bash
-npx prisma generate
+pnpm exec prisma generate
 ```
 
 ### Prepare .env
