@@ -60,10 +60,10 @@ export default function Header({ title }: HeaderProps) {
       position={"sticky"}
       top={"0"}
       zIndex={99}
-      bg={"chakra-body-bg"}
+      style={{ backgroundColor: "#0E192B" }}
       opacity={0.975}
     >
-      <Container maxW="container.2xl" px={{ base: 2, md: 4 }}>
+      <Container maxW="container.2xl" px={{ base: 2, md: "144px" }}>
         <Flex as="header" py="4" justifyContent="space-between" alignItems="center">
           <HStack>
             <Link
@@ -72,196 +72,189 @@ export default function Header({ title }: HeaderProps) {
               textDecoration={"none"}
               _hover={{ textDecoration: "none" }}
             >
-              <Heading as="h1" fontSize="xl">
-                <Text
-                  bgGradient="linear(to-l, #7928CA, #FF0080)"
-                  bgClip="text"
-                  fontSize="xl"
-                  fontWeight="extrabold"
-                >
-                  {title ? title : t("appName")}
-                </Text>
-              </Heading>
+              <Image width="170px" height="32px" src="/megumi-logo.svg" alt="Megumi Logo" />
             </Link>
           </HStack>
-          <Menu>
-            <HStack spacing={{ base: 2, md: 4 }}>
-              {isConnected && (
-                <Link as={NextLink} href="/dashboard" _hover={{ textDecor: "none" }}>
+          <Box>
+            <Menu>
+              <HStack spacing={{ base: 2, md: 4 }}>
+                {isConnected && (
+                  <Link as={NextLink} href="/dashboard" _hover={{ textDecor: "none" }}>
+                    <Button
+                      display={{ base: "none", md: "block" }}
+                      variant="ghost"
+                      size={{ base: "xs", md: "sm" }}
+                    >
+                      {t("dashboard.title")}
+                    </Button>
+                  </Link>
+                )}
+                <Link as={NextLink} href="/" _hover={{ textDecor: "none" }}>
                   <Button
-                    display={{ base: "none", md: "block" }}
                     variant="ghost"
+                    display={{ base: "none", md: "block" }}
                     size={{ base: "xs", md: "sm" }}
                   >
-                    {t("dashboard.title")}
+                    {t("common.viewAllAirdrops")}
                   </Button>
                 </Link>
-              )}
-              <Link as={NextLink} href="/" _hover={{ textDecor: "none" }}>
-                <Button
-                  variant="ghost"
-                  display={{ base: "none", md: "block" }}
-                  size={{ base: "xs", md: "sm" }}
-                >
-                  {t("common.viewAllAirdrops")}
-                </Button>
-              </Link>
-              <Link as={NextLink} href="/" _hover={{ textDecor: "none" }}>
-                <Button
-                  variant="ghost"
-                  display={{ base: isConnected ? "none" : "block", md: "none" }}
-                  size={{ base: "xs", md: "sm" }}
-                >
-                  {t("common.viewAllAirdrops")}
-                </Button>
-              </Link>
-              <MenuButton>
-                <HStack>
-                  {isConnected ? (
-                    <>
-                      {ensName && ensAvatar && <Avatar size={"sm"} src={ensAvatar} ml={1} />}
-                      <VStack
-                        display={{ base: "flex", md: "flex" }}
-                        alignItems="flex-start"
-                        spacing="1px"
-                        ml="2"
-                      >
-                        <Text fontSize="sm" id="account">
-                          {session?.user?.address ? (
-                            i18n.language === "ja" ? (
-                              <>
-                                {getEllipsizedAddress({ ensName, address })}
-                                <chakra.span display={{ base: "none", md: "inline" }}>
-                                  でログイン中
-                                </chakra.span>
-                              </>
+                <Link as={NextLink} href="/" _hover={{ textDecor: "none" }}>
+                  <Button
+                    variant="ghost"
+                    display={{ base: isConnected ? "none" : "block", md: "none" }}
+                    size={{ base: "xs", md: "sm" }}
+                  >
+                    {t("common.viewAllAirdrops")}
+                  </Button>
+                </Link>
+                <MenuButton>
+                  <HStack>
+                    {isConnected ? (
+                      <>
+                        {ensName && ensAvatar && <Avatar size={"sm"} src={ensAvatar} ml={1} />}
+                        <VStack
+                          display={{ base: "flex", md: "flex" }}
+                          alignItems="flex-start"
+                          spacing="1px"
+                          ml="2"
+                        >
+                          <Text fontSize="sm" id="account">
+                            {session?.user?.address ? (
+                              i18n.language === "ja" ? (
+                                <>
+                                  {getEllipsizedAddress({ ensName, address })}
+                                  <chakra.span display={{ base: "none", md: "inline" }}>
+                                    でログイン中
+                                  </chakra.span>
+                                </>
+                              ) : (
+                                <>
+                                  <chakra.span display={{ base: "none", md: "inline" }}>
+                                    Signed in as
+                                  </chakra.span>{" "}
+                                  {getEllipsizedAddress({ ensName, address })}
+                                </>
+                              )
                             ) : (
-                              <>
-                                <chakra.span display={{ base: "none", md: "inline" }}>
-                                  Signed in as
-                                </chakra.span>{" "}
-                                {getEllipsizedAddress({ ensName, address })}
-                              </>
-                            )
-                          ) : (
-                            getEllipsizedAddress({ ensName, address })
+                              getEllipsizedAddress({ ensName, address })
+                            )}
+                          </Text>
+                          {session?.user?.safeAddress && (
+                            <Flex alignItems={"center"}>
+                              <Image
+                                width={"12px"}
+                                height={"12px"}
+                                alt={"Safe account"}
+                                src={safeLogo.src}
+                              />
+                              <chakra.span fontSize={"sm"} lineHeight={1} ml={2}>
+                                {session?.user?.safeAddress.slice(0, 6)}...
+                                {session?.user?.safeAddress.slice(-6)}
+                              </chakra.span>
+                            </Flex>
                           )}
+                        </VStack>
+                        <ChevronDownIcon />
+                      </>
+                    ) : (
+                      <>
+                        <Text fontSize={{ base: "xs", md: "sm" }} id="account">
+                          {t("common.connectWallet")}
                         </Text>
-                        {session?.user?.safeAddress && (
-                          <Flex alignItems={"center"}>
-                            <Image
-                              width={"12px"}
-                              height={"12px"}
-                              alt={"Safe account"}
-                              src={safeLogo.src}
-                            />
-                            <chakra.span fontSize={"sm"} lineHeight={1} ml={2}>
-                              {session?.user?.safeAddress.slice(0, 6)}...
-                              {session?.user?.safeAddress.slice(-6)}
-                            </chakra.span>
-                          </Flex>
-                        )}
-                      </VStack>
-                      <ChevronDownIcon />
-                    </>
-                  ) : (
+                        <ChevronDownIcon />
+                      </>
+                    )}
+                  </HStack>
+                </MenuButton>
+                <MenuList zIndex={101}>
+                  {isConnected && (
                     <>
-                      <Text fontSize={{ base: "xs", md: "sm" }} id="account">
-                        {t("common.connectWallet")}
-                      </Text>
-                      <ChevronDownIcon />
+                      <HStack spacing={1} px={2} display={{ base: "block", md: "none" }}>
+                        <Tag size={"sm"}>
+                          {typeof chain === "undefined" ? "Unsupported Chain" : chain?.name}
+                        </Tag>
+                        {session?.user?.address && (
+                          <Tag size={"sm"} ml={1}>
+                            Signed in
+                          </Tag>
+                        )}
+                      </HStack>
+                      <Link as={NextLink} href="/dashboard" _hover={{ textDecor: "none" }}>
+                        <MenuItem display={{ base: "block", md: "none" }}>
+                          {t("dashboard.title")}
+                        </MenuItem>
+                      </Link>
+                      <Link as={NextLink} href="/" _hover={{ textDecor: "none" }}>
+                        <MenuItem display={{ base: "block", md: "none" }}>
+                          {t("common.viewAllAirdrops")}
+                        </MenuItem>
+                      </Link>
                     </>
                   )}
-                </HStack>
-              </MenuButton>
-              <MenuList zIndex={101}>
-                {isConnected && (
-                  <>
-                    <HStack spacing={1} px={2} display={{ base: "block", md: "none" }}>
-                      <Tag size={"sm"}>
-                        {typeof chain === "undefined" ? "Unsupported Chain" : chain?.name}
-                      </Tag>
-                      {session?.user?.address && (
-                        <Tag size={"sm"} ml={1}>
-                          Signed in
-                        </Tag>
-                      )}
-                    </HStack>
-                    <Link as={NextLink} href="/dashboard" _hover={{ textDecor: "none" }}>
-                      <MenuItem display={{ base: "block", md: "none" }}>
-                        {t("dashboard.title")}
-                      </MenuItem>
-                    </Link>
-                    <Link as={NextLink} href="/" _hover={{ textDecor: "none" }}>
-                      <MenuItem display={{ base: "block", md: "none" }}>
-                        {t("common.viewAllAirdrops")}
-                      </MenuItem>
-                    </Link>
-                  </>
-                )}
 
-                {isConnected && <Divider display={{ base: "block", md: "none" }} />}
+                  {isConnected && <Divider display={{ base: "block", md: "none" }} />}
 
-                {isConnected && (
-                  <MenuItem onClick={() => disconnect()}>{t("common.disconnect")}</MenuItem>
-                )}
+                  {isConnected && (
+                    <MenuItem onClick={() => disconnect()}>{t("common.disconnect")}</MenuItem>
+                  )}
 
-                {!isConnected && (
-                  <>
-                    <Flex align="center" px="2">
-                      <Divider />
-                      <Text p="2" color={"gray.400"} fontSize={"xs"} whiteSpace={"nowrap"}>
-                        {t("common.joinAirdrop")}
-                      </Text>
-                      <Divider />
-                    </Flex>
-                    <VStack px={3} py={1} spacing={3}>
-                      <chakra.span w={"full"}>
-                        <ConnectButton
-                          requireSignIn={false}
-                          label={t("common.connectWallet")}
-                          size="sm"
+                  {!isConnected && (
+                    <>
+                      <Flex align="center" px="2">
+                        <Divider />
+                        <Text p="2" color={"gray.400"} fontSize={"xs"} whiteSpace={"nowrap"}>
+                          {t("common.joinAirdrop")}
+                        </Text>
+                        <Divider />
+                      </Flex>
+                      <VStack px={3} py={1} spacing={3}>
+                        <chakra.span w={"full"}>
+                          <ConnectButton
+                            requireSignIn={false}
+                            label={t("common.connectWallet")}
+                            size="sm"
+                          />
+                        </chakra.span>
+                      </VStack>
+                    </>
+                  )}
+
+                  {!session?.user && (
+                    <>
+                      <Flex align="center" px="2" mt="2">
+                        <Divider />
+                        <Text padding="2" color={"gray.400"} fontSize={"xs"} whiteSpace={"nowrap"}>
+                          {t("common.manageAirdrop")}
+                        </Text>
+                        <Divider />
+                      </Flex>
+                      <VStack px={3} py={1} spacing={3}>
+                        <chakra.span w={"full"}>
+                          <ConnectButton
+                            requireSignIn={true}
+                            label={t("common.signInWithEthereum")}
+                            size="sm"
+                          />
+                        </chakra.span>
+                        <SafeSignInButton
+                          id="safe-sign-in-with-ethereum-connection"
+                          size={"sm"}
+                          w="full"
+                          onSignInError={(error: string) => {
+                            toast({
+                              description: error,
+                              status: "error",
+                              duration: 5000,
+                            });
+                          }}
                         />
-                      </chakra.span>
-                    </VStack>
-                  </>
-                )}
-
-                {!session?.user && (
-                  <>
-                    <Flex align="center" px="2" mt="2">
-                      <Divider />
-                      <Text padding="2" color={"gray.400"} fontSize={"xs"} whiteSpace={"nowrap"}>
-                        {t("common.manageAirdrop")}
-                      </Text>
-                      <Divider />
-                    </Flex>
-                    <VStack px={3} py={1} spacing={3}>
-                      <chakra.span w={"full"}>
-                        <ConnectButton
-                          requireSignIn={true}
-                          label={t("common.signInWithEthereum")}
-                          size="sm"
-                        />
-                      </chakra.span>
-                      <SafeSignInButton
-                        id="safe-sign-in-with-ethereum-connection"
-                        size={"sm"}
-                        w="full"
-                        onSignInError={(error: string) => {
-                          toast({
-                            description: error,
-                            status: "error",
-                            duration: 5000,
-                          });
-                        }}
-                      />
-                    </VStack>
-                  </>
-                )}
-              </MenuList>
-            </HStack>
-          </Menu>
+                      </VStack>
+                    </>
+                  )}
+                </MenuList>
+              </HStack>
+            </Menu>
+          </Box>
         </Flex>
       </Container>
     </Box>
