@@ -9,7 +9,15 @@ import SvgCommunityLogoBlack from "./CommunityLogoBlack";
 export default function Footer() {
   const { i18n } = useTranslation();
   return (
-    <Box px={{ base: 0, md: 4 }} pb={4} top={"0"} zIndex={100} bg={"gray.900"} opacity={0.975}>
+    <Box 
+      px={{ base: 0, md: 4 }} 
+      pb={4} 
+      top={"0"} 
+      zIndex={100} 
+      bg={"#0E192B"}
+      borderTop="1px solid"
+      borderColor="rgba(252, 200, 98, 0.1)"
+    >
       <Container maxW="container.2xl" px={{ base: 2, md: 4 }}>
         <Flex py="4" justifyContent="space-between" alignItems="center">
           <chakra.div flex={1}></chakra.div>
@@ -74,8 +82,10 @@ export default function Footer() {
             </Select>
           </chakra.div>
         </Flex>
-        <Flex justifyContent={"center"} fontSize={"sm"} color={"gray.400"}>
-          © DeFiGeek Community JAPAN
+        <Flex justifyContent={"center"} fontSize={"sm"} color={"rgba(255, 255, 255, 0.5)"}>
+          <Text as="span" bgGradient="linear(to-r, #FCC862, #FFEA9F, #EDB36F)" bgClip="text">
+            © DeFiGeek Community JAPAN
+          </Text>
         </Flex>
       </Container>
     </Box>

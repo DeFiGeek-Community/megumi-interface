@@ -5,6 +5,7 @@ import { authOptions } from "./api/auth/authOptions";
 import Providers from "./providers/Providers";
 import Header from "./components/common/Header";
 import Footer from "./components/common/Footer";
+import BackgroundDecorations from "./components/common/BackgroundDecorations";
 import i18next from "./lib/i18nConfig";
 import { Box } from "@chakra-ui/react";
 import "./globals.css";
@@ -43,9 +44,10 @@ export default async function RootLayout({
       Adding className="chakra-ui-dark" to avoid warning
       https://github.com/chakra-ui/chakra-ui/issues/7040#issuecomment-1655818781
        */}
-      <body className="chakra-ui-dark" style={{ backgroundColor: "#0E192B" }}>
+      <body className="chakra-ui-dark pattern-dots">
         <Providers session={session} locale={i18next.language}>
-          <Box display="flex" flexDirection="column" justifyContent="flex-start" minHeight="100vh">
+          <BackgroundDecorations />
+          <Box display="flex" flexDirection="column" justifyContent="flex-start" minHeight="100vh" position="relative" zIndex={1}>
             <Header />
             <Box flex="1">
               <main>{children}</main>

@@ -25,8 +25,7 @@ export default function MyAirdrops({
       <Flex justifyContent="flex-end" mb="6" mt="2">
         <Button
           leftIcon={<AddIcon />}
-          bg="gray.500"
-          _hover={{ bg: "gray.600" }}
+          variant="gold"
           fontSize={{ base: "sm", sm: "md" }}
           onClick={onOpen}
         >
@@ -46,9 +45,9 @@ export default function MyAirdrops({
       <VStack spacing="4">
         {myAirdrops.data === null ? (
           <>
-            <Skeleton h="200" w="full" />
-            <Skeleton h="200" w="full" />
-            <Skeleton h="200" w="full" />
+            <Skeleton h="200" w="full" borderRadius="16px" startColor="brand.bg.card" endColor="brand.border.subtle" />
+            <Skeleton h="200" w="full" borderRadius="16px" startColor="brand.bg.card" endColor="brand.border.subtle" />
+            <Skeleton h="200" w="full" borderRadius="16px" startColor="brand.bg.card" endColor="brand.border.subtle" />
           </>
         ) : myAirdrops.data.length === 0 ? (
           <Box mt="10" h="200" textAlign={"center"}>
@@ -63,8 +62,7 @@ export default function MyAirdrops({
         {myAirdrops.hasMore && (
           <Button
             onClick={() => myAirdrops.fetchNextPage()}
-            bg="gray.500"
-            _hover={{ bg: "gray.600" }}
+            variant="goldOutline"
           >
             Load more
           </Button>

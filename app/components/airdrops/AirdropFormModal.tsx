@@ -252,8 +252,7 @@ export default function AirdropFormModal({
                 <Button
                   mt={4}
                   w={"full"}
-                  variant="solid"
-                  colorScheme="green"
+                  variant="gold"
                   type="submit"
                   isLoading={loading}
                   disabled={!formikProps.isValid || loading}

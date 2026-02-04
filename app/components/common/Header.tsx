@@ -60,8 +60,9 @@ export default function Header({ title }: HeaderProps) {
       position={"sticky"}
       top={"0"}
       zIndex={99}
-      style={{ backgroundColor: "#0E192B" }}
-      opacity={0.975}
+      bg="#0E192B"
+      borderBottom="1px solid"
+      borderColor="rgba(252, 200, 98, 0.1)"
     >
       <Container maxW="container.2xl" px={{ base: 2, md: "144px" }}>
         <Flex as="header" py="4" justifyContent="space-between" alignItems="center">

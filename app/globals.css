@@ -1,21 +1,37 @@
+/* ===== CSS Variables for Theme ===== */
+:root {
+  --color-bg-primary: #0E192B;
+  --color-bg-secondary: #142236;
+  --color-bg-tertiary: #1a2d47;
+  --color-accent-gold: #FCC862;
+  --color-accent-gold-light: #FFEA9F;
+  --color-accent-gold-dark: #EDB36F;
+  --color-text-primary: #ffffff;
+  --color-text-secondary: rgba(255, 255, 255, 0.7);
+  --color-text-muted: rgba(255, 255, 255, 0.5);
+  --gradient-gold: linear-gradient(135deg, #FCC862 0%, #FFEA9F 50%, #EDB36F 100%);
+  --gradient-bg: linear-gradient(180deg, #0E192B 0%, #142236 50%, #0E192B 100%);
+  --glow-gold: 0 0 20px rgba(252, 200, 98, 0.3);
+}
+
 html {
   height: 100%;
 }
+
 body {
   height: 100%;
+  background: var(--gradient-bg);
+  background-attachment: fixed;
 }
+
 main {
   height: 100%;
 }
 
-header w3m-button,
-header wui-connect-button {
-  width: 100% !important;
-}
-
+/* ===== Modern Typography ===== */
 body {
   font-family: GeistSans,
-  "Helvetica Neue",
+    "Helvetica Neue",
     Arial,
     "Hiragino Kaku Gothic ProN",
     "Hiragino Sans",
@@ -23,6 +39,120 @@ body {
     sans-serif;
 }
 
+/* ===== Wallet Modal ===== */
+header w3m-button,
+header wui-connect-button {
+  width: 100% !important;
+}
+
 w3m-modal {
-  z-index: 2000!important;
+  z-index: 2000 !important;
+}
+
+/* ===== Modern Card Styles ===== */
+.card-modern {
+  background: rgba(20, 34, 54, 0.8);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(252, 200, 98, 0.1);
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.card-modern:hover {
+  border-color: rgba(252, 200, 98, 0.3);
+  box-shadow: var(--glow-gold);
+  transform: translateY(-2px);
+}
+
+/* ===== Accent Elements ===== */
+.accent-glow {
+  position: relative;
+}
+
+.accent-glow::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  background: var(--gradient-gold);
+  border-radius: inherit;
+  z-index: -1;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  filter: blur(8px);
+}
+
+.accent-glow:hover::after {
+  opacity: 0.5;
+}
+
+/* ===== Button Styles ===== */
+.btn-primary {
+  background: var(--gradient-gold);
+  color: var(--color-bg-primary);
+  font-weight: 600;
+  border: none;
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  box-shadow: var(--glow-gold);
+  transform: translateY(-1px);
+}
+
+/* ===== Subtle Background Pattern ===== */
+.pattern-dots {
+  background-image: radial-gradient(rgba(252, 200, 98, 0.03) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ===== Animated Gradient Border ===== */
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+.gradient-border {
+  position: relative;
+  background: var(--color-bg-secondary);
+  border-radius: 16px;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  background: linear-gradient(90deg, var(--color-accent-gold), var(--color-accent-gold-light), var(--color-accent-gold-dark), var(--color-accent-gold));
+  background-size: 300% 100%;
+  border-radius: inherit;
+  z-index: -1;
+  animation: gradient-shift 4s ease infinite;
+  opacity: 0.5;
+}
+
+/* ===== Smooth Scrollbar ===== */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-bg-tertiary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(252, 200, 98, 0.3);
+}
+
+/* ===== Link Hover Effect ===== */
+.link-glow {
+  transition: all 0.3s ease;
+}
+
+.link-glow:hover {
+  color: var(--color-accent-gold) !important;
+  text-shadow: 0 0 10px rgba(252, 200, 98, 0.5);
 }

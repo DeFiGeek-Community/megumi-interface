@@ -234,8 +234,7 @@ export default function ExistingContractForm({
       <Button
         mt={4}
         w={"full"}
-        variant="solid"
-        colorScheme="green"
+        variant="gold"
         type="submit"
         isLoading={contract.isLoading || updating}
         disabled={!contract.data || contract.isLoading || updating || !formikProps.isValid}
