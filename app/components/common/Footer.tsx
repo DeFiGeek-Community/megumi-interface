@@ -15,8 +15,19 @@ export default function Footer() {
       top={"0"} 
       zIndex={100} 
       bg={"#0E192B"}
+      position="relative"
       borderTop="1px solid"
-      borderColor="rgba(252, 200, 98, 0.1)"
+      borderColor="rgba(245, 169, 98, 0.08)"
+      _before={{
+        content: '""',
+        position: "absolute",
+        top: "-1px",
+        left: 0,
+        right: 0,
+        height: "2px",
+        background: "linear-gradient(90deg, transparent 0%, rgba(255, 212, 168, 0.3) 20%, rgba(252, 200, 98, 0.4) 50%, rgba(245, 169, 98, 0.3) 80%, transparent 100%)",
+        opacity: 0.5,
+      }}
     >
       <Container maxW="container.2xl" px={{ base: 2, md: 4 }}>
         <Flex py="4" justifyContent="space-between" alignItems="center">
@@ -83,7 +94,7 @@ export default function Footer() {
           </chakra.div>
         </Flex>
         <Flex justifyContent={"center"} fontSize={"sm"} color={"rgba(255, 255, 255, 0.5)"}>
-          <Text as="span" bgGradient="linear(to-r, #FCC862, #FFEA9F, #EDB36F)" bgClip="text">
+          <Text as="span" bgGradient="linear(to-r, #FFD4A8, #F5A962, #FCC862, #FFEA9F, #EDB36F)" bgClip="text">
             © DeFiGeek Community JAPAN
           </Text>
         </Flex>

@@ -1,17 +1,34 @@
 /* ===== CSS Variables for Theme ===== */
 :root {
+  /* Base colors */
   --color-bg-primary: #0E192B;
   --color-bg-secondary: #142236;
   --color-bg-tertiary: #1a2d47;
+  
+  /* Gold palette */
   --color-accent-gold: #FCC862;
   --color-accent-gold-light: #FFEA9F;
   --color-accent-gold-dark: #EDB36F;
+  
+  /* Warm palette - nurturing tones */
+  --color-warm-orange: #F5A962;
+  --color-warm-peach: #FFD4A8;
+  --color-warm-soft: #FFE4D1;
+  
+  /* Text colors */
   --color-text-primary: #ffffff;
   --color-text-secondary: rgba(255, 255, 255, 0.7);
   --color-text-muted: rgba(255, 255, 255, 0.5);
-  --gradient-gold: linear-gradient(135deg, #FCC862 0%, #FFEA9F 50%, #EDB36F 100%);
+  
+  /* Gradients - warm nurturing feel */
+  --gradient-gold: linear-gradient(135deg, #F5A962 0%, #FCC862 35%, #FFEA9F 65%, #EDB36F 100%);
+  --gradient-warm: linear-gradient(135deg, #F5A962 0%, #FFD4A8 50%, #FCC862 100%);
   --gradient-bg: linear-gradient(180deg, #0E192B 0%, #142236 50%, #0E192B 100%);
+  
+  /* Glow effects - blessing light */
   --glow-gold: 0 0 20px rgba(252, 200, 98, 0.3);
+  --glow-warm: 0 4px 25px rgba(245, 169, 98, 0.3);
+  --glow-soft: 0 0 30px rgba(255, 212, 168, 0.2);
 }
 
 html {
@@ -49,22 +66,22 @@ w3m-modal {
   z-index: 2000 !important;
 }
 
-/* ===== Modern Card Styles ===== */
+/* ===== Modern Card Styles - Warm nurturing feel ===== */
 .card-modern {
-  background: rgba(20, 34, 54, 0.8);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(252, 200, 98, 0.1);
-  border-radius: 16px;
-  transition: all 0.3s ease;
+  background: rgba(20, 34, 54, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(245, 169, 98, 0.1);
+  border-radius: 20px;
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .card-modern:hover {
-  border-color: rgba(252, 200, 98, 0.3);
-  box-shadow: var(--glow-gold);
-  transform: translateY(-2px);
+  border-color: rgba(245, 169, 98, 0.25);
+  box-shadow: var(--glow-warm), var(--glow-soft);
+  transform: translateY(-3px);
 }
 
-/* ===== Accent Elements ===== */
+/* ===== Accent Elements - Warm glow ===== */
 .accent-glow {
   position: relative;
 }
@@ -72,64 +89,75 @@ w3m-modal {
 .accent-glow::after {
   content: '';
   position: absolute;
-  inset: -2px;
-  background: var(--gradient-gold);
+  inset: -3px;
+  background: var(--gradient-warm);
   border-radius: inherit;
   z-index: -1;
   opacity: 0;
-  transition: opacity 0.3s ease;
-  filter: blur(8px);
+  transition: opacity 0.4s ease;
+  filter: blur(12px);
 }
 
 .accent-glow:hover::after {
-  opacity: 0.5;
+  opacity: 0.4;
 }
 
-/* ===== Button Styles ===== */
+/* ===== Button Styles - Nurturing warmth ===== */
 .btn-primary {
   background: var(--gradient-gold);
   color: var(--color-bg-primary);
   font-weight: 600;
   border: none;
-  transition: all 0.3s ease;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-primary:hover {
-  box-shadow: var(--glow-gold);
-  transform: translateY(-1px);
+  box-shadow: var(--glow-warm);
+  transform: translateY(-2px);
 }
 
-/* ===== Subtle Background Pattern ===== */
+/* ===== Subtle Background Pattern - Organic feel ===== */
 .pattern-dots {
-  background-image: radial-gradient(rgba(252, 200, 98, 0.03) 1px, transparent 1px);
-  background-size: 24px 24px;
+  /* Soft organic pattern instead of rigid dots */
+  background-image: 
+    radial-gradient(ellipse at 20% 30%, rgba(245, 169, 98, 0.015) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 70%, rgba(252, 200, 98, 0.02) 0%, transparent 50%),
+    radial-gradient(circle at 50% 50%, rgba(255, 212, 168, 0.01) 0%, transparent 70%);
+  background-size: 100% 100%;
+  background-attachment: fixed;
 }
 
-/* ===== Animated Gradient Border ===== */
+/* ===== Animated Gradient Border - Flowing warmth ===== */
 @keyframes gradient-shift {
   0%, 100% { background-position: 0% 50%; }
   50% { background-position: 100% 50%; }
 }
 
+@keyframes gentle-pulse {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.6; }
+}
+
 .gradient-border {
   position: relative;
   background: var(--color-bg-secondary);
-  border-radius: 16px;
+  border-radius: 20px;
 }
 
 .gradient-border::before {
   content: '';
   position: absolute;
   inset: -1px;
-  background: linear-gradient(90deg, var(--color-accent-gold), var(--color-accent-gold-light), var(--color-accent-gold-dark), var(--color-accent-gold));
-  background-size: 300% 100%;
+  background: linear-gradient(90deg, var(--color-warm-orange), var(--color-accent-gold), var(--color-accent-gold-light), var(--color-warm-peach), var(--color-warm-orange));
+  background-size: 400% 100%;
   border-radius: inherit;
   z-index: -1;
-  animation: gradient-shift 4s ease infinite;
-  opacity: 0.5;
+  animation: gradient-shift 6s ease infinite, gentle-pulse 3s ease-in-out infinite;
+  opacity: 0.4;
 }
 
-/* ===== Smooth Scrollbar ===== */
+/* ===== Smooth Scrollbar - Warm accent ===== */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -139,20 +167,51 @@ w3m-modal {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-bg-tertiary);
+  background: linear-gradient(180deg, var(--color-bg-tertiary) 0%, rgba(245, 169, 98, 0.2) 100%);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(252, 200, 98, 0.3);
+  background: linear-gradient(180deg, rgba(245, 169, 98, 0.3) 0%, rgba(252, 200, 98, 0.4) 100%);
 }
 
-/* ===== Link Hover Effect ===== */
+/* ===== Link Hover Effect - Warm glow ===== */
 .link-glow {
   transition: all 0.3s ease;
 }
 
 .link-glow:hover {
-  color: var(--color-accent-gold) !important;
-  text-shadow: 0 0 10px rgba(252, 200, 98, 0.5);
+  color: var(--color-warm-orange) !important;
+  text-shadow: 0 0 12px rgba(245, 169, 98, 0.5);
+}
+
+/* ===== Blessing Animation Classes ===== */
+@keyframes float-blessing {
+  0%, 100% { 
+    transform: translateY(0px); 
+    opacity: 0.6; 
+  }
+  50% { 
+    transform: translateY(-10px); 
+    opacity: 0.9; 
+  }
+}
+
+@keyframes ripple-out {
+  0% { 
+    transform: scale(0.95); 
+    opacity: 0.3; 
+  }
+  100% { 
+    transform: scale(1.1); 
+    opacity: 0; 
+  }
+}
+
+.float-blessing {
+  animation: float-blessing 4s ease-in-out infinite;
+}
+
+.ripple-out {
+  animation: ripple-out 3s ease-out infinite;
 }
