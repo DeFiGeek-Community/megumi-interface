@@ -94,7 +94,7 @@ export default function Footer() {
           </chakra.div>
         </Flex>
         <Flex justifyContent={"center"} fontSize={"sm"} color={"rgba(255, 255, 255, 0.5)"}>
-          <Text as="span" bgGradient="linear(to-r, #FFD4A8, #F5A962, #FCC862, #FFEA9F, #EDB36F)" bgClip="text">
+          <Text as="span" bgGradient="linear(to-r, #FFD4A8, #F5A962, #FCC862, #EDB36F)" bgClip="text">
             © DeFiGeek Community JAPAN
           </Text>
         </Flex>
