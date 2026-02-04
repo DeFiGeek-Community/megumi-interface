@@ -82,7 +82,7 @@ const components = {
     variants: {
       // Warm nurturing gradient - like parent bird's care
       gold: {
-        bg: "linear-gradient(135deg, #F5A962 0%, #FCC862 35%, #FFEA9F 65%, #EDB36F 100%)",
+        bg: "linear-gradient(135deg, #F5A962 0%, #FCC862 65%, #EDB36F 100%)",
         color: "brand.bg.primary",
         fontWeight: "600",
         borderRadius: "12px",
@@ -90,7 +90,7 @@ const components = {
           boxShadow: "0 4px 25px rgba(245, 169, 98, 0.4), 0 0 15px rgba(252, 200, 98, 0.3)",
           transform: "translateY(-2px)",
           _disabled: {
-            bg: "linear-gradient(135deg, #F5A962 0%, #FCC862 35%, #FFEA9F 65%, #EDB36F 100%)",
+            bg: "linear-gradient(135deg, #F5A962 0%, #FCC862 65%, #FFEA9F 70%, #EDB36F 100%)",
           },
         },
         _active: {
