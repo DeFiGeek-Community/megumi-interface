@@ -110,7 +110,7 @@ export default function Claim({
     writeFn.claiming || waitFn.isLoading || (writeFn.isSuccess && waitFn.isPending);
 
   return (
-    <Box 
+    <Box
       bg="brand.bg.card"
       borderRadius="16px"
       borderWidth="1px"

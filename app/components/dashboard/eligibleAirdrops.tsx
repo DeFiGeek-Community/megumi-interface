@@ -19,9 +19,27 @@ export default function EligibleAirdrops({
     <VStack spacing="4">
       {eligibleAirdrops.data === null ? (
         <>
-          <Skeleton h="200" w="full" borderRadius="16px" startColor="brand.bg.card" endColor="brand.border.subtle" />
-          <Skeleton h="200" w="full" borderRadius="16px" startColor="brand.bg.card" endColor="brand.border.subtle" />
-          <Skeleton h="200" w="full" borderRadius="16px" startColor="brand.bg.card" endColor="brand.border.subtle" />
+          <Skeleton
+            h="200"
+            w="full"
+            borderRadius="16px"
+            startColor="brand.bg.card"
+            endColor="brand.border.subtle"
+          />
+          <Skeleton
+            h="200"
+            w="full"
+            borderRadius="16px"
+            startColor="brand.bg.card"
+            endColor="brand.border.subtle"
+          />
+          <Skeleton
+            h="200"
+            w="full"
+            borderRadius="16px"
+            startColor="brand.bg.card"
+            endColor="brand.border.subtle"
+          />
         </>
       ) : eligibleAirdrops.data.length === 0 ? (
         <Box mt="10" textAlign={"center"}>
@@ -32,10 +50,7 @@ export default function EligibleAirdrops({
       )}
 
       {eligibleAirdrops.hasMore && (
-        <Button
-          onClick={() => eligibleAirdrops.fetchNextPage()}
-          variant="goldOutline"
-        >
+        <Button onClick={() => eligibleAirdrops.fetchNextPage()} variant="goldOutline">
           Load more
         </Button>
       )}

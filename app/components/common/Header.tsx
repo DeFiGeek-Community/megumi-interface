@@ -71,7 +71,8 @@ export default function Header({ title }: HeaderProps) {
         left: 0,
         right: 0,
         height: "2px",
-        background: "linear-gradient(90deg, transparent 0%, rgba(245, 169, 98, 0.3) 20%, rgba(252, 200, 98, 0.4) 50%, rgba(255, 212, 168, 0.3) 80%, transparent 100%)",
+        background:
+          "linear-gradient(90deg, transparent 0%, rgba(245, 169, 98, 0.3) 20%, rgba(252, 200, 98, 0.4) 50%, rgba(255, 212, 168, 0.3) 80%, transparent 100%)",
         opacity: 0.6,
       }}
     >

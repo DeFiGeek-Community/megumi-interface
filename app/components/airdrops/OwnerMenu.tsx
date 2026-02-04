@@ -183,7 +183,7 @@ export default function OwnerMenu({
     (withdrawClaimFee.writeFn.isSuccess && withdrawClaimFee.waitFn.isPending);
 
   return (
-    <Box 
+    <Box
       bg="brand.bg.card"
       borderRadius="16px"
       borderWidth="1px"

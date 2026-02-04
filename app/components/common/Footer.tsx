@@ -9,11 +9,11 @@ import SvgCommunityLogoBlack from "./CommunityLogoBlack";
 export default function Footer() {
   const { i18n } = useTranslation();
   return (
-    <Box 
-      px={{ base: 0, md: 4 }} 
-      pb={4} 
-      top={"0"} 
-      zIndex={100} 
+    <Box
+      px={{ base: 0, md: 4 }}
+      pb={4}
+      top={"0"}
+      zIndex={100}
       bg={"#0E192B"}
       position="relative"
       borderTop="1px solid"
@@ -25,7 +25,8 @@ export default function Footer() {
         left: 0,
         right: 0,
         height: "2px",
-        background: "linear-gradient(90deg, transparent 0%, rgba(255, 212, 168, 0.3) 20%, rgba(252, 200, 98, 0.4) 50%, rgba(245, 169, 98, 0.3) 80%, transparent 100%)",
+        background:
+          "linear-gradient(90deg, transparent 0%, rgba(255, 212, 168, 0.3) 20%, rgba(252, 200, 98, 0.4) 50%, rgba(245, 169, 98, 0.3) 80%, transparent 100%)",
         opacity: 0.5,
       }}
     >
@@ -94,7 +95,11 @@ export default function Footer() {
           </chakra.div>
         </Flex>
         <Flex justifyContent={"center"} fontSize={"sm"} color={"rgba(255, 255, 255, 0.5)"}>
-          <Text as="span" bgGradient="linear(to-r, #FFD4A8, #F5A962, #FCC862, #EDB36F)" bgClip="text">
+          <Text
+            as="span"
+            bgGradient="linear(to-r, #FFD4A8, #F5A962, #FCC862, #EDB36F)"
+            bgClip="text"
+          >
             © DeFiGeek Community JAPAN
           </Text>
         </Flex>

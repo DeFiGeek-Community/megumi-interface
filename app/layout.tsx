@@ -47,9 +47,16 @@ export default async function RootLayout({
       <body className="chakra-ui-dark pattern-dots">
         <Providers session={session} locale={i18next.language}>
           <BackgroundDecorations />
-          <Box display="flex" flexDirection="column" justifyContent="flex-start" minHeight="100vh" position="relative" zIndex={1}>
+          <Box
+            display="flex"
+            flexDirection="column"
+            justifyContent="flex-start"
+            minHeight="100vh"
+            position="relative"
+            zIndex={1}
+          >
             <Header />
-            <Box flex="1">
+            <Box flex="1" pt="4">
               <main>{children}</main>
             </Box>
             <Footer />

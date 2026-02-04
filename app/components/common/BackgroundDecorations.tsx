@@ -47,7 +47,7 @@ export default function BackgroundDecorations() {
         filter="blur(60px)"
         animation={`${softPulse} 8s ease-in-out infinite`}
       />
-      
+
       {/* Warm orb - bottom left (nurturing glow) */}
       <Box
         position="fixed"

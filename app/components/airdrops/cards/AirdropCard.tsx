@@ -32,7 +32,7 @@ export default function AirdropCard({
         filter: "brightness(115%)",
       }}
     >
-      <Card 
+      <Card
         width="100%"
         bg="brand.bg.card"
         borderColor="brand.border.subtle"
