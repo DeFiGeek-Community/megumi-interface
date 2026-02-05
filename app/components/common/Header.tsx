@@ -32,6 +32,7 @@ import ConnectButton from "@/app/components/common/ConnectButton";
 import { getEllipsizedAddress } from "@/app/utils/clientHelper";
 import SafeSignInButton from "./SafeSignInButton";
 import safeLogo from "@/public/images/safe.png";
+import GradientDivider from "./GradientDivider";
 
 type HeaderProps = {
   title?: string;
@@ -60,22 +61,12 @@ export default function Header({ title }: HeaderProps) {
       position={"sticky"}
       top={"0"}
       zIndex={99}
-      bg="#0E192B"
+      bg="brand.bg.primary"
       backdropFilter="blur(12px)"
       borderBottom="1px solid"
-      borderColor="rgba(245, 169, 98, 0.08)"
-      _after={{
-        content: '""',
-        position: "absolute",
-        bottom: "-1px",
-        left: 0,
-        right: 0,
-        height: "2px",
-        background:
-          "linear-gradient(90deg, transparent 0%, rgba(245, 169, 98, 0.3) 20%, rgba(252, 200, 98, 0.4) 50%, rgba(255, 212, 168, 0.3) 80%, transparent 100%)",
-        opacity: 0.6,
-      }}
+      borderColor="brand.border.subtle"
     >
+      <GradientDivider variant="bottom" />
       <Container maxW="container.2xl" px={{ base: 2, md: "144px" }}>
         <Flex as="header" py="4" justifyContent="space-between" alignItems="center">
           <HStack>
