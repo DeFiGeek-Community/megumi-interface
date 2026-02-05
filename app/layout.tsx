@@ -12,9 +12,39 @@ import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = i18next.t;
+  const title = `${t("appName")} | ${t("tagline")}`;
+  const description = t("tagline");
+
   return {
-    title: `${t("appName")} | ${t("tagline")}`,
-    description: t("tagline"),
+    metadataBase: new URL("https://megumi.defigeek.xyz/"),
+    title,
+    description,
+    icons: {
+      icon: "/favicons/icon-32x32.png",
+      shortcut: "/favicons/favicon.ico",
+      apple: "/favicons/apple-touch-icon.png",
+    },
+    manifest: "/favicons/manifest.json",
+    openGraph: {
+      title,
+      description,
+      siteName: t("appName"),
+      images: [
+        {
+          url: "/favicons/og-image.png",
+          width: 1200,
+          height: 630,
+        },
+      ],
+      locale: "en_US",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["/favicons/og-image.png"],
+    },
   };
 }
 
