@@ -55,6 +55,7 @@ export default function ConnectButton({ requireSignIn = false, ...props }: Conne
         <Button
           isLoading={signingIn}
           w={"full"}
+          variant="gold"
           onClick={() => login?.({ chainId, address })}
           {...props}
         >

@@ -138,8 +138,7 @@ export default function ManualForm({
         <Button
           mt={4}
           w={"full"}
-          variant="solid"
-          colorScheme="green"
+          variant="gold"
           type="submit"
           isLoading={uploading}
           disabled={!formikProps.isValid || uploading}
@@ -173,8 +172,7 @@ export default function ManualForm({
               <Button
                 mt={4}
                 w={"full"}
-                variant="solid"
-                colorScheme="green"
+                variant="gold"
                 isLoading={uploading}
                 disabled={!formikProps.isValid || uploading}
                 onClick={() => uploadGeneratedMerkleTree(merkleTree)}

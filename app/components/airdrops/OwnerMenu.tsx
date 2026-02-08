@@ -183,7 +183,19 @@ export default function OwnerMenu({
     (withdrawClaimFee.writeFn.isSuccess && withdrawClaimFee.waitFn.isPending);
 
   return (
-    <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4}>
+    <Box
+      bg="brand.bg.card"
+      borderRadius="16px"
+      borderWidth="1px"
+      borderColor="brand.border.subtle"
+      backdropFilter="blur(10px)"
+      boxShadow="md"
+      p={4}
+      transition="all 0.3s ease"
+      _hover={{
+        borderColor: "brand.border.medium",
+      }}
+    >
       <VStack spacing={2} align="stretch">
         <HStack justify="space-between">
           <Text fontSize="md" fontWeight="900">

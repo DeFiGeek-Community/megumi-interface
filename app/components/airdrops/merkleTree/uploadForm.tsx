@@ -158,8 +158,7 @@ export default function UploadForm({
         <Button
           mt={4}
           w={"full"}
-          variant="solid"
-          colorScheme="green"
+          variant="gold"
           type="submit"
           isLoading={merkleTreeLoading || uploading}
           disabled={!formikProps.isValid || merkleTreeLoading || uploading}
@@ -194,8 +193,7 @@ export default function UploadForm({
               <Button
                 mt={4}
                 w={"full"}
-                variant="solid"
-                colorScheme="green"
+                variant="gold"
                 isLoading={uploading || merkleTreeLoading}
                 disabled={!formikProps.isValid || uploading || merkleTreeLoading}
                 onClick={() => uploadGeneratedMerkleTree(merkleTree)}

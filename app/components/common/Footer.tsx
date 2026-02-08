@@ -5,61 +5,47 @@ import { useTranslation } from "react-i18next";
 import gitbook from "@/public/images/gitbook.svg";
 import discord from "@/public/images/discord-mark-white.png";
 import SvgCommunityLogoBlack from "./CommunityLogoBlack";
+import GradientDivider from "./GradientDivider";
+import SocialLink from "./SocialLink";
 
 export default function Footer() {
   const { i18n } = useTranslation();
   return (
-    <Box px={{ base: 0, md: 4 }} pb={4} top={"0"} zIndex={100} bg={"gray.900"} opacity={0.975}>
+    <Box
+      px={{ base: 0, md: 4 }}
+      pb={4}
+      top={"0"}
+      zIndex={100}
+      bg="brand.bg.primary"
+      position="relative"
+      borderTop="1px solid"
+      borderColor="brand.border.subtle"
+    >
+      <GradientDivider variant="top" />
       <Container maxW="container.2xl" px={{ base: 2, md: 4 }}>
         <Flex py="4" justifyContent="space-between" alignItems="center">
           <chakra.div flex={1}></chakra.div>
           <Flex flex={2} py="4" gridGap={4} justifyContent="center" alignItems="center">
-            <Tooltip hasArrow label={<Text whiteSpace={"pre-wrap"}>DeFiGeek Community JAPAN</Text>}>
-              <Link
-                href="https://defigeek.xyz/"
-                target={"_blank"}
-                fontSize={"3xl"}
-                width={"40px"}
-                _hover={{ opacity: 0.8 }}
-              >
-                <SvgCommunityLogoBlack width="2.5rem" height="2.5rem" />
-              </Link>
-            </Tooltip>
-            <Tooltip hasArrow label={<Text whiteSpace={"pre-wrap"}>Discord</Text>}>
-              <Link
-                href="https://discord.gg/FQYXqVBEnh"
-                target={"_blank"}
-                fontSize={"3xl"}
-                opacity={0.85}
-                width={"40px"}
-                _hover={{ opacity: 0.6 }}
-                padding={"0.3125rem"}
-              >
-                <Image w={"30px"} src={discord.src} />
-              </Link>
-            </Tooltip>
-            <Tooltip hasArrow label={<Text whiteSpace={"pre-wrap"}>GitHub</Text>}>
-              <Link
-                href="https://github.com/DeFiGeek-Community/"
-                target={"_blank"}
-                fontSize={"3xl"}
-                _hover={{ opacity: 0.8 }}
-                padding={"0.3125rem"}
-              >
-                <AiFillGithub />
-              </Link>
-            </Tooltip>
-            {/* <Tooltip hasArrow label={<Text whiteSpace={"pre-wrap"}>GitBook</Text>}>
-              <Link
-                href="https://docs.megumi.xyz"
-                target={"_blank"}
-                fontSize={"3xl"}
-                _hover={{ opacity: 0.8 }}
-                padding={"0.3125rem"}
-              >
-                <Image w={"30px"} h={"30px"} src={gitbook.src} />
-              </Link>
-            </Tooltip> */}
+            <SocialLink
+              href="https://defigeek.xyz/"
+              label="DeFiGeek Community JAPAN"
+              icon={<SvgCommunityLogoBlack width="2.5rem" height="2.5rem" />}
+            />
+            <SocialLink
+              href="https://discord.gg/FQYXqVBEnh"
+              label="Discord"
+              imageSrc={discord.src}
+            />
+            <SocialLink
+              href="https://github.com/DeFiGeek-Community/"
+              label="GitHub"
+              icon={<AiFillGithub />}
+            />
+            {/* <SocialLink
+              href="https://docs.megumi.xyz"
+              label="GitBook"
+              imageSrc={gitbook.src}
+            /> */}
           </Flex>
           <chakra.div flex={1}>
             <Select
@@ -74,8 +60,14 @@ export default function Footer() {
             </Select>
           </chakra.div>
         </Flex>
-        <Flex justifyContent={"center"} fontSize={"sm"} color={"gray.400"}>
-          © DeFiGeek Community JAPAN
+        <Flex justifyContent={"center"} fontSize={"sm"} color={"rgba(255, 255, 255, 0.5)"}>
+          <Text
+            as="span"
+            bgGradient="linear(to-r, #FFD4A8, #F5A962, #FCC862, #EDB36F)"
+            bgClip="text"
+          >
+            © DeFiGeek Community JAPAN
+          </Text>
         </Flex>
       </Container>
     </Box>
