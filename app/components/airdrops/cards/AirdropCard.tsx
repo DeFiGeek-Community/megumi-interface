@@ -32,7 +32,19 @@ export default function AirdropCard({
         filter: "brightness(115%)",
       }}
     >
-      <Card width="100%">
+      <Card
+        width="100%"
+        bg="brand.bg.card"
+        borderColor="brand.border.subtle"
+        borderWidth="1px"
+        borderRadius="16px"
+        backdropFilter="blur(10px)"
+        transition="all 0.3s ease"
+        _hover={{
+          borderColor: "brand.border.medium",
+          boxShadow: "0 0 20px rgba(252, 200, 98, 0.15)",
+        }}
+      >
         <CardBody paddingX={{ base: "1", sm: "5" }}>
           <Box>
             <DateContent {...dateContentParams} />

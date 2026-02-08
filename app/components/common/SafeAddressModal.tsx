@@ -103,8 +103,7 @@ export function SafeAddressModal({ isOpen, isLoading, onClose, onProceed }: Safe
               <Button
                 mt={8}
                 w={"full"}
-                variant="solid"
-                colorScheme="green"
+                variant="gold"
                 isLoading={isChecking || isLoading}
                 isDisabled={!formikProps.isValid}
                 onClick={() => {

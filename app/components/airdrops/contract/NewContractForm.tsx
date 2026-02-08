@@ -282,8 +282,7 @@ export default function NewContractForm({
           <Button
             mt={4}
             w={"full"}
-            variant="solid"
-            colorScheme="green"
+            variant="gold"
             type="submit"
             isLoading={deployButtonLoading}
             disabled={
@@ -301,8 +300,7 @@ export default function NewContractForm({
           <Button
             mt={4}
             w={"full"}
-            variant="solid"
-            colorScheme="blue"
+            variant="goldOutline"
             onClick={() => approvals.writeFn.approve()}
             isLoading={approveButtonLoading}
             disabled={

@@ -138,8 +138,10 @@ export default function AirdropDetail({
               alignItems={{ base: undefined, lg: "center" }}
             >
               <Box
-                bg="gray.500"
+                bg="brand.bg.tertiary"
                 borderRadius="md"
+                borderWidth="1px"
+                borderColor="brand.border.subtle"
                 px={{ base: "1", sm: "3" }}
                 py={{ base: "0.5", sm: "1" }}
                 mt="1.5"
@@ -190,8 +192,10 @@ export default function AirdropDetail({
               )}
 
               <Box
-                bg="gray.500"
+                bg="brand.bg.tertiary"
                 borderRadius="md"
+                borderWidth="1px"
+                borderColor="brand.border.subtle"
                 px={{ base: "1", sm: "3" }}
                 py={{ base: "0.5", sm: "1" }}
                 mt="1.5"
@@ -227,12 +231,19 @@ export default function AirdropDetail({
 
           {!address && (
             <Flex
-              bg="#2E3748"
-              borderRadius="md"
+              bg="brand.bg.card"
+              borderRadius="16px"
+              borderWidth="1px"
+              borderColor="brand.border.subtle"
+              backdropFilter="blur(10px)"
               boxShadow="md"
               p={4}
               mb={4}
               justifyContent={"center"}
+              transition="all 0.3s ease"
+              _hover={{
+                borderColor: "brand.border.medium",
+              }}
             >
               <ConnectButton requireSignIn={false} label={t("common.connectWallet")} size="sm" />
             </Flex>

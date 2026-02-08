@@ -110,7 +110,21 @@ export default function Claim({
     writeFn.claiming || waitFn.isLoading || (writeFn.isSuccess && waitFn.isPending);
 
   return (
-    <Box bg="#2E3748" borderRadius="md" boxShadow="md" p={4} mb={4}>
+    <Box
+      bg="brand.bg.card"
+      borderRadius="16px"
+      borderWidth="1px"
+      borderColor="brand.border.subtle"
+      backdropFilter="blur(10px)"
+      boxShadow="md"
+      p={4}
+      mb={4}
+      transition="all 0.3s ease"
+      _hover={{
+        borderColor: "brand.border.medium",
+        boxShadow: "0 0 20px rgba(252, 200, 98, 0.1)",
+      }}
+    >
       {!claimParams && claimLoading && (
         <Flex justifyContent={"center"} alignItems={"center"} py={10}>
           <Spinner />
@@ -204,8 +218,8 @@ export default function Claim({
             }
             isLoading={claimButtonLoading}
             onClick={() => handleClaim()}
-            size="sm"
-            colorScheme="blue"
+            size="md"
+            variant={isClaimed ? "goldOutline" : "gold"}
             width="full"
             mt={4}
           >
